@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>hepani page</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+
+  <body>
+
+    <div id="world" class="world">
+
+      <div id="system" class="system">
+
+        <h1>Welcome to hign energy physics animation page</h1>
+
+        <div id="ax" class="axis" name="axis">x</div>
+        <div id="ay" class="axis" name="axis">y</div>
+        <div id="az" class="axis" name="axis">z</div>
+
+        <div id="status" class="status">
+
+          <i>x<sub>0</sub></i> =
+          <input id="x0_i" class="statusElement" name="input" value="10" onchange="onchangeInput(this)">
+
+          <i>y<sub>0</sub></i> =
+          <input id="y0_i" class="statusElement" name="input" value="10" onchange="onchangeInput(this)">
+
+          <i>z<sub>0</sub></i> =
+          <input id="z0_i" class="statusElement" name="input" value="10" onchange="onchangeInput(this)">
+
+          <i>ψ</i> =
+          <input id="psi_i" class="statusElement" name="input" value="-0.7853981633974482" onchange="onchangeInput(this)">
+
+          <i>θ</i> =
+          <input id="theta_i" class="statusElement" name="input" value="2.186276035465284" onchange="onchangeInput(this)">
+
+          <i>φ</i> =
+          <input id="phi_i" class="statusElement" name="input" value="0" onchange="onchangeInput(this)">
+
+          &nbsp;
+          <button onclick="onclickReset()">Reset</button>
+
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+          <i>t</i> =
+          <input id="t_i" class="statusElement" value="0" onchange="onchangeTime()">
+
+          &nbsp;
+          <button onclick="onclickFresh()">Fresh</button>
+
+        </div>
+
+      </div>
+
+      <div class="lcontrols">
+        <div id="x0_c" class="control" onclick="onclickControl(this)">x<sub>0</sub></div>
+        <div id="y0_c" class="control" onclick="onclickControl(this)">y<sub>0</sub></div>
+        <div id="z0_c" class="control" onclick="onclickControl(this)">z<sub>0</sub></div>
+        <div id="psi_c" class="control" onclick="onclickControl(this)">ψ</div>
+        <div id="theta_c" class="control" onclick="onclickControl(this)">θ</div>
+        <div id="phi_c" class="control" onclick="onclickControl(this)">φ</div>
+      </div>
+
+      <div class="rcontrols">
+
+        <a href="coming.html" target="_black" style="color:black;text-decoration:none">
+          <div id="file" class="tcontrol">File</div>
+        </a>
+
+        <a href="coming.html" target="_black" style="color:black;text-decoration:none">
+          <div id="time" class="tcontrol">Time</div>
+        </a>
+
+        <div id="start" class="tcontrol" onclick="onclickStart()">Start</div>
+
+        <a href="coming.html" target="_black" style="color:black;text-decoration:none">
+          <div id="config" class="tcontrol">Conf</div>
+        </a>
+
+        <a href="coming.html" target="_black" style="color:black;text-decoration:none">
+          <div id="save" class="tcontrol">Save</div>
+        </a>
+
+        <a href="coming.html" target="_black" style="color:black;text-decoration:none">
+          <div id="help" class="tcontrol">Help</div>
+        </a>
+
+      </div>
+
+    </div>
+
+    <script src="io.js"></script>
+    <script src="ani.js"></script>
+
+  </body>
+
+</html>
