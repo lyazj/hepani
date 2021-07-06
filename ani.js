@@ -251,7 +251,7 @@ function frameFunction () {  // update globally
   document.getElementsByName("axis").forEach(function (axis) {
     applyPosition(axis, [0, 0, 0])
     var t = getPolar(axes_1[axis.id]), len = t[0], theta = t[1]
-    axis.style.transform = "rotate(" + theta + "rad)"
+    axis.style.transform = "rotate(" + (2*Math.PI - theta) + "rad)"
     axis.style.paddingLeft = 300 * len + "px"
     axis.style.marginTop = "6px"
     axis.style.left = axis.offsetLeft - 150 * len + "px"
