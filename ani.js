@@ -71,7 +71,7 @@ function onclickControl(elem) {  // create/remove corresponding range bar
 
   range = document.createElement("input")
   if(name == "x0" || name == "y0" || name == "z0")
-    range.max = 10, range.min = -10, range.step = 0.01
+    range.max = 100, range.min = -100, range.step = 0.01
   else if(name == "psi" || name == "phi")
     range.max = Math.PI, range.min = -Math.PI, range.step = 0.001
   else if(name == "theta")
@@ -250,11 +250,12 @@ function frameFunction () {  // update globally
   axes_1["az"] = trans([0, 0, 1])
   document.getElementsByName("axis").forEach(function (axis) {
     applyPosition(axis, [0, 0, 0])
-    var t = getPolar(axes_1[axis.id]), len = t[0], theta = t[1]
+    var scale = getScale(axes_1[axis.id][2])
+    var t = getPolar(axes_1[axis.id]), len = t[0] * scale, theta = t[1]
     axis.style.transform = "rotate(" + (2*Math.PI - theta) + "rad)"
-    axis.style.paddingLeft = 300 * len + "px"
+    axis.style.paddingLeft = 716 * len + "px"
     axis.style.marginTop = "6px"
-    axis.style.left = axis.offsetLeft - 150 * len + "px"
+    axis.style.left = axis.offsetLeft - 358 * len + "px"
   })
 
   var phase_new = getPhase()
