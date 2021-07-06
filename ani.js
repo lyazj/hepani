@@ -6,18 +6,13 @@ const left_span = left_max - left_min
 const top_min = -16
 const top_max = 546
 const top_span = top_max - top_min
-const size_min = 1
-const size_max = 6
-const size_span = size_max - size_min
 const x_min = -10
 const x_max = 10
 const x_span = x_max - x_min
 const y_min = -10
 const y_max = 10
 const y_span = y_max - y_min
-const z_min = -10
-const z_max = 10
-const z_span = z_max - z_min
+const z_std = 50
 
 var coord = { }
 var phase = -1
@@ -159,18 +154,16 @@ function getTimeSpan() {
 
 function getLeft(x) {
   x = (x - x_min) / x_span * left_span + left_min
-  return (x < left_min || x > left_max) ? number.NaN : x
+  return (x < left_min || x > left_max) ? Number.NaN : x
 }
 
 function getTop(y) {
   y = (y - y_min) / y_span * top_span + top_min
-  return (y < top_min || y > top_max) ? number.NaN : y
+  return (y < top_min || y > top_max) ? Number.NaN : y
 }
 
-function getSize(z) {
-  z = (z - z_min) / z_span * size_span + size_min
-  /* return z < size_min ? size_min : z > size_max ? size_max : z */
-  return z
+function getScale(z) {
+  return z_std / z
 }
 
 function rotate(x, y, arg) {
@@ -228,12 +221,19 @@ function getPolar(r) {
 
 function applyPosition(elem, r) {
   r = trans(r)
-  if(r[2] > 0 && !isNaN(r[0]) && !isNaN(r[1]))
+  if(r[2] < 0)
+  {
+    elem.style.background = "lightblue"
+    r[2] = -r[2]
+  }
+  else
+    elem.style.background = "blue"
+  var scale = getScale(r[2])
+  if(scale && !isNaN(r[0]) && !isNaN(r[1]))
   {
     elem.style.display = "inline"
-    var size = getSize(r[2])
-    elem.style.left = getLeft(r[0] / size) + "px"
-    elem.style.top = getTop(r[1] / size) + "px"
+    elem.style.left = getLeft(r[0] * scale) + "px"
+    elem.style.top = getTop(r[1] * scale) + "px"
   }
   else
     elem.style.display = "none"
