@@ -95,25 +95,27 @@ var writeJSON = (function () {
       argArray.push(arg[i])
     }
 
-    var process = child_process.spawn("./Hepani", argArray)
+    var inputFile = "input.txt"
     var tempJSON = getTempJSON()
     if(!tempJSON) {
       response.writeHead(500, {"Content-Type": "text/plain"})
       return response.end("Server too busy.")
     }
-    var fout = fs.createWriteStream(tempJSON)
-    var serr = ""
 
-    process.stdout.on("data", function (data) {
-      fout.write(data)
+    var process = child_process.spawn("./Hepani", argArray, {
+      stdio: [
+        fs.openSync(inputFile, "r"),
+        fs.openSync(tempJSON, "w"),
+        "pipe"
+      ]
     })
+
+    var serr = ""
     process.stderr.on("data", function (data) {
       serr += data.toString()
     })
 
     process.on("close", function (code) {
-
-      fout.end()
 
       if(code) {
         response.writeHead(403, {"Content-Type": "text/plain"})

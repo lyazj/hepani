@@ -342,23 +342,20 @@ int main(int argc, char *argv[])
     args[key] = argv[++i];
   }
 
-  ifstream ifs("input.txt");
-  if(!ifs)
-  {
-    cerr << "Cannot open input file." << endl;
-    return 1;
-  }
-
   System system;
 
   if(args["type"] == "py8log")
   {
-    if(!system.from_py8log(ifs))
+    if(!system.from_py8log(cin))
     {
       cerr << "Invalid input file." << endl;
       return 1;
     }
   }
+  // else if(...)
+  // {
+
+  // }
   else
   {
     cerr << "Unsupported file type." << endl;
@@ -372,7 +369,7 @@ int main(int argc, char *argv[])
   }
 
   // ojsonstream ojs(clog.rdbuf());
-  // ojs << args << endl;
+  // ojs << args;
 
   return 0;
 }

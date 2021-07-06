@@ -40,10 +40,15 @@ function requestJSON(arg) {
   xhr.setRequestHeader("Content-Type", "application/json")
   xhr.send(JSON.stringify(arg))
   xhr.onload = function () {
-    particles = JSON.parse(xhr.responseText)
     removeLoading()
-    frameFunction()
-    displayAxes()
+    if(this.status == 200)
+    {
+      particles = JSON.parse(this.responseText)
+      frameFunction()
+      displayAxes()
+    }
+    else
+      alert("HTTP Error " + this.status + ": " + this.responseText)
   }
 }
 
