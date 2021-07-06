@@ -37,7 +37,7 @@ function onclickReset() {  // set coordinates as default
 }
 
 function onchangeTime() {
-  framFunction()
+  frameFunction()
 }
 
 function onclickFresh() {  // set time as 0
