@@ -16,6 +16,7 @@
 
 #include "Hepani.h"
 
+#include <map>
 #include <sstream>
 #include <fstream>
 #include <iomanip>
@@ -321,21 +322,57 @@ bool System::to_json(std::ostream &os) const
   return (bool)(ojs << particles);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+  map<string, string> args;
+  for(int i = 1; i < argc; ++i)
+  {
+    string key(argv[i]);
+    if(key.size() < 3 || key.substr(0, 2) != "--")
+    {
+      cerr << "Invalid argument: " + key << "." << endl;
+      return 1;
+    }
+    key = key.substr(2);
+    if(i == argc)
+    {
+      cerr << "Missing value of option: " << key << "." << endl;
+      return 1;
+    }
+    args[key] = argv[++i];
+  }
+
   ifstream ifs("input.txt");
   if(!ifs)
+  {
+    cerr << "Cannot open input file." << endl;
     return 1;
-  ofstream ofs("output.json");
-  if(!ofs)
-    return 2;
+  }
 
   System system;
 
-  if(!system.from_py8log(ifs))
-    return 3;
-  if(!system.to_json(ofs))
-    return 4;
+  if(args["type"] == "py8log")
+  {
+    if(!system.from_py8log(ifs))
+    {
+      cerr << "Invalid input file." << endl;
+      return 1;
+    }
+  }
+  else
+  {
+    cerr << "Unsupported file type." << endl;
+    return 1;
+  }
+
+  if(!system.to_json(cout))
+  {
+    cerr << "Error writing output." << endl;
+    return 1;
+  }
+
+  // ojsonstream ojs(clog.rdbuf());
+  // ojs << args << endl;
 
   return 0;
 }

@@ -4,6 +4,7 @@ var http = require("http")
 var url = require("url")
 var fs = require("fs")
 var zlib = require("zlib")
+var child_process = require("child_process")
 
 // blacklist
 var fileBlock = [
@@ -21,8 +22,13 @@ var fileType = {
   // ...
 }
 
-function writeFile(response, file, type, code) {
+function writeFile(response, file, type, code, callback) {
 
+  if(typeof code == "function")
+  {
+    callback = code
+    code = undefined
+  }
   if(type === undefined)
     type = "text/html"
   if(code === undefined)
@@ -52,6 +58,8 @@ function writeFile(response, file, type, code) {
       // ...
     })
     fs.createReadStream(file).pipe(zlib.createGzip()).pipe(response)
+    if(callback)
+      callback()
 
   })
 
@@ -61,12 +69,90 @@ function writeError(response, code) {
   writeFile(response, code + ".html", "text/html", code)
 }
 
+var writeJSON = (function () {
+
+  var cnt = 0
+
+  function getTempJSON() {
+    var num = cnt++
+    cnt %= 65536
+    var filename = "json_" + num + ".tmp"
+    try {
+      fs.accessSync(filename)
+    }
+    catch(err) {
+      return filename
+    }
+  }
+
+  return function (response, post) {
+
+    var arg = JSON.parse(post)
+    var argArray = []
+    for(var i in arg)
+    {
+      argArray.push("--" + i)
+      argArray.push(arg[i])
+    }
+
+    var process = child_process.spawn("./Hepani", argArray)
+    var tempJSON = getTempJSON()
+    if(!tempJSON) {
+      response.writeHead(500, {"Content-Type": "text/plain"})
+      return response.end("Server too busy.")
+    }
+    var fout = fs.createWriteStream(tempJSON)
+    var serr = ""
+
+    process.stdout.on("data", function (data) {
+      fout.write(data)
+    })
+    process.stderr.on("data", function (data) {
+      serr += data.toString()
+    })
+
+    process.on("close", function (code) {
+
+      fout.end()
+
+      if(code) {
+        response.writeHead(403, {"Content-Type": "text/plain"})
+        response.end(serr)
+        return fs.unlink(tempJSON, function (err) {
+          if(err)
+            console.error(err)
+        })
+      }
+
+      writeFile(response, tempJSON, fileType.json, function () {
+        fs.unlink(tempJSON, function (err) {
+          if(err)
+            console.error(err)
+        })
+      })
+
+    })
+
+  }
+
+})()
+
 http.createServer(function (request, response) {
 
-  console.log("Request url: " + request.url)
+  console.log(request.method + ": " + request.url)
   var pathname = url.parse(request.url).pathname.slice(1)
   if(!pathname)
     pathname = "index.html"
+  if(request.method == "POST" && pathname == "output.json")
+  {
+    var post = ""
+    request.on("data", function (chunk) {
+      post += chunk
+    })
+    return request.on("end", function () {
+      writeJSON(response, post)
+    })
+  }
 
   for(var type in fileType)
     if(RegExp("\\." + type + "\\b").exec(pathname))

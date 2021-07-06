@@ -30,13 +30,15 @@ function removeLoading() {
   loading.parentNode.removeChild(loading)
 }
 
-function requestJSON() {
+function requestJSON(arg) {
+  if(!arg)
+    arg = {}
   hideAxes()
   createLoading()
   var xhr = new XMLHttpRequest()
-  xhr.open("post", "output.json")
+  xhr.open("post", "output.json", true)
   xhr.setRequestHeader("Content-Type", "application/json")
-  xhr.send(JSON.stringify({tag: "for test only"}))
+  xhr.send(JSON.stringify(arg))
   xhr.onload = function () {
     particles = JSON.parse(xhr.responseText)
     removeLoading()
@@ -45,4 +47,6 @@ function requestJSON() {
   }
 }
 
-requestJSON()
+requestJSON({
+  type: "py8log"
+})
