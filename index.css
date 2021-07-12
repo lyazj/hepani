@@ -116,3 +116,13 @@ div.axis {
   font-style:italic;
   position:absolute;
 }
+
+div.buttom {
+  width:100%;
+  background:MidnightBlue;
+  top:100%;
+  left:0;
+  position:absolute;
+  text-align:center;
+  color:white;
+}
