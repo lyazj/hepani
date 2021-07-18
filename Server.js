@@ -1,6 +1,7 @@
 "use strict"
 
 var http = require("http")
+var https = require("https")
 var url = require("url")
 var fs = require("fs")
 var zlib = require("zlib")
@@ -21,6 +22,9 @@ var fileType = {
   json: "application/json",
   // ...
 }
+
+var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
+var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
 
 function writeFile(response, file, type, code, callback) {
 
@@ -139,7 +143,7 @@ var writeJSON = (function () {
 
 })()
 
-http.createServer(function (request, response) {
+function procedure(request, response) {
 
   console.log(request.method + ": " + request.url)
   var pathname = url.parse(request.url).pathname.slice(1)
@@ -161,6 +165,12 @@ http.createServer(function (request, response) {
       return writeFile(response, pathname, fileType[type])
   return writeError(response, 404)
 
-}).listen(5861)
+}
 
+http.createServer(procedure).listen(5861)
 console.log("Server running at http://39.98.116.227/")
+
+https.createServer({
+  key: httpsKey, cert: httpsCert
+}, procedure).listen(1122)
+console.log("Server running at https://39.98.116.227/")
