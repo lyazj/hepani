@@ -16,6 +16,7 @@ var fileBlock = [
 // whitelist
 var fileType = {
   ico:  "image/x-icon",
+  png:  "image/png",
   html: "text/html;charset=utf-8",
   js:   "text/javascript",
   css:  "text/css",
@@ -59,6 +60,7 @@ function writeFile(response, file, type, code, callback) {
     response.writeHead(code, {
       "Content-Type": type,
       "Content-Encoding": "gzip",
+      "Cache-Control": "max-age=3600",
       // ...
     })
     fs.createReadStream(file).pipe(zlib.createGzip()).pipe(response)
