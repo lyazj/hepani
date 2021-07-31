@@ -3,7 +3,6 @@
 all = cache.json Hepani
 
 all: $(all)
-	@$(RM) depend
 
 clean:
 	$(RM) $(all)
@@ -12,9 +11,7 @@ cache.json: Cache.py
 	./$<
 
 Hepani: Hepani.cpp
-	g++ -O2 $^ -o $@ -lHepMC3
+	g++ -O2 $(filter %.cpp,$^) -o $@ -lHepMC3
+	strip $@
 
-depend: *.cpp
-	@g++ -MM $^ | sed -e 's/.*\.o:/Hepani:/' > $@
-
-include depend
+.PHONY: clean

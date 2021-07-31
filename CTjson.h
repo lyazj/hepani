@@ -114,7 +114,7 @@ inline ojsonstream &operator<<(ojsonstream &ojs, nullptr_t)
   return ojs;
 }
 
-ojsonstream &operator<<(ojsonstream &ojs, const std::string &str)
+inline ojsonstream &operator<<(ojsonstream &ojs, const std::string &str)
 {
   ojs.base() << "\"";
   for(char c : str)

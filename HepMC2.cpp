@@ -7,7 +7,7 @@
 using namespace std;
 using namespace HepMC3;
 
-int main()
+int test()
 {
   HepMC2RandomAccessor h2ra("input.hepmc");
   GenEvent evt;
@@ -62,4 +62,6 @@ int main()
   for(const Particle &particle : particles)
     cout << particle.colours[0] << " " << particle.colours[1] << endl;
   cout << particles.size() << endl;
+
+  return 0;
 }
