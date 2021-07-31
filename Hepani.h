@@ -76,6 +76,7 @@ struct Particle {
   uint32_t            no;          // Assigned while loading
   int32_t             id;          // Assigned while loading
   std::string         name;        // Assigned while loading
+                                   // Overrided with cache
   uint32_t            colours[2];  // Assigned while loading
   Array               r;           // Caculated uniformly
   Array               v;           // Assigned to p / e while loading
@@ -86,6 +87,7 @@ struct Particle {
   uint32_t            death;       // Assigned to -1 while loading...
   std::set<uint32_t>  momset;      // Assigned while loading
   std::set<uint32_t>  dauset;      // Assigned while loading
+  std::string         describe;    // Assigned with cache
 
   ojsonstream &print(ojsonstream &) const;
 };
