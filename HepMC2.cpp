@@ -7,7 +7,7 @@
 using namespace std;
 using namespace HepMC3;
 
-int test()
+int main()
 {
   HepMC2RandomAccessor h2ra("input.hepmc");
   GenEvent evt;

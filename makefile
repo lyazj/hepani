@@ -1,6 +1,6 @@
 #!/usr/bin/env -S make -f
 
-all = cache.json Hepani
+all = cache.json Hepani HepMC2
 
 all: $(all)
 
@@ -10,7 +10,7 @@ clean:
 cache.json: Cache.py
 	./$<
 
-Hepani: Hepani.cpp
+%: %.cpp
 	g++ -O2 $(filter %.cpp,$^) -o $@ -lHepMC3
 	strip $@
 
