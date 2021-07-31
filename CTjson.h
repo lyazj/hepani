@@ -32,8 +32,7 @@ public:
     : std::ostream(psb),
     _depth(0), _ind_char(' '), _ind_cnt(4)
   {
-    base() << std::boolalpha;
-    base() << std::fixed << std::setprecision(6);
+    base() << std::boolalpha << std::scientific;
   }
 
   std::ostream &base()
@@ -114,7 +113,7 @@ inline ojsonstream &operator<<(ojsonstream &ojs, nullptr_t)
   return ojs;
 }
 
-inline ojsonstream &operator<<(ojsonstream &ojs, const std::string &str)
+static ojsonstream &operator<<(ojsonstream &ojs, const std::string &str)
 {
   ojs.base() << "\"";
   for(char c : str)
