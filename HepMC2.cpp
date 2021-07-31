@@ -1,6 +1,7 @@
 #include "HepMC2Extension.h"
 #include "Hepani.h"
 
+#include <HepMC3/GenParticle.h>
 // #include <HepMC3/Print.h>
 
 using namespace std;

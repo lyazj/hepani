@@ -77,6 +77,7 @@ struct Particle {
   int32_t             id;          // Assigned while loading
   std::string         name;        // Assigned while loading
                                    // Overrided with cache
+  int32_t             status;      // Assigned while loading
   uint32_t            colours[2];  // Assigned while loading
   Array               r;           // Caculated uniformly
   Array               v;           // Assigned to p / e while loading
@@ -93,7 +94,6 @@ struct Particle {
 };
 
 struct Parpy8log : Particle {
-  int32_t   status;                // Assigned while loading
   uint32_t  mothers[2];            // Assigned while loading
   uint32_t  daughters[2];          // Assigned while loading
 };
