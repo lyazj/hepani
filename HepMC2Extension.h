@@ -27,6 +27,7 @@
 #include <time.h>
 
 #include <HepMC3/GenEvent.h>
+#include <HepMC3/GenParticle.h>
 #include <HepMC3/ReaderAsciiHepMC2.h>
 
 namespace HepMC3 {

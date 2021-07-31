@@ -1,6 +1,6 @@
 #!/usr/bin/env -S make -f
 
-all = cache.json Hepani HepMC2
+all = cache.json Hepani
 
 all: $(all)
 

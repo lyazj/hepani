@@ -18,6 +18,7 @@
 #define HEPANI_HDR
 
 #include "CTjson.h"
+#include "HepMC2Extension.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -45,6 +46,7 @@ inline auto operator<<(ojsonstream &ojs, const T &t)
 }  // namespace CTjson
 
 using namespace CTjson;
+using namespace HepMC3;
 
 #define KVP(var) #var, var
 
@@ -73,43 +75,46 @@ Array operator/(const Array &, double);
 constexpr uint32_t phase_undef = (uint32_t)-1;
 
 struct Particle {
-  uint32_t            no;          // Assigned while loading
-  int32_t             id;          // Assigned while loading
-  std::string         name;        // Assigned while loading
-                                   // Overrided with cache
-  int32_t             status;      // Assigned while loading
-  uint32_t            colours[2];  // Assigned while loading
-  Array               r;           // Caculated uniformly
-  Array               v;           // Assigned to p / e while loading
-  Array               p;           // Assigned while loading
-  double              e;           // Assigned while loading
-  double              m;           // Assigned while loading
-  uint32_t            birth;       // Assigned to -1 while loading...
-  uint32_t            death;       // Assigned to -1 while loading...
-  std::set<uint32_t>  momset;      // Assigned while loading
-  std::set<uint32_t>  dauset;      // Assigned while loading
-  std::string         describe;    // Assigned with cache
+  uint32_t            no;           // Assigned while loading
+  int32_t             id;           // Assigned while loading
+  std::string         name;         // Assigned while loading
+                                    // Overrided with cache
+  int32_t             status;       // Assigned while loading
+  uint32_t            colours[2];   // Assigned while loading
+  Array               r;            // Caculated uniformly
+  Array               v;            // Assigned to p / e while loading
+  Array               p;            // Assigned while loading
+  double              e;            // Assigned while loading
+  double              m;            // Assigned while loading
+  uint32_t            birth;        // Assigned to -1 while loading...
+  uint32_t            death;        // Assigned to -1 while loading...
+  std::set<uint32_t>  momset;       // Assigned while loading
+  std::set<uint32_t>  dauset;       // Assigned while loading
+  std::string         description;  // Assigned with cache
 
   ojsonstream &print(ojsonstream &) const;
 };
 
 struct Parpy8log : Particle {
-  uint32_t  mothers[2];            // Assigned while loading
-  uint32_t  daughters[2];          // Assigned while loading
+  uint32_t  mothers[2];             // Assigned while loading
+  uint32_t  daughters[2];           // Assigned while loading
 };
 
 std::istream &operator>>(std::istream &, Parpy8log &);
 
 typedef std::vector<std::vector<Particle>> Particles;
 typedef std::vector<std::vector<uint32_t>> Parindex;
+typedef std::vector<Particle> Pars;
 typedef std::vector<Parpy8log> Parpy8logs;
 
 struct System {
   Particles   particles;   // Changed only if caculating success
   Parindex    parindex;    // Changed only if caculating success
-  Parpy8logs  parpy8logs;  // Changed only if caculating success
+  Pars        pars;        // Optional, Changed only if caculating success
+  Parpy8logs  parpy8logs;  // Optional, Changed only if caculating success
 
   bool from_py8log(std::istream &);
+  bool from_hepmc2(std::istream &);
   bool to_json(std::ostream &) const;
 };
 

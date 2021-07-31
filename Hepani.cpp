@@ -161,6 +161,9 @@ static auto general_process(
   typename remove_reference<decltype(pars[0])>::type
   >::value, bool>::type
 {
+  /* supply PDG information */
+
+
   /* build index */
   parindex.clear();
   try {
@@ -275,6 +278,79 @@ static bool load_py8log(Parpy8logs &parpy8logs, const string &log)
   return true;
 }
 
+static bool load_hepmc2(Pars &pars, istream &is)
+{
+  HepMC2RandomAccessor h2ra(is);
+  GenEvent evt;
+  if(!h2ra.read_event(evt))
+    return false;
+
+  pars = {{
+    .no = 0,
+    .id = 90,
+    .name = "(system)",
+    .status = 11,
+    .colours = {0},
+    .v = {0.0},
+    .p = {0.0},
+    .e = 0.0,
+    .m = 0.0,
+    .birth = phase_undef,
+    .death = phase_undef,
+  }};
+
+  for(GenParticlePtr pparticle : evt.particles())
+  {
+    Particle particle;
+
+    particle.no = pparticle->id();
+    particle.id = pparticle->pid();
+
+    unsigned int attribute_state(0);
+    for(const string &name : pparticle->attribute_names())
+    {
+      if(name == "flow1")
+      {
+        particle.colours[0] =
+          pparticle->attribute<IntAttribute>("flow1")->value();
+        attribute_state |= 1U << 0;
+      }
+      else if(name == "flow2")
+      {
+        particle.colours[1] =
+          pparticle->attribute<IntAttribute>("flow2")->value();
+        attribute_state |= 1U << 1;
+      }
+      if(attribute_state == ~(~0U << 2))
+        break;
+    }
+    for(int i = 0; i < 2; ++i)
+      if(!(attribute_state & (1U << i)))
+        particle.colours[i] = 0;
+
+    const FourVector &momentum(pparticle->momentum());
+    particle.p = {momentum.px(), momentum.py(), momentum.pz()};
+    particle.e = momentum.e();
+    particle.m = pparticle->generated_mass();
+    particle.status = pparticle->status();
+
+    for(GenParticlePtr pparent : pparticle->parents())
+      particle.momset.insert(pparent->id());
+    for(GenParticlePtr pchild : pparticle->children())
+      particle.dauset.insert(pchild->id());
+
+    if(particle.momset.empty())
+    {
+      particle.momset.insert(0);
+      pars[0].dauset.insert(particle.no);
+    }
+
+    pars.emplace_back(move(particle));
+  }
+
+  return true;
+}
+
 bool System::from_py8log(istream &is)
 {
   ostringstream oss;
@@ -296,6 +372,31 @@ bool System::from_py8log(istream &is)
   return true;
 }
 
+bool System::from_hepmc2(istream &is)
+{
+  ostringstream oss;
+  oss << is.rdbuf();
+  istringstream iss(oss.str());
+
+  Pars partmps;
+  if(!load_hepmc2(partmps, iss))
+    return false;
+
+  // ojsonstream ojs(cerr.rdbuf());
+  // ojs << partmps;
+  // exit(5861);
+
+  Particles partitmps;
+  Parindex paridxtmp;
+  if(!general_process(partitmps, paridxtmp, partmps))
+    return false;
+
+  swap(particles, partitmps);
+  swap(parindex, paridxtmp);
+  swap(pars, partmps);
+  return true;
+}
+
 ojsonstream &Particle::print(ojsonstream &ojs) const
 {
   return prt_obj(
@@ -303,6 +404,7 @@ ojsonstream &Particle::print(ojsonstream &ojs) const
       KVP(no),
       KVP(id),
       KVP(name),
+      KVP(status),
       KVP(colours),
       KVP(r),
       KVP(v),
@@ -311,7 +413,8 @@ ojsonstream &Particle::print(ojsonstream &ojs) const
       KVP(birth),
       KVP(death),
       KVP(momset),
-      KVP(dauset)
+      KVP(dauset),
+      KVP(description)
   );
 }
 
@@ -347,6 +450,14 @@ int main(int argc, char *argv[])
   if(args["type"] == "py8log")
   {
     if(!system.from_py8log(cin))
+    {
+      cerr << "Invalid input file." << endl;
+      return 1;
+    }
+  }
+  else if(args["type"] == "hepmc2")
+  {
+    if(!system.from_hepmc2(cin))
     {
       cerr << "Invalid input file." << endl;
       return 1;
