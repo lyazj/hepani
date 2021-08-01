@@ -31,17 +31,17 @@
     </p>
     <p>Let's have a try!</p>
 
-    <form action="/" method="post" enctype="multipart/form-data">
+    <form id="upload" action="/" method="post" enctype="multipart/form-data">
       <fieldset>
         <legend>Upload a file</legend>
         Select a type:
-        <select name="type">
+        <select name="type" id="type">
           <option value="py8log">running log from pythia8</option>
-          <option value="py8log">HepMC2 file type</option>
+          <option value="hepmc2">HepMC2 file type</option>
         </select>
         <br />
         Select a file:
-        <input type="file" name="input" />
+        <input type="file" name="input" id="input" />
         <br />
         Check twice and click:
         <input type="submit" value="upload" />
@@ -55,5 +55,50 @@
     For help, see: <a href="coming.html" target="_black">help page</a>.
     </p>
 
+    <script src="https://cdn.bootcdn.net/ajax/libs/pako/2.0.3/pako_deflate.min.js"></script>
+    <script>
+      "use strict"
+      function submit() {  // format: "[ascii type]\0[deflated binary stream]"
+
+        var type = document.getElementById("type").value
+        var buffer = new Uint8Array(type.length + 1)
+        for(var i = 0; i < type.length; ++i)
+          buffer[i] = type.charCodeAt(i)
+
+        var sendRequest = function (buf) {
+          var xhr = new XMLHttpRequest()
+          xhr.open("post", "/", true)
+          xhr.setRequestHeader('content-type', 'application/octet-stream')
+          xhr.send(buf)
+          xhr.onload = function () {
+            if(this.status == 200)
+            {
+
+            }
+            else
+              alert("HTTP Error " + this.status + ": " + this.responseText)
+          }
+        }
+
+        var file = document.getElementById("input").files[0]
+        if(file)
+        {
+          var fileReader = new FileReader()
+          fileReader.readAsArrayBuffer(file)
+          fileReader.onload = function () {
+            var result = pako.gzip(new Uint8Array(fileReader.result), {level: 9})
+            var newBuffer = new Uint8Array(buffer.byteLength + result.byteLength)
+            for(var i = 0; i < buffer.byteLength; ++i)
+              newBuffer[i] = buffer[i]
+            for(var i = 0; i < result.byteLength; ++i)
+              newBuffer[i + buffer.byteLength] = result[i]
+            sendRequest(newBuffer)
+          }
+        }
+        else
+          sendRequest(buffer)
+
+      }
+    </script>
   </body>
 </html>
