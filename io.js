@@ -15,13 +15,18 @@ function displayAxes() {
 }
 
 function createLoading() {
-  var elem = document.createElement("p")
+  var elem = document.createElement("div")
   elem.id = "loading"
+  elem.style.width = "400pt"
+  elem.style.height = "32pt"
   elem.style.left = "50%"
   elem.style.top = "50%"
+  elem.style.marginLeft = "-200pt"
+  elem.style.marginTop = "-16pt"
   elem.style.position = "absolute"
   elem.style.fontSize = "32pt"
   elem.style.color = "Pink"
+  elem.style.textAlign = "center"
   elem.innerHTML = "Loading..."
   system.appendChild(elem)
 }
@@ -30,15 +35,12 @@ function removeLoading() {
   loading.parentNode.removeChild(loading)
 }
 
-function requestJSON(arg) {
-  if(!arg)
-    arg = {}
+function requestJSON() {
   hideAxes()
   createLoading()
   var xhr = new XMLHttpRequest()
-  xhr.open("post", "output.json", true)
-  xhr.setRequestHeader("Content-Type", "application/json")
-  xhr.send(JSON.stringify(arg))
+  xhr.open("get", "output.json", true)
+  xhr.send()
   xhr.onload = function () {
     removeLoading()
     if(this.status == 200)
@@ -52,6 +54,4 @@ function requestJSON(arg) {
   }
 }
 
-requestJSON({
-  type: "py8log"
-})
+requestJSON()

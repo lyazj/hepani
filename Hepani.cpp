@@ -423,10 +423,6 @@ bool System::from_hepmc2(istream &is)
   if(!load_hepmc2(partmps, iss))
     return false;
 
-  // ojsonstream ojs(cerr.rdbuf());
-  // ojs << partmps;
-  // exit(5861);
-
   Particles partitmps;
   Parindex paridxtmp;
   if(!general_process(partitmps, paridxtmp, partmps))
