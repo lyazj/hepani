@@ -3,12 +3,11 @@
 import particle
 import json
 
-particles = {}
-for par in particle.particle.particle.Particle.all():
-    particles[par.pdgid] = {
-        'name': par.html_name,
-        'describe': par.describe(),
-    }
+description = { }
+with open('name.txt', 'w') as name:
+    for par in particle.particle.particle.Particle.all():
+        name.write(f'{int(par.pdgid)}:{par.html_name}\n')
+        description[par.pdgid] = par.describe()
 
-with open('cache.json', 'w') as cache:
-    cache.write(json.dumps(particles))
+with open('description.json', 'w') as descript:
+    descript.write(json.dumps(description))

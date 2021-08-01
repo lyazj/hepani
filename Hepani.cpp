@@ -110,6 +110,42 @@ ojsonstream &Array::print(ojsonstream &ojs) const
   return ojs << data;
 }
 
+NameCache::NameCache(istream &is)
+{
+  int pid;
+  char buf;
+  string name;
+  while(is >> pid && is >> buf)
+  {
+    if(buf != ':')
+    {
+      is.setstate(is.failbit);
+      break;
+    }
+    if(!getline(is, name))
+      break;
+    data[pid] = name;
+  }
+}
+
+NameCache::NameCache(const string &filename)
+{
+  ifstream ifs(filename);
+  NameCache nc(ifs);
+  if(ifs.eof())
+    operator=(nc);
+}
+
+string *NameCache::find(int pid)
+{
+  auto iter(data.find(pid));
+  if(iter == data.end())
+    return nullptr;
+  return &iter->second;
+}
+
+NameCache name_cache("name.txt");
+
 inline static void general_loading_assign(Particle &particle)
 {
   particle.v = particle.p / particle.e;
@@ -162,7 +198,12 @@ static auto general_process(
   >::value, bool>::type
 {
   /* supply PDG information */
-
+  for(Particle &par : pars)
+  {
+    string *pname(name_cache.find(par.id));
+    if(pname)
+      par.name = *pname;
+  }
 
   /* build index */
   parindex.clear();
@@ -305,6 +346,7 @@ static bool load_hepmc2(Pars &pars, istream &is)
 
     particle.no = pparticle->id();
     particle.id = pparticle->pid();
+    particle.status = pparticle->status();
 
     unsigned int attribute_state(0);
     for(const string &name : pparticle->attribute_names())
@@ -332,19 +374,18 @@ static bool load_hepmc2(Pars &pars, istream &is)
     particle.p = {momentum.px(), momentum.py(), momentum.pz()};
     particle.e = momentum.e();
     particle.m = pparticle->generated_mass();
-    particle.status = pparticle->status();
 
     for(GenParticlePtr pparent : pparticle->parents())
       particle.momset.insert(pparent->id());
     for(GenParticlePtr pchild : pparticle->children())
       particle.dauset.insert(pchild->id());
-
     if(particle.momset.empty())
     {
       particle.momset.insert(0);
       pars[0].dauset.insert(particle.no);
     }
 
+    general_loading_assign(particle);
     pars.emplace_back(move(particle));
   }
 
@@ -413,8 +454,7 @@ ojsonstream &Particle::print(ojsonstream &ojs) const
       KVP(birth),
       KVP(death),
       KVP(momset),
-      KVP(dauset),
-      KVP(description)
+      KVP(dauset)
   );
 }
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env -S make -f
 
-all = cache.json Hepani
+all = name.txt description.json Hepani
 
 all: $(all)
 
 clean:
 	$(RM) $(all)
 
-cache.json: Cache.py
+name.txt description.json : Cache.py
 	./$<
 
 %: %.cpp

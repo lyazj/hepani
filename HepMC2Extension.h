@@ -89,7 +89,8 @@ inline HepMC2RandomAccessor::HepMC2RandomAccessor(std::istream &_is)
 
 }
 
-inline HepMC2RandomAccessor::HepMC2RandomAccessor(const std::string &filename)
+inline HepMC2RandomAccessor::HepMC2RandomAccessor(
+    const std::string &filename)
   : pifs(new std::ifstream(filename)), is(pifs->rdbuf()),
   index(is), input((is.clear(), is))
 {

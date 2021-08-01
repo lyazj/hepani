@@ -26,6 +26,7 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <unordered_map>
 
 namespace CTjson {
 
@@ -72,6 +73,18 @@ Array operator*(const Array &, double);
 Array operator*(double, const Array &);
 Array operator/(const Array &, double);
 
+class NameCache {
+public:
+  NameCache(const std::string &);
+  std::string *find(int);
+
+private:
+  NameCache(std::istream &);
+  std::unordered_map<int, std::string> data;
+};
+
+extern NameCache name_cache;
+
 constexpr uint32_t phase_undef = (uint32_t)-1;
 
 struct Particle {
@@ -90,7 +103,6 @@ struct Particle {
   uint32_t            death;        // Assigned to -1 while loading...
   std::set<uint32_t>  momset;       // Assigned while loading
   std::set<uint32_t>  dauset;       // Assigned while loading
-  std::string         description;  // Assigned with cache
 
   ojsonstream &print(ojsonstream &) const;
 };
