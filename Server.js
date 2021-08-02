@@ -151,15 +151,9 @@ function procedure(request, response) {
   var pathname = url.parse(request.url).pathname.slice(1)
   if(!pathname)
     pathname = "index.html"
-  if(request.method == "POST" && pathname == "output.json")
+  if(request.method == "POST" && pathname == "upload")
   {
-    var post = ""
-    request.on("data", function (chunk) {
-      post += chunk
-    })
-    return request.on("end", function () {
-      writeJSON(response, post)
-    })
+    console.log(request.body)
   }
 
   for(var type in fileType)

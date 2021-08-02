@@ -2,7 +2,6 @@
 
 var particles = []
 var shouldRequestJSON = true
-var xhrJSON
 
 function hideAxes() {
   document.getElementsByName("axis").forEach(function (elem) {
@@ -30,14 +29,14 @@ function createLoading() {
   elem.style.color = "Pink"
   elem.style.textAlign = "center"
   elem.innerHTML = "Loading..."
-  system.appendChild(elem)
+  document.body.appendChild(elem)
 }
 
 function removeLoading() {
   loading.parentNode.removeChild(loading)
 }
 
-var writePage = function (url) {
+function writePage(url, callback) {
   var xhr = new XMLHttpRequest()
   xhr.open("get", url, true)
   xhr.send()
@@ -46,10 +45,29 @@ var writePage = function (url) {
     {
       document.write(this.responseText)
       document.close()
+      if(callback)
+        callback()
     }
     else
       alert("HTTP Error " + this.status + ": " + this.responseText)
   }
+}
+
+function onrequestJSON(xhr) {
+  hideAxes()
+  createLoading()
+}
+
+function onloadJSON(xhr) {
+  removeLoading()
+  if(xhr.status == 200)
+  {
+    particles = JSON.parse(xhr.responseText)
+    initialize()
+    displayAxes()
+  }
+  else
+    alert("HTTP Error " + xhr.status + ": " + xhr.responseText)
 }
 
 function requestJSON() {  // must be called after 'ani.js' full loaded
@@ -61,27 +79,12 @@ function requestJSON() {  // must be called after 'ani.js' full loaded
     return
   }
 
-  hideAxes()
-  createLoading()
-  var xhr = xhrJSON
-  if(xhr)
-    xhrJSON = undefined
-  else
-  {
-    xhr = new XMLHttpRequest()
-    xhr.open("get", "output.json", true)
-    xhr.send()
-  }
+  var xhr = new XMLHttpRequest()
+  onrequestJSON(xhr)
+  xhr.open("get", "output.json", true)
+  xhr.send()
   xhr.onload = function () {
-    removeLoading()
-    if(this.status == 200)
-    {
-      particles = JSON.parse(this.responseText)
-      initialize()
-      displayAxes()
-    }
-    else
-      alert("HTTP Error " + this.status + ": " + this.responseText)
+    onloadJSON(this)
   }
 
 }

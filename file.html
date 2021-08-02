@@ -73,12 +73,15 @@
         for(var i = 0; i < type.length; ++i)
           buffer[i] = type.charCodeAt(i)
 
-        var sendRequest = function (buf) {
+        function sendRequest(buf) {
           var xhr = new XMLHttpRequest()
+          onrequestJSON(xhr)
           xhr.open("post", "upload", true)
           xhr.setRequestHeader('content-type', 'application/octet-stream')
           xhr.send(buf)
-          xhrJSON = xhr
+          xhr.onload = function () {
+            onloadJSON(this)
+          }
         }
 
         var file = document.getElementById("input").files[0]
