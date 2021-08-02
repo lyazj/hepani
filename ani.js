@@ -17,9 +17,16 @@ const z_std = 50
 var coord
 var phase
 
+function clearParticles() {  // clear particles in div#system
+  var particles = document.getElementsByClassName("particle")
+  for(var i = 0; i < particles.length; ++i)
+    particles[i].remove()
+}
+
 function initialize() {  // must be called after full loaded
   coord = { }
   phase = -1
+  clearParticles()
   frameFunction()
 }
 
@@ -208,7 +215,7 @@ function generateParticle() {
     elem.className = "particle"
     elem.id = particle.no
     elem.name = particle.name
-    elem.innerHTML = elem.name
+    elem.innerHTML = particle.name
     if(elem.innerHTML[0] == '(')
       elem.innerHTML = elem.innerHTML.slice(1)
     if(elem.innerHTML.slice(-1) == ')')

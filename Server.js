@@ -6,6 +6,7 @@ var url = require("url")
 var fs = require("fs")
 var zlib = require("zlib")
 var child_process = require("child_process")
+var querystring = require("querystring")
 
 // blacklist
 var fileBlock = [
@@ -75,86 +76,72 @@ function writeError(response, code) {
   writeFile(response, code + ".html", "text/html", code)
 }
 
-var writeJSON = (function () {
+function writeJSON() {
 
-  var cnt = 0
+  var process = child_process.spawn("./Hepani", argArray, {
+    stdio: [
+      fs.openSync(inputFile, "r"),
+      fs.openSync(tempJSON, "w"),
+      "pipe"
+    ]
+  })
 
-  function getTempJSON() {
-    var num = cnt++
-    cnt %= 65536
-    var filename = "json_" + num + ".tmp"
-    try {
-      fs.accessSync(filename)
-    }
-    catch(err) {
-      return filename
-    }
-  }
+  var serr = ""
+  process.stderr.on("data", function (data) {
+    serr += data.toString()
+  })
 
-  return function (response, post) {
+  process.on("close", function (code) {
 
-    var arg = JSON.parse(post)
-    var argArray = []
-    for(var i in arg)
-    {
-      argArray.push("--" + i)
-      argArray.push(arg[i])
-    }
-
-    var inputFile = "input.txt"
-    var tempJSON = getTempJSON()
-    if(!tempJSON) {
-      response.writeHead(500, {"Content-Type": "text/plain"})
-      return response.end("Server too busy.")
-    }
-
-    var process = child_process.spawn("./Hepani", argArray, {
-      stdio: [
-        fs.openSync(inputFile, "r"),
-        fs.openSync(tempJSON, "w"),
-        "pipe"
-      ]
-    })
-
-    var serr = ""
-    process.stderr.on("data", function (data) {
-      serr += data.toString()
-    })
-
-    process.on("close", function (code) {
-
-      if(code) {
-        response.writeHead(403, {"Content-Type": "text/plain"})
-        response.end(serr)
-        return fs.unlink(tempJSON, function (err) {
-          if(err)
-            console.error(err)
-        })
-      }
-
-      writeFile(response, tempJSON, fileType.json, function () {
-        fs.unlink(tempJSON, function (err) {
-          if(err)
-            console.error(err)
-        })
+    if(code) {
+      response.writeHead(403, {"Content-Type": "text/plain"})
+      response.end(serr)
+      return fs.unlink(tempJSON, function (err) {
+        if(err)
+          console.error(err)
       })
+    }
 
+    writeFile(response, tempJSON, fileType.json, function () {
+      fs.unlink(tempJSON, function (err) {
+        if(err)
+          console.error(err)
+      })
     })
 
-  }
+  })
 
-})()
+}
+
+function writeExample(response, type) {
+  writeFile(response, type + ".json", "application/json")
+}
 
 function procedure(request, response) {
 
   console.log(request.method + ": " + request.url)
-  var pathname = url.parse(request.url).pathname.slice(1)
+
+  var URL = url.parse(request.url)
+  console.log(URL)
+  var pathname = URL.pathname.slice(1)
   if(!pathname)
     pathname = "index.html"
   if(request.method == "POST" && pathname == "upload")
   {
+    var query = querystring.parse(URL.query)
+    console.log(query)
+    if(query.empty)
+      return writeExample(response, query.type)
+
+    if(request.headers["content-type"] != "application/octet-stream"
+      || request.headers["content-encoding"] != "gzip")
+      return writeError(response, 406)
+
     var gunzip = zlib.createGunzip()
-    return writeError(response, 404)
+    request.pipe(gunzip)
+
+    // ...
+    return
   }
 
   for(var type in fileType)

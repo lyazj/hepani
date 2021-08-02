@@ -92,8 +92,9 @@
         function sendRequest(buf) {
           var xhr = new XMLHttpRequest()
           onrequestJSON(xhr)
-          xhr.open("post", "upload", true)
-          xhr.setRequestHeader('content-type', 'application/octet-stream')
+          xhr.open("post", url, true)
+          xhr.setRequestHeader('Content-Type', 'application/octet-stream')
+          xhr.setRequestHeader('Content-Encoding', 'gzip')
           xhr.send(buf)
           xhr.onload = function () {
             onloadJSON(this)
