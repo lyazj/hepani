@@ -1,6 +1,7 @@
 "use strict"
 
 var particles = []
+var shouldRequestJSON = true
 var xhrJSON
 
 function hideAxes() {
@@ -52,6 +53,14 @@ var writePage = function (url) {
 }
 
 function requestJSON() {  // must be called after 'ani.js' full loaded
+
+  if(shouldRequestJSON == false)
+  {
+    shouldRequestJSON = true
+    initialize()
+    return
+  }
+
   hideAxes()
   createLoading()
   var xhr = xhrJSON
@@ -74,4 +83,5 @@ function requestJSON() {  // must be called after 'ani.js' full loaded
     else
       alert("HTTP Error " + this.status + ": " + this.responseText)
   }
+
 }
