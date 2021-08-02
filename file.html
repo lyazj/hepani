@@ -79,13 +79,7 @@
           xhr.open("post", "upload", true)
           xhr.setRequestHeader('content-type', 'application/octet-stream')
           xhr.send(buf)
-          xhr.onload = function () {
-            if(this.status == 200)
-            {
-              // ...
-            }
-            else
-              alert("HTTP Error " + this.status + ": " + this.responseText)
+          xhrJSON = xhr
           }
         }
 

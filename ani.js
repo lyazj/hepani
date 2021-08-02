@@ -17,7 +17,7 @@ const z_std = 50
 var coord
 var phase
 
-function initialize() {
+function initialize() {  // must be called after full loaded
   coord = { }
   phase = -1
   frameFunction()

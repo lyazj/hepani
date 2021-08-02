@@ -1,6 +1,7 @@
 "use strict"
 
 var particles = []
+var xhrJSON
 
 function hideAxes() {
   document.getElementsByName("axis").forEach(function (elem) {
@@ -50,12 +51,18 @@ var writePage = function (url) {
   }
 }
 
-function requestJSON() {
+function requestJSON() {  // must be called after 'ani.js' full loaded
   hideAxes()
   createLoading()
-  var xhr = new XMLHttpRequest()
-  xhr.open("get", "output.json", true)
-  xhr.send()
+  var xhr = xhrJSON
+  if(xhr)
+    xhrJSON = undefined
+  else
+  {
+    xhr = new XMLHttpRequest()
+    xhr.open("get", "output.json", true)
+    xhr.send()
+  }
   xhr.onload = function () {
     removeLoading()
     if(this.status == 200)
