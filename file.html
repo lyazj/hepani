@@ -5,7 +5,6 @@
     <title>Upload</title>
   </head>
   <body>
-
     <h1>Upload a file</h1>
     <p>To generate animation, we need a file in which one or more hign energy physics events are stored.</p>
     <p>By now, two types of file are supported:</p>
@@ -66,6 +65,7 @@
     </script>
     <script>
       "use strict"
+
       function submitUpload() {  // format: "[ascii type]\0[deflated binary stream]"
 
         var type = document.getElementById("type").value
@@ -74,13 +74,11 @@
           buffer[i] = type.charCodeAt(i)
 
         var sendRequest = function (buf) {
-
           var xhr = new XMLHttpRequest()
           xhr.open("post", "upload", true)
           xhr.setRequestHeader('content-type', 'application/octet-stream')
           xhr.send(buf)
           xhrJSON = xhr
-
         }
 
         var file = document.getElementById("input").files[0]
@@ -102,6 +100,7 @@
           sendRequest(buffer)
 
         writePage("/")
+
         return false
 
       }
