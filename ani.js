@@ -14,8 +14,14 @@ const y_max = 10
 const y_span = y_max - y_min
 const z_std = 50
 
-var coord = { }
-var phase = -1
+var coord
+var phase
+
+function initialize() {
+  coord = { }
+  phase = -1
+  frameFunction()
+}
 
 function updateRange(elem) {  // update corresponding range bar
   var range = document.getElementById(elem.id.slice(0, -2) + "_r")

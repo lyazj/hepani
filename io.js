@@ -35,6 +35,21 @@ function removeLoading() {
   loading.parentNode.removeChild(loading)
 }
 
+var writePage = function (url) {
+  var xhr = new XMLHttpRequest()
+  xhr.open("get", url, true)
+  xhr.send()
+  xhr.onload = function () {
+    if(this.status == 200)
+    {
+      document.write(this.responseText)
+      document.close()
+    }
+    else
+      alert("HTTP Error " + this.status + ": " + this.responseText)
+  }
+}
+
 function requestJSON() {
   hideAxes()
   createLoading()
@@ -46,12 +61,10 @@ function requestJSON() {
     if(this.status == 200)
     {
       particles = JSON.parse(this.responseText)
-      frameFunction()
+      initialize()
       displayAxes()
     }
     else
       alert("HTTP Error " + this.status + ": " + this.responseText)
   }
 }
-
-requestJSON()

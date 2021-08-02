@@ -44,7 +44,10 @@
         <input type="file" name="input" id="input" />
         <br />
         Check twice and click:
-        <input type="submit" value="upload" />
+        <!--
+          <input type="submit" value="upload" />
+        -->
+        <button onclick="submitUpload()">upload</button>
         <br />
       </fieldset>
     </form>
@@ -58,7 +61,7 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/pako/2.0.3/pako_deflate.min.js"></script>
     <script>
       "use strict"
-      function submit() {  // format: "[ascii type]\0[deflated binary stream]"
+      function submitUpload() {  // format: "[ascii type]\0[deflated binary stream]"
 
         var type = document.getElementById("type").value
         var buffer = new Uint8Array(type.length + 1)
@@ -66,6 +69,8 @@
           buffer[i] = type.charCodeAt(i)
 
         var sendRequest = function (buf) {
+          return writePage("/")
+
           var xhr = new XMLHttpRequest()
           xhr.open("post", "/", true)
           xhr.setRequestHeader('content-type', 'application/octet-stream')

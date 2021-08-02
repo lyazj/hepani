@@ -66,9 +66,7 @@
 
       <div class="rcontrols">
 
-        <a href="file.html" style="color:black;text-decoration:none">
-          <div id="file" class="tcontrol">File</div>
-        </a>
+        <div id="file" class="tcontrol" onclick="writePage('file.html')">File</div>
 
         <a href="coming.html" target="_black" style="color:black;text-decoration:none">
           <div id="time" class="tcontrol">Time</div>
@@ -103,8 +101,14 @@
       <br />
     </div>
 
-    <script src="io.js"></script>
-    <script src="ani.js"></script>
+    <script src="load.js"></script>
+    <script>
+      loadJS("io.js", function () {
+        loadJS("ani.js", function () {
+          requestJSON()
+        })
+      })
+    </script>
 
   </body>
 
