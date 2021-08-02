@@ -153,7 +153,8 @@ function procedure(request, response) {
     pathname = "index.html"
   if(request.method == "POST" && pathname == "upload")
   {
-    console.log(request.body)
+    var gunzip = zlib.createGunzip()
+    return writeError(response, 404)
   }
 
   for(var type in fileType)

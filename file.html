@@ -36,7 +36,7 @@
         <legend>Upload a file</legend>
         Select a type:
         <select name="type" id="type">
-          <option value="py8log">running log from pythia8</option>
+          <option value="py8log" selected="selected">running log from pythia8</option>
           <option value="hepmc2">HepMC2 file type</option>
         </select>
         <br />
@@ -66,12 +66,28 @@
     <script>
       "use strict"
 
-      function submitUpload() {  // format: "[ascii type]\0[deflated binary stream]"
+      function submitUpload() {
 
-        var type = document.getElementById("type").value
-        var buffer = new Uint8Array(type.length + 1)
-        for(var i = 0; i < type.length; ++i)
-          buffer[i] = type.charCodeAt(i)
+        var file = input.files[0]
+        var url = "upload"
+        var requireArguments = {
+          type: type.value,
+          empty: !file,
+        }
+
+        var first = true
+        for(var item in requireArguments)
+        {
+          if(first)
+          {
+            url += "?"
+            first = false
+          }
+          else
+            url += "&"
+          url += encodeURIComponent(item) + "="
+            + encodeURIComponent(requireArguments[item])
+        }
 
         function sendRequest(buf) {
           var xhr = new XMLHttpRequest()
@@ -84,25 +100,24 @@
           }
         }
 
-        var file = document.getElementById("input").files[0]
         if(file)
         {
           var fileReader = new FileReader()
           fileReader.readAsArrayBuffer(file)
           fileReader.onload = function () {
-            var result = pako.gzip(new Uint8Array(fileReader.result), {level: 9})
-            var newBuffer = new Uint8Array(buffer.byteLength + result.byteLength)
-            for(var i = 0; i < buffer.byteLength; ++i)
-              newBuffer[i] = buffer[i]
-            for(var i = 0; i < result.byteLength; ++i)
-              newBuffer[i + buffer.byteLength] = result[i]
-            sendRequest(newBuffer)
+            sendRequest(pako.gzip(fileReader.result, {level: 9}))
           }
         }
         else
-          sendRequest(buffer)
+          sendRequest()
 
-        writePage("/")
+        shouldRequestJSON = false
+        writePage("/", function () {
+          if(shouldDisplayAxes)
+            displayAxes()
+          else
+            hideAxes()
+        })
 
         return false
 

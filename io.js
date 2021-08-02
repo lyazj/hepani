@@ -1,15 +1,18 @@
 "use strict"
 
 var particles = []
+var shouldDisplayAxes = true
 var shouldRequestJSON = true
 
 function hideAxes() {
+  shouldDisplayAxes = false
   document.getElementsByName("axis").forEach(function (elem) {
     elem.style.visibility = "hidden"
   })
 }
 
 function displayAxes() {
+  shouldDisplayAxes = true
   document.getElementsByName("axis").forEach(function (elem) {
     elem.style.visibility = "visible"
   })
@@ -33,7 +36,8 @@ function createLoading() {
 }
 
 function removeLoading() {
-  loading.parentNode.removeChild(loading)
+  if(typeof(loading) != "undefined")
+    loading.parentNode.removeChild(loading)
 }
 
 function writePage(url, callback) {
@@ -60,11 +64,11 @@ function onrequestJSON(xhr) {
 
 function onloadJSON(xhr) {
   removeLoading()
+  displayAxes()
   if(xhr.status == 200)
   {
     particles = JSON.parse(xhr.responseText)
     initialize()
-    displayAxes()
   }
   else
     alert("HTTP Error " + xhr.status + ": " + xhr.responseText)
