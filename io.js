@@ -95,7 +95,6 @@ function requestJSON() {  // must be called after 'ani.js' full loaded
   if(shouldRequestJSON == false)
   {
     shouldRequestJSON = true
-    initialize()
     return
   }
 
