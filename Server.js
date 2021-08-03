@@ -141,13 +141,14 @@ function procedure(request, response) {
       }
       response.writeHead(200, {
         "Content-Type": "application/json",
-        // "Content-Encoding": "gzip",
+        "Content-Encoding": "gzip",
       })
-      // gzip.write(sout)
-      // gzip.pipe(response)
+      gzip.pipe(response)
+      gzip.write(sout)
+      gzip.end()
       // console.log(sout)
-      response.write(sout)
-      response.end()
+      // response.write(sout)
+      // response.end()
     })
 
     request.pipe(gunzip).pipe(process.stdin)

@@ -91,7 +91,6 @@
 
         function sendRequest(buf) {
           var xhr = new XMLHttpRequest()
-          onrequestJSON(xhr)
           xhr.open("post", url, true)
           xhr.setRequestHeader('Content-Type', 'application/octet-stream')
           xhr.setRequestHeader('Content-Encoding', 'gzip')
@@ -101,12 +100,13 @@
           }
         }
 
+        onrequestJSON()
         if(file)
         {
           var fileReader = new FileReader()
           fileReader.readAsArrayBuffer(file)
           fileReader.onload = function () {
-            sendRequest(pako.gzip(fileReader.result, {level: 9}))
+            sendRequest(pako.gzip(fileReader.result/* , {level: 9} */))
           }
         }
         else
