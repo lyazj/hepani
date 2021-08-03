@@ -76,43 +76,6 @@ function writeError(response, code) {
   writeFile(response, code + ".html", "text/html", code)
 }
 
-function writeJSON() {
-
-  var process = child_process.spawn("./Hepani", argArray, {
-    stdio: [
-      fs.openSync(inputFile, "r"),
-      fs.openSync(tempJSON, "w"),
-      "pipe"
-    ]
-  })
-
-  var serr = ""
-  process.stderr.on("data", function (data) {
-    serr += data.toString()
-  })
-
-  process.on("close", function (code) {
-
-    if(code) {
-      response.writeHead(403, {"Content-Type": "text/plain"})
-      response.end(serr)
-      return fs.unlink(tempJSON, function (err) {
-        if(err)
-          console.error(err)
-      })
-    }
-
-    writeFile(response, tempJSON, fileType.json, function () {
-      fs.unlink(tempJSON, function (err) {
-        if(err)
-          console.error(err)
-      })
-    })
-
-  })
-
-}
-
 function writeExample(response, type) {
   writeFile(response, type + ".json", "application/json")
 }
@@ -122,15 +85,15 @@ function procedure(request, response) {
   console.log(request.method + ": " + request.url)
 
   var URL = url.parse(request.url)
-  console.log(URL)
   var pathname = URL.pathname.slice(1)
   if(!pathname)
     pathname = "index.html"
+
   if(request.method == "POST" && pathname == "upload")
   {
     var query = querystring.parse(URL.query)
-    console.log(query)
-    if(query.empty)
+
+    if(query.empty == "true")
       return writeExample(response, query.type)
 
     if(request.headers["content-type"] != "application/octet-stream"
@@ -138,9 +101,61 @@ function procedure(request, response) {
       return writeError(response, 406)
 
     var gunzip = zlib.createGunzip()
-    request.pipe(gunzip)
+    var gzip = zlib.createGzip()
+    var hasError = false
+    gunzip.on("error", function (err) {
+      hasError = true
+      response.writeHead(406, {"Content-Type": "application/josn"})
+      response.end(JSON.stringify(err))
+    })
+    gzip.on("error", function (err) {
+      hasError = true
+      response.writeHead(406, {"Content-Type": "application/josn"})
+      response.end(JSON.stringify(err))
+    })
 
-    // ...
+    var argArray = []
+    for(var item in query)
+    {
+      argArray.push("--" + item)
+      argArray.push(query[item])
+    }
+
+    var process = child_process.spawn("./Hepani", argArray)
+
+    var sout = ""
+    var serr = ""
+    process.stdout.on("data", function (chunk) {
+      sout += chunk
+    })
+    process.stderr.on("data", function (chunk) {
+      serr += chunk
+    })
+    process.on("close", function (code) {
+      if(hasError)
+        return
+      if(code)
+      {
+        response.writeHead(403, {"Content-Type": "text/plain"})
+        return response.end(serr)
+      }
+      response.writeHead(200, {
+        "Content-Type": "application/json",
+        // "Content-Encoding": "gzip",
+      })
+      // gzip.write(sout)
+      // gzip.pipe(response)
+      // console.log(sout)
+      response.write(sout)
+      response.end()
+    })
+
+    request.pipe(gunzip).pipe(process.stdin)
+
+    /* debug */
+    // process.stdout.pipe(require("process").stdout)
+    // process.stderr.pipe(require("process").stderr)
+
     return
   }
 
