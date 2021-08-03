@@ -89,7 +89,6 @@ function onloadJSON(xhr) {
     jsonContent = xhr.responseText
     particles = JSON.parse(jsonContent)
     initialize()
-    updateJSONURL(xhr.responseText)
   }
   else
     alert("HTTP Error " + xhr.status + ": " + xhr.responseText)
