@@ -42,6 +42,8 @@
         <br />
         Select a file:
         <input type="file" name="input" id="input" />
+        <input type="checkbox" name="gzip" id="gzip" />
+        gzip
         <br />
         Check twice and click:
         <!--
@@ -52,7 +54,9 @@
       </fieldset>
     </form>
 
-    <p>Note: if no file selected, an example of selected type will be used.</p>
+    <p>Note:
+    Please check the <strong>gzip</strong> box if the file already compressed with gzip).
+    If no file selected, an example of selected type will be used.</p>
     <p>
     For more information about <em>pythia8</em>, see: <a href="https://pythia.org/" target="_black">PYTHIA official site</a>.
     For help, see: <a href="coming.html" target="_black">help page</a>.
@@ -106,7 +110,10 @@
           var fileReader = new FileReader()
           fileReader.readAsArrayBuffer(file)
           fileReader.onload = function () {
-            sendRequest(pako.gzip(fileReader.result/* , {level: 9} */))
+            var buffer = fileReader.result
+            if(gzip.checked)
+              buffer = pako.gzip(buffer/* , {level: 9} */)
+            sendRequest(buffer)
           }
         }
         else
