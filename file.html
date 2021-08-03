@@ -112,7 +112,7 @@
           fileReader.readAsArrayBuffer(file)
           fileReader.onload = function () {
             var buffer = fileReader.result
-            if(gzipChecked)
+            if(!gzipChecked)
               buffer = pako.gzip(buffer/* , {level: 9} */)
             sendRequest(buffer)
           }
