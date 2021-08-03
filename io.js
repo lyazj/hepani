@@ -1,9 +1,12 @@
 "use strict"
 
 var particles = []
+var jsonContent
 var shouldDisplayAxes = true
 var shouldDisplayLoading = false
 var shouldRequestJSON = true
+
+const jsonName = "animation.json"
 
 function updateUI() {
   if(shouldDisplayAxes)
@@ -83,8 +86,10 @@ function onloadJSON(xhr) {
   if(xhr.status == 200)
   {
     displayAxes()
-    particles = JSON.parse(xhr.responseText)
+    jsonContent = xhr.responseText
+    particles = JSON.parse(jsonContent)
     initialize()
+    updateJSONURL(xhr.responseText)
   }
   else
     alert("HTTP Error " + xhr.status + ": " + xhr.responseText)
@@ -106,4 +111,21 @@ function requestJSON() {  // must be called after 'ani.js' full loaded
     onloadJSON(this)
   }
 
+}
+
+function getJSONURL() {
+  return jsonContent ? URL.createObjectURL(new File(
+    [jsonContent], jsonName, {type: "application/json"}
+  )) : undefined
+}
+
+function downloadJSON() {
+  var url = getJSONURL()
+  if(!url)
+    return window.alert("No json available.")
+
+  var a = document.createElement("a")
+  a.href = url
+  a.download = jsonName
+  a.click()
 }
