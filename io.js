@@ -2,7 +2,19 @@
 
 var particles = []
 var shouldDisplayAxes = true
+var shouldDisplayLoading = false
 var shouldRequestJSON = true
+
+function updateUI() {
+  if(shouldDisplayAxes)
+    displayAxes()
+  else
+    hideAxes()
+  if(shouldDisplayLoading)
+    createLoading()
+  else
+    removeLoading()
+}
 
 function hideAxes() {
   shouldDisplayAxes = false
@@ -19,6 +31,9 @@ function displayAxes() {
 }
 
 function createLoading() {
+  shouldDisplayLoading = true
+  if(typeof(loading) != "undefined")
+    return
   var elem = document.createElement("div")
   elem.id = "loading"
   elem.style.width = "400pt"
@@ -36,6 +51,7 @@ function createLoading() {
 }
 
 function removeLoading() {
+  shouldDisplayLoading = false
   if(typeof(loading) != "undefined")
     loading.parentNode.removeChild(loading)
 }

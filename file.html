@@ -113,12 +113,7 @@
           sendRequest()
 
         shouldRequestJSON = false
-        writePage("/", function () {
-          if(shouldDisplayAxes)
-            displayAxes()
-          else
-            hideAxes()
-        })
+        writePage("/")
 
         return false
 
