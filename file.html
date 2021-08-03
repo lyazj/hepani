@@ -73,6 +73,7 @@
       function submitUpload() {
 
         var file = input.files[0]
+        var gzipChecked = gzip.checked
         var url = "upload"
         var requireArguments = {
           type: type.value,
@@ -111,7 +112,7 @@
           fileReader.readAsArrayBuffer(file)
           fileReader.onload = function () {
             var buffer = fileReader.result
-            if(gzip.checked)
+            if(gzipChecked)
               buffer = pako.gzip(buffer/* , {level: 9} */)
             sendRequest(buffer)
           }
