@@ -80,9 +80,9 @@ function onrequestJSON(xhr) {
 
 function onloadJSON(xhr) {
   removeLoading()
-  displayAxes()
   if(xhr.status == 200)
   {
+    displayAxes()
     particles = JSON.parse(xhr.responseText)
     initialize()
   }
