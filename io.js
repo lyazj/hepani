@@ -78,7 +78,8 @@ function writePage(url, callback) {
 
 function receiveJSONContent(content) {
   jsonContent = content
-  particles = JSON.parse(content)
+  particles = content ? JSON.parse(content) : []
+  initialize()
 }
 
 function onrequestJSON(xhr) {
@@ -90,12 +91,14 @@ function onloadJSON(xhr) {
   removeLoading()
   if(xhr.status == 200)
   {
-    displayAxes()
     receiveJSONContent(xhr.responseText)
-    initialize()
+    displayAxes()
   }
   else
+  {
+    receiveJSONContent()
     alert("HTTP Error " + xhr.status + ": " + xhr.responseText)
+  }
 }
 
 function requestJSON() {  // must be called after 'ani.js' full loaded
@@ -125,7 +128,7 @@ function getJSONURL() {
 function downloadJSON() {
   var url = getJSONURL()
   if(!url)
-    return window.alert("No json available.")
+    return alert("No json available.")
 
   var a = document.createElement("a")
   a.href = url

@@ -283,6 +283,8 @@ function frameFunction () {  // update globally
     return
   particles[phase].forEach(function (particle) {
     var elem = document.getElementById(particle.no)
+    if(!elem)
+      return
     var t = getTimeSpan()
     var r = [ ]
     for(var i = 0; i < 3; ++i)
