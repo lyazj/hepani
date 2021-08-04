@@ -20,7 +20,7 @@ var phase
 function clearParticle() {  // clear particles in div#system
   var particles = document.getElementsByClassName("particle")
   for(var i = 0; i < particles.length; ++i)
-    particles[i].remove()
+    particles[i].parentNode.removeChild(particles[i])
 }
 
 function initialize() {  // must be called after full loaded
