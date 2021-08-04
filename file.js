@@ -12,7 +12,7 @@ function submitUpload() {
     fileReader.onload = function () {
       receiveJSONContent(fileReader.result)
       shouldRequestJSON = false
-      writePage("/", initialize)
+      writePage("/")
     }
   }
 
@@ -20,7 +20,7 @@ function submitUpload() {
   {
     if(!file)
     {
-      writePage("/", initialize)
+      writePage("/")
       return false
     }
 
@@ -88,7 +88,7 @@ function submitUpload() {
     sendRequest()
 
   shouldRequestJSON = false
-  writePage("/", initialize)
+  writePage("/")
 
   return false
 

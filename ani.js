@@ -17,7 +17,7 @@ const z_std = 50
 var coord
 var phase
 
-function clearParticles() {  // clear particles in div#system
+function clearParticle() {  // clear particles in div#system
   var particles = document.getElementsByClassName("particle")
   for(var i = 0; i < particles.length; ++i)
     particles[i].remove()
@@ -26,7 +26,6 @@ function clearParticles() {  // clear particles in div#system
 function initialize() {  // must be called after full loaded
   coord = { }
   phase = -1
-  clearParticles()
   frameFunction()
 }
 
@@ -135,6 +134,11 @@ var onclickStart = (function () {  // start/stop animation
 
 })()
 
+function tryStop() {
+  if(start.innerHTML == "Stop")
+    onclickStart()
+}
+
 function getCoordinates() {
   var psi_v = psi_i.value
   var theta_v = theta_i.value
@@ -195,16 +199,6 @@ function trans(r) {
   t = rotate(r[1], r[2], "theta"), r[1] = t[0], r[2] = t[1]
   t = rotate(r[0], r[1], "phi"), r[0] = t[0], r[1] = t[1]
   return r
-}
-
-function clearParticle() {
-  if(phase < 0 || phase >= particles.length)
-    return
-  particles[phase].forEach(function (particle) {
-    var elem = document.getElementById(particle.no)
-    if(elem)
-      elem.parentNode.removeChild(elem)
-  })
 }
 
 function generateParticle() {

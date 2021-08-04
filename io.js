@@ -1,40 +1,54 @@
 "use strict"
 
+/* must be an 2D-Array containing particle Object(s) */
 var particles = []
-var jsonContent
-var shouldDisplayAxes = true
-var shouldDisplayLoading = false
+
+/* set it as false to disable JSON auto-requesting once */
 var shouldRequestJSON = true
 
 const jsonName = "animation.json"
 
-function updateUI() {
-  if(shouldDisplayAxes)
-    displayAxes()
-  else
+/* inner variables */
+var jsonFile
+var jsonBlobURL
+var isLoading = false
+
+/* should be called when body.onload emits at home page */
+// @noexcept
+function updateLoading(is) {
+  if(typeof(is) != "undefined")
+    isLoading = is
+  if(isLoading)
+  {
     hideAxes()
-  if(shouldDisplayLoading)
     createLoading()
+  }
   else
+  {
     removeLoading()
+    displayAxes()
+  }
 }
 
+// @effective: sync
+// @noexcept
 function hideAxes() {
-  shouldDisplayAxes = false
   document.getElementsByName("axis").forEach(function (elem) {
     elem.style.visibility = "hidden"
   })
 }
 
+// @effective: sync
+// @noexcept
 function displayAxes() {
-  shouldDisplayAxes = true
   document.getElementsByName("axis").forEach(function (elem) {
     elem.style.visibility = "visible"
   })
 }
 
+// @effective: sync
+// @noexcept
 function createLoading() {
-  shouldDisplayLoading = true
   if(typeof(loading) != "undefined")
     return
   var elem = document.createElement("div")
@@ -53,12 +67,16 @@ function createLoading() {
   document.body.appendChild(elem)
 }
 
+// @effective: sync
+// @noexcept
 function removeLoading() {
-  shouldDisplayLoading = false
   if(typeof(loading) != "undefined")
     loading.parentNode.removeChild(loading)
 }
 
+/* callback called only if state 200 returned */
+// @effective: async
+// @noexcept: &callback
 function writePage(url, callback) {
   var xhr = new XMLHttpRequest()
   xhr.open("get", url, true)
@@ -76,23 +94,37 @@ function writePage(url, callback) {
   }
 }
 
+// @noexcept
 function receiveJSONContent(content) {
-  jsonContent = content
-  particles = content ? JSON.parse(content) : []
-}
-
-function onrequestJSON(xhr) {
-  hideAxes()
-  createLoading()
-}
-
-function onloadJSON(xhr) {
-  removeLoading()
-  if(xhr.status == 200)
-  {
-    receiveJSONContent(xhr.responseText)
-    displayAxes()
+  try {
+    particles = JSON.parse(content)
+  } catch(err) {
+    particles = []
+    if(content)
+      alert("Invalid JSON content: " + content)
+    content = undefined
   }
+  try {
+    initialize()
+  } catch(err) { }
+  if(jsonFile)
+    URL.revokeObjectURL(jsonFile)
+  jsonFile = content ? new File(
+    [content], jsonName, {type: "application/json"}
+  ) : undefined
+  jsonBlobURL = jsonFile ? URL.createObjectURL(jsonFile) : undefined
+}
+
+// @noexcept
+function onrequestJSON(xhr) {
+  updateLoading(true)
+}
+
+// @noexcept
+function onloadJSON(xhr) {
+  updateLoading(false)
+  if(xhr.status == 200)
+    receiveJSONContent(xhr.responseText)
   else
   {
     receiveJSONContent()
@@ -100,7 +132,11 @@ function onloadJSON(xhr) {
   }
 }
 
-function requestJSON() {  // must be called after 'ani.js' full loaded
+/* request JSON automatically */
+// to disable it once, set shouldRequestJSON as false
+// @effective: async
+// @noexcept
+function requestJSON() {
 
   if(shouldRequestJSON == false)
   {
@@ -114,24 +150,17 @@ function requestJSON() {  // must be called after 'ani.js' full loaded
   xhr.send()
   xhr.onload = function () {
     onloadJSON(this)
-    initialize()
   }
 
 }
 
-function getJSONURL() {
-  return jsonContent ? URL.createObjectURL(new File(
-    [jsonContent], jsonName, {type: "application/json"}
-  )) : undefined
-}
-
+// @noexcept
 function downloadJSON() {
-  var url = getJSONURL()
-  if(!url)
+  if(!jsonBlobURL)
     return alert("No json available.")
 
   var a = document.createElement("a")
-  a.href = url
+  a.href = jsonBlobURL
   a.download = jsonName
   a.click()
 }
