@@ -79,7 +79,6 @@ function writePage(url, callback) {
 function receiveJSONContent(content) {
   jsonContent = content
   particles = content ? JSON.parse(content) : []
-  initialize()
 }
 
 function onrequestJSON(xhr) {
@@ -115,6 +114,7 @@ function requestJSON() {  // must be called after 'ani.js' full loaded
   xhr.send()
   xhr.onload = function () {
     onloadJSON(this)
+    initialize()
   }
 
 }

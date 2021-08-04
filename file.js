@@ -20,7 +20,7 @@ function submitUpload() {
   {
     if(!file)
     {
-      writePage("/")
+      writePage("/", initialize)
       return false
     }
 
@@ -88,7 +88,7 @@ function submitUpload() {
     sendRequest()
 
   shouldRequestJSON = false
-  writePage("/")
+  writePage("/", initialize)
 
   return false
 
