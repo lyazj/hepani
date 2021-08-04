@@ -76,6 +76,11 @@ function writePage(url, callback) {
   }
 }
 
+function receiveJSONContent(content) {
+  jsonContent = content
+  particles = JSON.parse(content)
+}
+
 function onrequestJSON(xhr) {
   hideAxes()
   createLoading()
@@ -86,8 +91,7 @@ function onloadJSON(xhr) {
   if(xhr.status == 200)
   {
     displayAxes()
-    jsonContent = xhr.responseText
-    particles = JSON.parse(jsonContent)
+    receiveJSONContent(xhr.responseText)
     initialize()
   }
   else

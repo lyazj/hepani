@@ -1,6 +1,6 @@
 #!/usr/bin/env -S make -f
 
-all = name.txt description.json Hepani output.json py8log.json hepmc2.json
+all = name.txt description.json Hepani output.json output.json.gz py8log.json hepmc2.json
 
 all: $(all)
 
@@ -21,6 +21,9 @@ hepmc2.json: Hepani
 	./$< --type hepmc2 < input.hepmc >$@
 
 output.json: py8log.json
-	ln -s $< $@
+	ln -f $< $@
+
+output.json.gz: output.json
+	gzip -kc $< > $@
 
 .PHONY: clean
