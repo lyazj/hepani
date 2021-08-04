@@ -18,7 +18,7 @@ var coord
 var phase
 
 /* why loop needed?! */
-function clearParticle() {  // clear particles in div#system
+function clearParticle() {  // clear particles (in div#system)
   var particles = document.getElementsByClassName("particle")
   while(particles.length)
   {
