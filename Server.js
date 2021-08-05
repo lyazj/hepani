@@ -29,8 +29,8 @@ var fileType = {
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
 var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
 var description = JSON.parse(fs.readFileSync("description.json"))
-var descriptionMString = fs.statSync("description.json").mtime.toUTCString()
-var descriptionMtime = new Date(descriptionMString)
+var descriptionMstring = fs.statSync("description.json").mtime.toUTCString()
+var descriptionMtime = new Date(descriptionMstring)
 
 function writeFile(response, file, type, code, ims) {
 
@@ -184,10 +184,12 @@ function procedure(request, response) {
       "Content-Type": "text/plain;charset=utf-8",
       // "Content-Encoding": "gzip",
       "Cache-Control": "public,max-age=86400",
-      "Last-Modified": descriptionMString,
+      "Last-Modified": descriptionMstring,
     })
 
-    response.end(description[id])
+    response.write(description[id])
+    response.write("\n\nSource: https://github.com/scikit-hep/particle")
+    response.end("\nUpdate: " + descriptionMstring)
 
     // var gzip = zlib.createGzip()
     // gzip.pipe(response)

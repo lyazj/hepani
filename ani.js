@@ -17,15 +17,22 @@ const z_std = 50
 var coord
 var phase
 
-/* why loop needed?! */
+// /* why loop needed?! */
+// function clearParticle() {  // clear particles (in div#system)
+//   var particles = document.getElementsByClassName("particle")
+//   while(particles.length)
+//   {
+//     for(var i = 0; i < particles.length; ++i)
+//       particles[i].parentNode.removeChild(particles[i])
+//     particles = document.getElementsByClassName("particle")
+//   }
+// }
+
 function clearParticle() {  // clear particles (in div#system)
   var particles = document.getElementsByClassName("particle")
-  while(particles.length)
-  {
-    for(var i = 0; i < particles.length; ++i)
-      particles[i].parentNode.removeChild(particles[i])
-    particles = document.getElementsByClassName("particle")
-  }
+  var particle
+  while(particle = particles[0])
+    particle.parentNode.removeChild(particle)
 }
 
 function initialize() {  // must be called after full loaded
