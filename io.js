@@ -169,8 +169,10 @@ function downloadJSON() {
 // @effective: async
 // @noexcept
 function getDescription(id, callback) {
-  if(typeof(id) == undefined)
+  if(!id)
     id = 0
+  if(!callback)
+    callback = alert
   var xhr = new XMLHttpRequest()
   xhr.open("get", "description?id=" + encodeURIComponent(id), true)
   xhr.send()
