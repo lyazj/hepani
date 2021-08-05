@@ -12,7 +12,6 @@ const jsonName = "animation.json"
 var jsonFile
 var jsonBlobURL
 var isLoading = false
-var description = { }
 
 /* should be called when body.onload emits at home page */
 // @noexcept
@@ -166,35 +165,19 @@ function downloadJSON() {
   a.click()
 }
 
-/* callback called only if state 200/304 returned */
+/* callback called only if state 200 returned */
 // @effective: async
 // @noexcept
 function getDescription(id, callback) {
-
   if(typeof(id) == undefined)
     id = 0
-  var result = description[id]
-  var ims
-  if(result)
-    ims = result.lastModified
-
   var xhr = new XMLHttpRequest()
   xhr.open("get", "description?id=" + encodeURIComponent(id), true)
-  if(ims)
-    xhr.setRequestHeader("If-Modified-Since", ims)
   xhr.send()
   xhr.onload = function () {
     if(this.status == 200)
-    {
-      description[id] = result = {
-        body: this.responseText,
-        lastModified: this.getResponseHeader("Last-Modified"),
-      }
-    }
-    else if(this.status != 304)
+      callback(this.responseText)
+    else
       return alert("HTTP Error " + this.status + ": " + this.responseText)
-
-    callback(result.body)
   }
-
 }
