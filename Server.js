@@ -11,6 +11,7 @@ var querystring = require("querystring")
 // blacklist
 var fileBlock = [
   /Server\.js/,
+  /description\.json/,
   // ...
 ]
 
@@ -27,6 +28,9 @@ var fileType = {
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
 var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
+var description = JSON.parse(fs.readFileSync("description.json"))
+var descriptionMString = fs.statSync("description.json").mtime.toUTCString()
+var descriptionMtime = new Date(descriptionMString)
 
 function writeFile(response, file, type, code, ims) {
 
@@ -54,7 +58,7 @@ function writeFile(response, file, type, code, ims) {
       if(code != 200)
       {
         console.error(err)
-        response.writeHead(code, {"Content-Type": "text/plain"})
+        response.writeHead(code, {"Content-Type": "text/plain;charset=utf-8"})
         return response.end("[" + code + "] (Cannot Load Error Page)")
       }
       return writeError(response, 404)
@@ -63,7 +67,8 @@ function writeFile(response, file, type, code, ims) {
     response.writeHead(code, {
       "Content-Type": type,
       "Content-Encoding": "gzip",
-      "Cache-Control": "private, max-age=3600",
+      "Cache-Control": "no-cache",
+      // "Cache-Control": "private,max-age=3600",
       "Last-Modified": lastModified,
     })
     fs.createReadStream(file).pipe(zlib.createGzip()).pipe(response)
@@ -82,12 +87,15 @@ function writeExample(response, type) {
 
 function procedure(request, response) {
 
-  console.log(request.method + ": " + request.url)
-
   var URL = url.parse(request.url)
-  var pathname = URL.pathname.slice(1)
+  var pathname = URL.pathname
+  while(pathname[0] == '/')
+    pathname = pathname.slice(1)
   if(!pathname)
     pathname = "index.html"
+
+  console.log(new Date().toLocaleString() + "  "
+    + request.method + ": " + request.url + " -> " + pathname)
 
   if(request.method == "POST" && pathname == "upload")
   {
@@ -136,7 +144,7 @@ function procedure(request, response) {
         return
       if(code)
       {
-        response.writeHead(406, {"Content-Type": "text/plain"})
+        response.writeHead(406, {"Content-Type": "text/plain;charset=utf-8"})
         return response.end(serr)
       }
       response.writeHead(200, {
@@ -144,11 +152,9 @@ function procedure(request, response) {
         "Content-Encoding": "gzip",
       })
       gzip.pipe(response)
-      gzip.write(sout)
-      gzip.end()
+      gzip.end(sout)
       // console.log(sout)
-      // response.write(sout)
-      // response.end()
+      // response.end(sout)
     })
 
     request.pipe(gunzip).pipe(process.stdin)
@@ -156,6 +162,36 @@ function procedure(request, response) {
     /* debug */
     // process.stdout.pipe(require("process").stdout)
     // process.stderr.pipe(require("process").stderr)
+
+    return
+  }
+
+  if(pathname == "description")
+  {
+    var query = querystring.parse(URL.query)
+    var id = query.id
+    if(typeof(id) == "undefined")
+      return writeError(response, 406)
+
+    var ims = request.headers["if-modified-since"]
+    if(ims && descriptionMtime <= new Date(ims))
+    {
+      response.writeHead(304)
+      return response.end()
+    }
+
+    response.writeHead(200, {
+      "Content-Type": "text/plain;charset=utf-8",
+      // "Content-Encoding": "gzip",
+      "Cache-Control": "public,max-age=86400",
+      "Last-Modified": descriptionMString,
+    })
+
+    response.end(description[id])
+
+    // var gzip = zlib.createGzip()
+    // gzip.pipe(response)
+    // gzip.end(description[id])
 
     return
   }
