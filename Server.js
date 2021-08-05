@@ -28,13 +28,8 @@ var fileType = {
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
 var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
 
-function writeFile(response, file, type, code, callback) {
+function writeFile(response, file, type, code, ims) {
 
-  if(typeof code == "function")
-  {
-    callback = code
-    code = undefined
-  }
   if(type === undefined)
     type = "text/html"
   if(code === undefined)
@@ -44,6 +39,13 @@ function writeFile(response, file, type, code, callback) {
     return name.exec(file)
   }))
     return writeError(response, 404)
+
+  var lastModified = fs.statSync(file).mtime.toUTCString()
+  if(code == 200 && ims && new Date(lastModified) <= new Date(ims))
+  {
+    response.writeHead(304)
+    return response.end()
+  }
 
   fs.access(file, fs.constants.R_OK, function (err) {
 
@@ -61,12 +63,10 @@ function writeFile(response, file, type, code, callback) {
     response.writeHead(code, {
       "Content-Type": type,
       "Content-Encoding": "gzip",
-      "Cache-Control": "max-age=3600",
-      // ...
+      "Cache-Control": "private, max-age=3600",
+      "Last-Modified": lastModified,
     })
     fs.createReadStream(file).pipe(zlib.createGzip()).pipe(response)
-    if(callback)
-      callback()
 
   })
 
@@ -136,7 +136,7 @@ function procedure(request, response) {
         return
       if(code)
       {
-        response.writeHead(403, {"Content-Type": "text/plain"})
+        response.writeHead(406, {"Content-Type": "text/plain"})
         return response.end(serr)
       }
       response.writeHead(200, {
@@ -162,7 +162,10 @@ function procedure(request, response) {
 
   for(var type in fileType)
     if(RegExp("\\." + type + "\\b").exec(pathname))
-      return writeFile(response, pathname, fileType[type])
+      return writeFile(
+        response, pathname, fileType[type], 200,
+        request.headers["if-modified-since"]
+      )
   return writeError(response, 404)
 
 }
