@@ -187,7 +187,11 @@ function procedure(request, response) {
       "Last-Modified": descriptionMstring,
     })
 
-    response.write(description[id])
+    var result = description[id]
+    if(!result)
+      return response.end("No description available.")
+
+    response.write(result)
     response.write("\n\nSource: https://github.com/scikit-hep/particle")
     response.end("\nUpdate: " + descriptionMstring)
 
