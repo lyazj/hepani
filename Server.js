@@ -29,7 +29,8 @@ var fileType = {
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
 var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
 var description = JSON.parse(fs.readFileSync("description.json"))
-var descriptionMstring = fs.statSync("description.json").mtime.toUTCString()
+var descriptionMstring =
+  fs.statSync("description.json").mtime.toUTCString()
 var descriptionMtime = new Date(descriptionMstring)
 
 function writeFile(response, file, type, code, ims) {
@@ -44,24 +45,33 @@ function writeFile(response, file, type, code, ims) {
   }))
     return writeError(response, 404)
 
-  var lastModified = fs.statSync(file).mtime.toUTCString()
-  if(code == 200 && ims && new Date(lastModified) <= new Date(ims))
-  {
-    response.writeHead(304)
-    return response.end()
-  }
-
-  fs.access(file, fs.constants.R_OK, function (err) {
+  fs.stat(file, function (err, stats) {
 
     if(err)
     {
+      if(err.code != "ENOENT")
+      {
+        console.error(err)
+        return writeError(response, 500)
+      }
+
       if(code != 200)
       {
         console.error(err)
-        response.writeHead(code, {"Content-Type": "text/plain;charset=utf-8"})
+        response.writeHead(
+          code, {"Content-Type": "text/plain;charset=utf-8"}
+        )
         return response.end("[" + code + "] (Cannot Load Error Page)")
       }
+
       return writeError(response, 404)
+    }
+
+    var lastModified = stats.mtime.toUTCString()
+    if(code == 200 && ims && new Date(lastModified) <= new Date(ims))
+    {
+      response.writeHead(304)
+      return response.end()
     }
 
     response.writeHead(code, {
@@ -144,7 +154,9 @@ function procedure(request, response) {
         return
       if(code)
       {
-        response.writeHead(406, {"Content-Type": "text/plain;charset=utf-8"})
+        response.writeHead(
+          406, {"Content-Type": "text/plain;charset=utf-8"}
+        )
         return response.end(serr)
       }
       response.writeHead(200, {
