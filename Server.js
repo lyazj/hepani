@@ -20,11 +20,30 @@ var fileType = {
   ico:  "image/x-icon",
   png:  "image/png",
   html: "text/html;charset=utf-8",
-  js:   "text/javascript",
-  css:  "text/css",
-  json: "application/json",
+  js:   "text/javascript;charset=utf-8",
+  css:  "text/css;charset=utf-8",
+  json: "application/json;charset=utf-8",
   // ...
 }
+
+var cacheControl = {
+  static: "max-age=31536000,immutable",
+  stable: "max-age=86400,public",
+  mutable: "no-cache",
+}
+
+cacheControl = Object.assign(cacheControl, {
+  "favicon.ico": cacheControl.static,
+  "beian.png": cacheControl.static,
+  "404.html": cacheControl.static,
+  "406.html": cacheControl.static,
+  "500.html": cacheControl.static,
+  "coming.html": cacheControl.static,
+
+  "index.html": cacheControl.mutable,
+  "index.css": cacheControl.mutable,
+  "ani.js": cacheControl.mutable,
+})
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
 var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
@@ -67,20 +86,36 @@ function writeFile(response, file, type, code, ims) {
       return writeError(response, 404)
     }
 
+    var thisCacheControl = cacheControl[file]
+    if(!thisCacheControl)
+      thisCacheControl = cacheControl.stable
+
     var lastModified = stats.mtime.toUTCString()
     if(code == 200 && ims && new Date(lastModified) <= new Date(ims))
     {
-      response.writeHead(304)
+      response.writeHead(304, {
+        "Cache-Control": thisCacheControl,
+        "X-Content-Type-Options": "nosniff",
+      })
       return response.end()
     }
 
-    response.writeHead(code, {
-      "Content-Type": type,
-      "Content-Encoding": "gzip",
-      "Cache-Control": "no-cache",
-      // "Cache-Control": "private,max-age=3600",
-      "Last-Modified": lastModified,
-    })
+    if(code == 200)
+      response.writeHead(code, {
+        "Content-Type": type,
+        "Content-Encoding": "gzip",
+        "Cache-Control": thisCacheControl,
+        "Last-Modified": lastModified,
+        "X-Content-Type-Options": "nosniff",
+      })
+    else
+      response.writeHead(code, {
+        "Content-Type": type,
+        "Content-Encoding": "gzip",
+        "Cache-Control": cacheControl.mutable,
+        "X-Content-Type-Options": "nosniff",
+      })
+
     fs.createReadStream(file).pipe(zlib.createGzip()).pipe(response)
 
   })
@@ -188,15 +223,19 @@ function procedure(request, response) {
     var ims = request.headers["if-modified-since"]
     if(ims && descriptionMtime <= new Date(ims))
     {
-      response.writeHead(304)
+      response.writeHead(304, {
+        "Cache-Control": cacheControl["description.json"],
+        "X-Content-Type-Options": "nosniff",
+      })
       return response.end()
     }
 
     response.writeHead(200, {
       "Content-Type": "text/plain;charset=utf-8",
       // "Content-Encoding": "gzip",
-      "Cache-Control": "public,max-age=86400",
+      "Cache-Control": cacheControl["description.json"],
       "Last-Modified": descriptionMstring,
+      "X-Content-Type-Options": "nosniff",
     })
 
     var result = description[id]
