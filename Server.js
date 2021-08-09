@@ -215,7 +215,7 @@ function procedure(request, response) {
   }
 
   for(var type in fileType)
-    if(RegExp("\\." + type + "\\b").exec(pathname))
+    if(RegExp("\\." + type + "$").exec(pathname))
       return writeFile(
         response, pathname, fileType[type], 200,
         request.headers["if-modified-since"]

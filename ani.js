@@ -17,17 +17,6 @@ const z_std = 50
 var coord
 var phase
 
-// /* why loop needed?! */
-// function clearParticle() {  // clear particles (in div#system)
-//   var particles = document.getElementsByClassName("particle")
-//   while(particles.length)
-//   {
-//     for(var i = 0; i < particles.length; ++i)
-//       particles[i].parentNode.removeChild(particles[i])
-//     particles = document.getElementsByClassName("particle")
-//   }
-// }
-
 function clearParticle() {  // clear particles (in div#system)
   var particles = document.getElementsByClassName("particle")
   var particle
@@ -36,6 +25,8 @@ function clearParticle() {  // clear particles (in div#system)
 }
 
 function initialize() {  // must be called after full loaded
+  if(isLoading)
+    return updateLoading()
   coord = { }
   phase = -1
   frameFunction()

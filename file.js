@@ -30,7 +30,8 @@ function submitUpload() {
       fileReader.readAsArrayBuffer(file)
       fileReader.onload = function () {
         file = new File(
-          [pako.ungzip(fileReader.result)], jsonName, {type: "application/json"}
+          [pako.ungzip(fileReader.result)], jsonName,
+          {type: "application/json"}
         )
         readJSON()
       }
