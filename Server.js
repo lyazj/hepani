@@ -77,9 +77,11 @@ function writeFile(response, file, type, code, ims) {
       if(code != 200)
       {
         console.error(err)
-        response.writeHead(
-          code, {"Content-Type": "text/plain;charset=utf-8"}
-        )
+        response.writeHead(code, {
+          "Content-Type": "text/plain;charset=utf-8",
+          "Cache-Control": cacheControl.mutable,
+          "X-Content-Type-Options": "nosniff",
+        })
         return response.end("[" + code + "] (Cannot Load Error Page)")
       }
 
@@ -158,12 +160,21 @@ function procedure(request, response) {
     var hasError = false
     gunzip.on("error", function (err) {
       hasError = true
-      response.writeHead(406, {"Content-Type": fileType.json})
+      response.writeHead(406, {
+        "Content-Type": fileType.json,
+        "Cache-Control": cacheControl.mutable,
+        "X-Content-Type-Options": "nosniff",
+      })
       response.end(JSON.stringify(err))
     })
     gzip.on("error", function (err) {
       hasError = true
-      response.writeHead(500, {"Content-Type": fileType.json})
+      console.error(err)
+      response.writeHead(500, {
+        "Content-Type": fileType.json,
+        "Cache-Control": cacheControl.mutable,
+        "X-Content-Type-Options": "nosniff",
+      })
       response.end(JSON.stringify(err))
     })
 
@@ -189,14 +200,18 @@ function procedure(request, response) {
         return
       if(code)
       {
-        response.writeHead(
-          406, {"Content-Type": "text/plain;charset=utf-8"}
-        )
+        response.writeHead(406, {
+          "Content-Type": "text/plain;charset=utf-8",
+          "Cache-Control": cacheControl.mutable,
+          "X-Content-Type-Options": "nosniff",
+        })
         return response.end(serr)
       }
       response.writeHead(200, {
         "Content-Type": fileType.json,
         "Content-Encoding": "gzip",
+        "Cache-Control": cacheControl.mutable,
+        "X-Content-Type-Options": "nosniff",
       })
       gzip.pipe(response)
       gzip.end(sout)
