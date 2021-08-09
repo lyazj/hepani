@@ -238,7 +238,7 @@ function procedure(request, response) {
     if(ims && descriptionMtime <= new Date(ims))
     {
       response.writeHead(304, {
-        "Cache-Control": cacheControl["description.json"],
+        "Cache-Control": cacheControl.stable,
         "X-Content-Type-Options": "nosniff",
       })
       return response.end()
@@ -247,7 +247,7 @@ function procedure(request, response) {
     response.writeHead(200, {
       "Content-Type": "text/plain;charset=utf-8",
       // "Content-Encoding": "gzip",
-      "Cache-Control": cacheControl["description.json"],
+      "Cache-Control": cacheControl.stable,
       "Last-Modified": descriptionMstring,
       "X-Content-Type-Options": "nosniff",
     })
