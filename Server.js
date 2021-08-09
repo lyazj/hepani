@@ -127,7 +127,7 @@ function writeError(response, code) {
 }
 
 function writeExample(response, type) {
-  writeFile(response, type + ".json", "application/json")
+  writeFile(response, type + ".json", fileType.json)
 }
 
 function procedure(request, response) {
@@ -158,12 +158,12 @@ function procedure(request, response) {
     var hasError = false
     gunzip.on("error", function (err) {
       hasError = true
-      response.writeHead(406, {"Content-Type": "application/josn"})
+      response.writeHead(406, {"Content-Type": fileType.json})
       response.end(JSON.stringify(err))
     })
     gzip.on("error", function (err) {
       hasError = true
-      response.writeHead(406, {"Content-Type": "application/josn"})
+      response.writeHead(500, {"Content-Type": fileType.json})
       response.end(JSON.stringify(err))
     })
 
@@ -195,7 +195,7 @@ function procedure(request, response) {
         return response.end(serr)
       }
       response.writeHead(200, {
-        "Content-Type": "application/json",
+        "Content-Type": fileType.json,
         "Content-Encoding": "gzip",
       })
       gzip.pipe(response)
