@@ -27,11 +27,10 @@ var fileType = {
 }
 
 var cacheControl = {
-  static: "max-age=31536000,immutable",
+  static: "max-age=31536000,public,immutable",
   stable: "max-age=86400,public",
   mutable: "no-cache",
 }
-
 cacheControl = Object.assign(cacheControl, {
   "favicon.ico": cacheControl.static,
   "beian.png": cacheControl.static,
