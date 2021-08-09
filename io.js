@@ -9,16 +9,16 @@ var shouldRequestJSON = true
 const jsonName = "animation.json"
 
 /* inner variables */
-var jsonFile
-var jsonBlobURL
-var isLoading = false
+var _jsonFile
+var _jsonBlobURL
+var _isLoading = false
 
 /* should be called when body.onload emits at home page */
 // @noexcept
 function updateLoading(is) {
   if(typeof(is) != "undefined")
-    isLoading = is
-  if(isLoading)
+    _isLoading = is
+  if(_isLoading)
   {
     hideAxes()
     createLoading()
@@ -28,7 +28,7 @@ function updateLoading(is) {
     removeLoading()
     displayAxes()
   }
-  return isLoading
+  return _isLoading
 }
 
 // @effective: sync
@@ -108,12 +108,12 @@ function receiveJSONContent(content) {
   try {
     initialize()
   } catch(err) { }
-  if(jsonFile)
-    URL.revokeObjectURL(jsonFile)
-  jsonFile = content ? new File(
+  if(_jsonFile)
+    URL.revokeObjectURL(_jsonFile)
+  _jsonFile = content ? new File(
     [content], jsonName, {type: "application/json"}
   ) : undefined
-  jsonBlobURL = jsonFile ? URL.createObjectURL(jsonFile) : undefined
+  _jsonBlobURL = _jsonFile ? URL.createObjectURL(_jsonFile) : undefined
 }
 
 // @noexcept
@@ -157,11 +157,11 @@ function requestJSON() {
 
 // @noexcept
 function downloadJSON() {
-  if(!jsonBlobURL)
+  if(!_jsonBlobURL)
     return alert("No json available.")
 
   var a = document.createElement("a")
-  a.href = jsonBlobURL
+  a.href = _jsonBlobURL
   a.download = jsonName
   a.click()
 }
