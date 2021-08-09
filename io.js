@@ -28,6 +28,7 @@ function updateLoading(is) {
     removeLoading()
     displayAxes()
   }
+  return isLoading
 }
 
 // @effective: sync

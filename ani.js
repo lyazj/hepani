@@ -25,8 +25,8 @@ function clearParticle() {  // clear particles (in div#system)
 }
 
 function initialize() {  // must be called after full loaded
-  if(isLoading)
-    return updateLoading()
+  if(updateLoading())
+    return
   coord = { }
   phase = -1
   frameFunction()
