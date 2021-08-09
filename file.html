@@ -39,23 +39,23 @@
     <form id="upload" action="/" method="post" enctype="multipart/form-data">
       <fieldset>
         <legend>Upload a file</legend>
-        Select a type:
+        <label for="type">Select a type:</label>
         <select name="type" id="type">
           <option value="py8log" selected="selected">running log from pythia8</option>
           <option value="hepmc2">HepMC2 file</option>
           <option value="hepani">Hepani JSON file</option>
         </select>
         <br />
-        Select a file:
+        <label for="input">Select a file:</label>
         <input type="file" name="input" id="input" />
         <input type="checkbox" name="gzip" id="gzip" />
-        gzip
+        <label for="gzip">gzip</label>
         <br />
-        Check twice and click:
+        <label for="submit">Check twice and click:</label>
         <!--
-          <input type="submit" value="upload" />
+          <input type="submit" id="submit" value="upload" />
         -->
-        <button onclick="return submitUpload()">upload</button>
+        <button onclick="return submitUpload()" id="submit">upload</button>
         <br />
       </fieldset>
     </form>
