@@ -1,113 +1,13 @@
 <!DOCTYPE html>
-
 <html lang="en-US">
-
   <head>
-    <meta charset="utf-8" />
-    <title>hepani page</title>
-    <link rel="stylesheet" href="index.css" />
+    <meta charset="utf-8">
+    <title>Hepani</title>
   </head>
-
-  <body onload="initialize()">
-
-    <div id="world" class="world">
-
-      <div id="system" class="system">
-
-        <h1>Welcome to hign energy physics animation page</h1>
-
-        <div id="ax" class="axis" name="axis" style="visibility:hidden">x</div>
-        <div id="ay" class="axis" name="axis" style="visibility:hidden">y</div>
-        <div id="az" class="axis" name="axis" style="visibility:hidden">z</div>
-
-        <div id="status" class="status">
-
-          <label for="x0_i"><i>x<sub>0</sub></i> =</label>
-          <input id="x0_i" class="statusElement" name="input" value="100" onchange="onchangeInput(this)" />
-
-          <label for="y0_i"><i>y<sub>0</sub></i> =</label>
-          <input id="y0_i" class="statusElement" name="input" value="100" onchange="onchangeInput(this)" />
-
-          <label for="z0_i"><i>z<sub>0</sub></i> =</label>
-          <input id="z0_i" class="statusElement" name="input" value="100" onchange="onchangeInput(this)" />
-
-          <label for="psi_i"><i>ψ</i> =</label>
-          <input id="psi_i" class="statusElement" name="input" value="-0.7853981633974482" onchange="onchangeInput(this)" />
-
-          <label for="theta_i"><i>θ</i> =</label>
-          <input id="theta_i" class="statusElement" name="input" value="2.186276035465284" onchange="onchangeInput(this)" />
-
-          <label for="phi_i"><i>φ</i> =</label>
-          <input id="phi_i" class="statusElement" name="input" value="3.141592653589793" onchange="onchangeInput(this)" />
-
-          &nbsp;
-          <button onclick="onclickReset()">Reset</button>
-
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-          <label for="t_i"><i>t</i> =</label>
-          <input id="t_i" class="statusElement" value="0" onchange="onchangeTime()" />
-
-          &nbsp;
-          <button onclick="onclickFresh()">Fresh</button>
-
-        </div>
-
-      </div>
-
-      <div class="lcontrols">
-        <div id="x0_c" class="control" onclick="onclickControl(this)">x<sub>0</sub></div>
-        <div id="y0_c" class="control" onclick="onclickControl(this)">y<sub>0</sub></div>
-        <div id="z0_c" class="control" onclick="onclickControl(this)">z<sub>0</sub></div>
-        <div id="psi_c" class="control" onclick="onclickControl(this)">ψ</div>
-        <div id="theta_c" class="control" onclick="onclickControl(this)">θ</div>
-        <div id="phi_c" class="control" onclick="onclickControl(this)">φ</div>
-      </div>
-
-      <div class="rcontrols">
-
-        <div id="file" class="tcontrol" onclick="tryStop();writePage('file.html')">File</div>
-
-        <a href="coming.html" target="_black" style="color:black;text-decoration:none">
-          <div id="time" class="tcontrol">Time</div>
-        </a>
-
-        <div id="start" class="tcontrol" onclick="onclickStart()">Start</div>
-
-        <a href="coming.html" target="_black" style="color:black;text-decoration:none">
-          <div id="config" class="tcontrol">Conf</div>
-        </a>
-
-        <div id="save" class="tcontrol" onclick="downloadJSON()">Save</div>
-
-        <a href="coming.html" target="_black" style="color:black;text-decoration:none">
-          <div id="help" class="tcontrol">Help</div>
-        </a>
-
-      </div>
-
-    </div>
-
-    <div class="buttom">
-      <br />
-      <a target="_balck" style="color:white;text-decoration:none;font-size:16px" href="https://beian.miit.gov.cn">京ICP备2021021905号</a>
-      <a target="_balck" style="color:white;text-decoration:none;font-size:16px" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=53010202001297"><img alt="" src="beian.png" style="height:16px;width:16px" />滇公网安备 53010202001297号</a>
-      <br />
-      Copyright (C) 2021
-      <a target="_black" style="color:white;text-decoration:none" href="https://github.com/lyazj/hepani">@lyazj</a>
-      <br />
-      <br />
-    </div>
-
+  <body>
     <script src="load.js"></script>
     <script>
-      loadJS("io.js", function () {
-        loadJS("ani.js", function () {
-          requestJSON()
-        })
-      })
+      loadJS("three.min.js")
     </script>
-
   </body>
-
 </html>

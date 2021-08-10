@@ -38,6 +38,8 @@ cacheControl = Object.assign(cacheControl, {
   "406.html": cacheControl.static,
   "500.html": cacheControl.static,
   "coming.html": cacheControl.static,
+  "pako.min.js": cacheControl.static,
+  "three.min.js": cacheControl.static,
 
   "index.html": cacheControl.mutable,
   "index.css": cacheControl.mutable,
