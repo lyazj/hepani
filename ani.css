@@ -1,0 +1,112 @@
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+header, footer, aside {
+  z-index: 1;
+}
+
+header, footer {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+}
+
+aside {
+  position: fixed;
+  height: 100%;
+}
+
+header h1 {
+  color: navy;
+}
+
+footer {
+  top: 100%;
+  overflow: hidden;
+  color: white;
+  background-color: navy;
+}
+
+footer a, aside a {
+  color: inherit;
+  text-decoration: none;
+}
+
+aside .functions {
+  position: absolute;
+  top: 15%;
+  margin: 0;
+  padding: 10px;
+  color: #dfdfdf;
+  display: inline-block;
+  list-style: none;
+  box-sizing: border-box;
+}
+
+aside .functions .function {
+  margin: 5px;
+  padding: 5px;
+  display: none;
+}
+
+aside .functions > .function {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+aside .functions .function .icon {
+  width: 30px;
+  height: 30px;
+  display: inline;
+  vertical-align: middle;
+}
+
+aside .functions .function .name::before {
+  content: " ";
+}
+
+aside .functions .function .name {
+  height: 30px;
+  display: none;
+}
+
+aside .functions .notes {
+  font-size: 12px;
+  display: none;
+}
+
+aside .functions:hover {
+  background-color: #202020;
+  height: 85%;
+}
+
+aside .functions:hover .function {
+  display: block;
+  width: 180px;
+  overflow: hidden;
+}
+
+aside .functions:hover > .function {
+  border-bottom: 1px solid white;
+  margin-bottom: 10px;
+}
+
+aside .functions:hover .function .name {
+  display: inline;
+}
+
+aside .functions:hover .notes {
+  display: block;
+}
+
+aside .functions a .function:hover {
+  color: #202020;
+  background-color: #dfdfdf;
+}
+
+aside .functions > .function:first-of-type {
+  display: block;
+}
