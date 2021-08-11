@@ -3,7 +3,7 @@ body {
   overflow: hidden;
   background: lightblue url(
     "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg"
-  ) no-repeat scroll center cover;
+  ) no-repeat fixed center / cover;
 }
 
 header, footer, aside {
@@ -13,6 +13,7 @@ header, footer, aside {
 header, footer {
   position: absolute;
   width: 100%;
+  font-size: 14px;
   text-align: center;
 }
 
