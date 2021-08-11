@@ -467,7 +467,7 @@ int main(int argc, char *argv[])
   for(int i = 1; i < argc; ++i)
   {
     string key(argv[i]);
-    if(key.size() < 3 || key.substr(0, 2) != "--")
+    if(key.substr(0, 2) != "--")
     {
       cerr << "Invalid argument: " + key << "." << endl;
       return 1;

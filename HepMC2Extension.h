@@ -70,7 +70,7 @@ inline HepMC2Index::HepMC2Index(std::istream &is)
   size_t pos(is.tellg());
   while(getline(is, buf))
   {
-    if(buf.find("E ") != buf.npos)
+    if(buf.substr(0, 2) == "E ")
       index.push_back(pos);
     pos = is.tellg();
   }

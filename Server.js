@@ -19,6 +19,9 @@ var fileBlock = [
 var fileType = {
   ico:  "image/x-icon",
   png:  "image/png",
+  jpg:  "image/jpeg",
+  jpeg: "image/jpeg",
+  svg:  "image/svg+xml",
   html: "text/html;charset=utf-8",
   js:   "text/javascript;charset=utf-8",
   css:  "text/css;charset=utf-8",
@@ -32,18 +35,23 @@ var cacheControl = {
   mutable: "no-cache",
 }
 cacheControl = Object.assign(cacheControl, {
-  "favicon.ico": cacheControl.static,
-  "beian.png": cacheControl.static,
-  "404.html": cacheControl.static,
-  "406.html": cacheControl.static,
-  "500.html": cacheControl.static,
-  "coming.html": cacheControl.static,
-  "pako.min.js": cacheControl.static,
-  "three.min.js": cacheControl.static,
+  "favicon.ico"    : cacheControl.static,
+  "beian.png"      : cacheControl.static,
+  "404.html"       : cacheControl.static,
+  "406.html"       : cacheControl.static,
+  "500.html"       : cacheControl.static,
+  "coming.html"    : cacheControl.static,
 
-  "index.html": cacheControl.mutable,
-  "index.css": cacheControl.mutable,
-  "ani.js": cacheControl.mutable,
+  "ani.html"       : cacheControl.mutable,
+  "ani.css"        : cacheControl.mutable,
+  "ani.js"         : cacheControl.mutable,
+
+  "about.svg"      : cacheControl.static,
+  "download.svg"   : cacheControl.static,
+  "file.svg"       : cacheControl.static,
+  "functions.svg"  : cacheControl.static,
+  "help.svg"       : cacheControl.static,
+  "start.svg"      : cacheControl.static,
 })
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
@@ -140,7 +148,7 @@ function procedure(request, response) {
   while(pathname[0] == '/')
     pathname = pathname.slice(1)
   if(!pathname)
-    pathname = "index.html"
+    pathname = "ani.html"
 
   console.log(new Date().toLocaleString() + "  "
     + request.method + ": " + request.url + " -> " + pathname)
