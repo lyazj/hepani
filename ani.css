@@ -3,8 +3,7 @@ body {
   overflow: hidden;
   background: lightblue url(
     "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg"
-  ) no-repeat fixed center;
-  background-size: cover;
+  ) no-repeat scroll center cover;
 }
 
 header, footer, aside {
