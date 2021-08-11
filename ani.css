@@ -40,7 +40,7 @@ aside .functions {
   margin: 0;
   padding: 10px;
   color: #dfdfdf;
-  display: inline-block;
+  display: block;
   list-style: none;
   box-sizing: border-box;
 }

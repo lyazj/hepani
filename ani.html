@@ -10,7 +10,11 @@
     <script>
       loadJS("https://threejs.org/build/three.min.js", function () {
         loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
-          loadJS("ani.js")
+          loadJS("io.js", function () {
+            loadJS("ani.js", function () {
+              requestJSON()
+            })
+          })
         })
       })
     </script>
@@ -30,13 +34,13 @@
     <aside>
       <ul class="functions">
         <li class="function"><img class="icon" alt="" src="functions.svg" /><span class="name">Functions</span></li>
-        <a href="javascript:void(0)">
+        <a href="javascript:writePage('file.html')">
           <li class="function"><img class="icon" alt="" src="file.svg" /><span class="name">File</span></li>
         </a>
         <a href="javascript:void(0)">
           <li class="function"><img class="icon" alt="" src="start.svg" /><span class="name">Start</span></li>
         </a>
-        <a href="javascript:void(0)">
+        <a href="javascript:downloadJSON()">
           <li class="function"><img class="icon" alt="" src="download.svg" /><span class="name">Save</span></li>
         </a>
         <a href="coming.html" target="_black">
