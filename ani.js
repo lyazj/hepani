@@ -24,8 +24,10 @@ var camera
 var controls
 var background
 var scene = new THREE.Scene()
-var renderer = new THREE.WebGLRenderer()
-renderer.setClearColor(0xb9d3ff, 1)
+var renderer = new THREE.WebGLRenderer({
+  alpha: true,
+})
+// renderer.setClearColor(0xb9d3ff, 1)
 document.body.appendChild(renderer.domElement)
 
 var textureLoader = new THREE.TextureLoader()
@@ -51,7 +53,7 @@ function updateBackground() {
     Math.sqrt(width*width + height*height) / 2, 36, 36
   )
   var material = new THREE.MeshLambertMaterial({
-    map: textureLoader.load("bg.png"),
+    map: textureLoader.load("bg.jpg"),
     side: THREE.BackSide,
   })
   background = new THREE.Mesh(geometry, material)
@@ -62,7 +64,7 @@ function updateGraphics() {
   updateParameters()
   updateCamera()
   updateRenderer()
-  updateBackground()
+  // updateBackground()
 }
 
 (onresize = updateGraphics)()

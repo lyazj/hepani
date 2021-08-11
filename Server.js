@@ -54,8 +54,6 @@ cacheControl = Object.assign(cacheControl, {
   "start.svg"      : cacheControl.static,
 })
 
-var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
-var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
 var description = JSON.parse(fs.readFileSync("description.json"))
 var descriptionMstring =
   fs.statSync("description.json").mtime.toUTCString()
@@ -287,10 +285,5 @@ function procedure(request, response) {
 
 }
 
-http.createServer(procedure).listen(5861)
+http.createServer(procedure).listen(5414)
 console.log("Server running at http://39.98.116.227/")
-
-https.createServer({
-  key: httpsKey, cert: httpsCert
-}, procedure).listen(1122)
-console.log("Server running at https://39.98.116.227/")
