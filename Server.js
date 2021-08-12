@@ -34,6 +34,7 @@ var cacheControl = {
   stable: "max-age=86400,public",
   mutable: "no-cache",
 }
+
 cacheControl = Object.assign(cacheControl, {
   "favicon.ico"    : cacheControl.static,
   "beian.png"      : cacheControl.static,
@@ -41,11 +42,9 @@ cacheControl = Object.assign(cacheControl, {
   "406.html"       : cacheControl.static,
   "500.html"       : cacheControl.static,
   "coming.html"    : cacheControl.static,
-
   "ani.html"       : cacheControl.mutable,
   "ani.css"        : cacheControl.mutable,
   "ani.js"         : cacheControl.mutable,
-
   "about.svg"      : cacheControl.static,
   "download.svg"   : cacheControl.static,
   "file.svg"       : cacheControl.static,
@@ -54,6 +53,8 @@ cacheControl = Object.assign(cacheControl, {
   "start.svg"      : cacheControl.static,
 })
 
+var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
+var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
 var description = JSON.parse(fs.readFileSync("description.json"))
 var descriptionMstring =
   fs.statSync("description.json").mtime.toUTCString()
@@ -146,7 +147,7 @@ function procedure(request, response) {
   while(pathname[0] == '/')
     pathname = pathname.slice(1)
   if(!pathname)
-    pathname = "ani.html"
+    pathname = "index.html"
 
   console.log(new Date().toLocaleString() + "  "
     + request.method + ": " + request.url + " -> " + pathname)
@@ -285,5 +286,10 @@ function procedure(request, response) {
 
 }
 
-http.createServer(procedure).listen(5414)
+http.createServer(procedure).listen(5861)
 console.log("Server running at http://39.98.116.227/")
+
+https.createServer({
+  key: httpsKey, cert: httpsCert
+}, procedure).listen(1122)
+console.log("Server running at https://39.98.116.227/")
