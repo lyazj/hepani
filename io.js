@@ -3,6 +3,9 @@
 /* must be an 2D-Array containing particle Object(s) */
 var particles = []
 
+/* must be an 1D-Array containing ending time(s) */
+var timeline = []
+
 /* set it as false to disable JSON auto-requesting once */
 var shouldRequestJSON = true
 
@@ -98,9 +101,12 @@ function writePage(url, callback) {
 // @noexcept
 function receiveJSONContent(content) {
   try {
-    particles = JSON.parse(content)
+    var data = JSON.parse(content)
+    particles = data.particles
+    timeline = data.timeline
   } catch(err) {
     particles = []
+    timeline = []
     if(content)
       alert("Invalid JSON content: " + content)
     content = undefined
