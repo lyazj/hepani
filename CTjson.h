@@ -30,7 +30,8 @@ public:
 
   ojsonstream(std::basic_streambuf<char> *psb)
     : std::ostream(psb),
-    _depth(0), _ind_char(' '), _ind_cnt(4)
+    _depth(0), _ind_char(' '), _ind_cnt(4),
+    _breakline(true), _space(true)
   {
     base() << std::boolalpha << std::scientific;
   }
@@ -84,11 +85,35 @@ public:
     base() << std::string(_depth * _ind_cnt, _ind_char);
     return *this;
   }
+  ojsonstream &setbreakline(bool b)
+  {
+    _breakline = b;
+    return *this;
+  }
+  ojsonstream &breakline()
+  {
+    if(_breakline)
+      base() << '\n';
+    return *this;
+  }
+  ojsonstream &setspace(bool b)
+  {
+    _space = b;
+    return *this;
+  }
+  ojsonstream &space()
+  {
+    if(_space)
+      base() << ' ';
+    return *this;
+  }
 
 private:
   depth_type  _depth;
   char        _ind_char;
   size_t      _ind_cnt;
+  bool        _breakline;
+  bool        _space;
 };
 
 typedef ojsonstream &iomanip(ojsonstream &);
@@ -101,8 +126,7 @@ inline ojsonstream &operator<<(ojsonstream &ojs, iomanip &iom)
 // for performance, no explicit flushing
 inline ojsonstream &endl(ojsonstream &ojs)
 {
-  ojs.base() << '\n';
-  return ojs.indent();
+  return ojs.breakline().indent();
 }
 
 // more iomanips to be added...
@@ -170,8 +194,8 @@ auto operator<<(ojsonstream &ojs, const T &t)
     ojs << *it_beg++;
   while(it_beg != it_end)
   {
-    ojs.base() << ", ";
-    ojs << *it_beg++;
+    ojs.base() << ',';
+    ojs.space() << *it_beg++;
   }
 
   ojs.base() << ']';
@@ -185,8 +209,8 @@ inline auto prt_pair(ojsonstream &ojs,
   -> decltype(ojs << value)
 {
   ojs << key;
-  ojs.base() << ": ";
-  ojs << value;
+  ojs.base() << ':';
+  ojs.space() << value;
   return ojs;
 }
 

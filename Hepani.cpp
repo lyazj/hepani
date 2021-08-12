@@ -26,6 +26,9 @@
 #include <algorithm>
 #include <type_traits>
 
+#include <stdlib.h>
+#include <assert.h>
+
 using namespace std;
 
 double &Array::operator[](size_t i)
@@ -148,6 +151,7 @@ NameCache name_cache("name.txt");
 
 inline static void general_loading_assign(Particle &particle)
 {
+  particle.r = {0.0};
   particle.v = particle.p / particle.e;
   particle.birth = particle.death = phase_undef;
 }
@@ -191,8 +195,8 @@ static auto get_birth(uint32_t i, T &pars) ->
 
 /* parindex and pars undefined if false returned */
 template<class T>
-static auto general_process(
-    Particles &particles, Parindex &parindex, T &pars) ->
+static auto general_process(Particles &particles, Parindex &parindex,
+    T &pars, Durations &durations, Timeline &timeline) ->
   typename enable_if<is_base_of<Particle,
   typename remove_reference<decltype(pars[0])>::type
   >::value, bool>::type
@@ -219,18 +223,34 @@ static auto general_process(
   catch(const runtime_error &) {
     return false;
   }
+  if(parindex.size() < 2)
+    return false;
+
+  /* build timeline */
+  timeline.assign(parindex.size(), duration);
+  for(uint32_t i = 0; i < timeline.size(); ++i)
+  {
+    double val(durations[to_string(i)]);
+    if(val)
+      timeline[i] = val;
+  }
+  for(uint32_t i = 1; i < timeline.size(); ++i)
+    timeline[i] += timeline[i - 1];
 
   /* do general calculation orderly */
-  for(uint32_t p = 0; p < parindex.size(); ++p)
+  assert(parindex[0].size() == 1 && parindex[0][0] == 0);
+  pars[0].death = 1;
+  for(uint32_t i : parindex[1])
+    pars[i].r = -pars[i].v * (timeline[1] - timeline[0]);
+  for(uint32_t p = 2; p < parindex.size(); ++p)
     for(uint32_t i : parindex[p])
     {
       double e_sum = 0.0;
-      pars[i].r = {0.0};
       for(uint32_t m : pars[i].momset)
       {
         e_sum += pars[m].e;
-        pars[i].r += pars[m].e * (
-            pars[m].r + pars[m].v * (p - pars[m].birth) * 1.0);
+        pars[i].r += pars[m].e * (pars[m].r + pars[m].v *
+            (timeline[p - 1] - timeline[pars[m].birth - 1]));
         pars[m].death = min(pars[m].death, p);
       }
       if(e_sum)
@@ -246,8 +266,14 @@ static auto general_process(
           p < pars[parindex[i][j]].death && p < parindex.size(); ++p)
       {
         particles[p].push_back(pars[parindex[i][j]]);
-        particles[p].back().r += particles[p].back().v * (
-            (p - particles[p].back().birth) * 1.0);
+        if(p)
+        {
+          double time(timeline[p - 1]);
+          uint32_t birth(particles[p].back().birth);
+          if(birth)
+            time -= timeline[birth - 1];
+          particles[p].back().r += particles[p].back().v * time;
+        }
       }
 
   return true;
@@ -319,6 +345,8 @@ static bool load_py8log(Parpy8logs &parpy8logs, const string &log)
   return true;
 }
 
+
+/* pars undefined if false returned */
 static bool load_hepmc2(Pars &pars, istream &is)
 {
   HepMC2RandomAccessor h2ra(is);
@@ -332,6 +360,7 @@ static bool load_hepmc2(Pars &pars, istream &is)
     .name = "(system)",
     .status = 11,
     .colours = {0},
+    .r = {0.0},
     .v = {0.0},
     .p = {0.0},
     .e = 0.0,
@@ -340,11 +369,17 @@ static bool load_hepmc2(Pars &pars, istream &is)
     .death = phase_undef,
   }};
 
+  pars.resize(evt.particles().size() + 1);
+
   for(GenParticlePtr pparticle : evt.particles())
   {
-    Particle particle;
+    uint32_t no(pparticle->id());
+    if(!no || no >= pars.size())
+      return false;
 
-    particle.no = pparticle->id();
+    Particle &particle(pars[no]);
+
+    particle.no = no;
     particle.id = pparticle->pid();
     particle.status = pparticle->status();
 
@@ -386,7 +421,6 @@ static bool load_hepmc2(Pars &pars, istream &is)
     }
 
     general_loading_assign(particle);
-    pars.emplace_back(move(particle));
   }
 
   return true;
@@ -404,7 +438,8 @@ bool System::from_py8log(istream &is)
 
   Particles partitmps;
   Parindex paridxtmp;
-  if(!general_process(partitmps, paridxtmp, parpy8tmps))
+  if(!general_process(
+        partitmps, paridxtmp, parpy8tmps, durations, timeline))
     return false;
 
   swap(particles, partitmps);
@@ -425,12 +460,19 @@ bool System::from_hepmc2(istream &is)
 
   Particles partitmps;
   Parindex paridxtmp;
-  if(!general_process(partitmps, paridxtmp, partmps))
+  if(!general_process(
+        partitmps, paridxtmp, partmps, durations, timeline))
     return false;
 
   swap(particles, partitmps);
   swap(parindex, paridxtmp);
   swap(pars, partmps);
+
+  for(uint32_t i : parindex[1])
+  {
+    pars[0].e += pars[i].e;
+    pars[0].m += pars[i].m;
+  }
   return true;
 }
 
@@ -457,12 +499,15 @@ ojsonstream &Particle::print(ojsonstream &ojs) const
 bool System::to_json(std::ostream &os) const
 {
   ojsonstream ojs(os.rdbuf());
+  ojs.setindent(0).setbreakline(0).setspace(0);
   ojs.base() << scientific << setprecision(3);
-  return (bool)(ojs << particles);
+  return bool(prt_obj(ojs, KVP(timeline), KVP(particles)));
 }
 
 int main(int argc, char *argv[])
 {
+  System system;
+
   map<string, string> args;
   for(int i = 1; i < argc; ++i)
   {
@@ -478,10 +523,11 @@ int main(int argc, char *argv[])
       cerr << "Missing value of option: " << key << "." << endl;
       return 1;
     }
-    args[key] = argv[++i];
+    if(key.substr(0, 1) == "d")
+      system.durations[key.substr(1)] = atof(argv[++i]);
+    else
+      args[key] = argv[++i];
   }
-
-  System system;
 
   if(args["type"] == "py8log")
   {
@@ -514,6 +560,7 @@ int main(int argc, char *argv[])
     cerr << "Error writing output." << endl;
     return 1;
   }
+  cout << endl;
 
   // ojsonstream ojs(clog.rdbuf());
   // ojs << args;

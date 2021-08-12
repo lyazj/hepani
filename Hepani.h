@@ -26,6 +26,7 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <map>
 #include <unordered_map>
 
 namespace CTjson {
@@ -86,6 +87,7 @@ private:
 extern NameCache name_cache;
 
 constexpr uint32_t phase_undef = (uint32_t)-1;
+constexpr double duration = 1.0;
 
 struct Particle {
   uint32_t            no;           // Assigned while loading
@@ -94,7 +96,7 @@ struct Particle {
                                     // Overrided with cache
   int32_t             status;       // Assigned while loading
   uint32_t            colours[2];   // Assigned while loading
-  Array               r;            // Caculated uniformly
+  Array               r;            // Assigned to 0 while loading...
   Array               v;            // Assigned to p / e while loading
   Array               p;            // Assigned while loading
   double              e;            // Assigned while loading
@@ -119,11 +121,17 @@ typedef std::vector<std::vector<uint32_t>> Parindex;
 typedef std::vector<Particle> Pars;
 typedef std::vector<Parpy8log> Parpy8logs;
 
+typedef std::map<std::string, double> Durations;
+typedef std::vector<double> Timeline;
+
 struct System {
   Particles   particles;   // Changed only if caculating success
   Parindex    parindex;    // Changed only if caculating success
   Pars        pars;        // Optional, Changed only if caculating success
   Parpy8logs  parpy8logs;  // Optional, Changed only if caculating success
+
+  Durations   durations;
+  Timeline    timeline;
 
   bool from_py8log(std::istream &);
   bool from_hepmc2(std::istream &);
