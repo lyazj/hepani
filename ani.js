@@ -85,7 +85,7 @@ function addLights() {
 function addMeshes() {
   var geometry = new THREE.BoxGeometry(20, 20, 20)
   var material = new THREE.MeshLambertMaterial({
-    color: 0x0000ff,
+    color: 0x00ff00,
     opacity: 0.75,
     transparent: true,
   })
@@ -100,7 +100,7 @@ function render() {
 
 var particleGeometry = new THREE.SphereGeometry(20, 36, 36)
 var particleMaterial = new THREE.MeshLambertMaterial({
-  color: 0x0000ff,
+  color: 0x00ff00,
 })
 var particleMesh = new THREE.Mesh(particleGeometry, particleMaterial)
 scene.add(particleMesh)
