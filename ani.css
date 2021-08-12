@@ -34,9 +34,9 @@ footer {
 }
 
 footer img {
-  height: 14px;
-  width: 14px;
-  vertical-align: middle;
+  height: 16px;
+  width: 16px;
+  vertical-align: bottom;
 }
 
 footer a, aside a {
