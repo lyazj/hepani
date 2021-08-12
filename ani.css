@@ -33,6 +33,12 @@ footer {
   background-color: navy;
 }
 
+footer img {
+  height: 14px;
+  width: 14px;
+  vertical-align: middle;
+}
+
 footer a, aside a {
   color: inherit;
   text-decoration: none;
