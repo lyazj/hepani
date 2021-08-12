@@ -51,6 +51,7 @@ cacheControl = Object.assign(cacheControl, {
   "functions.svg"  : cacheControl.static,
   "help.svg"       : cacheControl.static,
   "start.svg"      : cacheControl.static,
+  "time.svg"       : cacheControl.static,
 })
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
