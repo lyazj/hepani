@@ -10,8 +10,8 @@ var querystring = require("querystring")
 
 // blacklist
 var fileBlock = [
-  /Server\.js/,
-  /description\.json/,
+  /Server\.js$/,
+  /description\.json$/,
   // ...
 ]
 
@@ -29,6 +29,12 @@ var fileType = {
   // ...
 }
 
+var noGzip = [
+  /.*\.png$/,
+  /.*\.jpg$/,
+  /.*\.jpeg$/,
+]
+
 var cacheControl = {
   static: "max-age=31536000,public,immutable",
   stable: "max-age=86400,public",
@@ -36,22 +42,25 @@ var cacheControl = {
 }
 
 cacheControl = Object.assign(cacheControl, {
-  "favicon.ico"    : cacheControl.static,
-  "beian.png"      : cacheControl.static,
-  "404.html"       : cacheControl.static,
-  "406.html"       : cacheControl.static,
-  "500.html"       : cacheControl.static,
-  "coming.html"    : cacheControl.static,
-  "ani.html"       : cacheControl.mutable,
-  "ani.css"        : cacheControl.mutable,
-  "ani.js"         : cacheControl.mutable,
-  "about.svg"      : cacheControl.static,
-  "download.svg"   : cacheControl.static,
-  "file.svg"       : cacheControl.static,
-  "functions.svg"  : cacheControl.static,
-  "help.svg"       : cacheControl.static,
-  "start.svg"      : cacheControl.static,
-  "time.svg"       : cacheControl.static,
+  "favicon.ico"      : cacheControl.static,
+  "beian.png"        : cacheControl.static,
+  "404.html"         : cacheControl.static,
+  "406.html"         : cacheControl.static,
+  "500.html"         : cacheControl.static,
+  "coming.html"      : cacheControl.static,
+  "ani.html"         : cacheControl.mutable,
+  "ani.css"          : cacheControl.mutable,
+  "ani.js"           : cacheControl.mutable,
+  "about.svg"        : cacheControl.static,
+  "download.svg"     : cacheControl.static,
+  "file.svg"         : cacheControl.static,
+  "functions.svg"    : cacheControl.static,
+  "help.svg"         : cacheControl.static,
+  "start.svg"        : cacheControl.static,
+  "time.svg"         : cacheControl.static,
+  "bg.jpg"           : cacheControl.static,
+  "OrbitControls.js" : cacheControl.static,
+  "three.min.js"     : cacheControl.static,
 })
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
@@ -111,23 +120,23 @@ function writeFile(response, file, type, code, ims) {
       return response.end()
     }
 
-    if(code == 200)
-      response.writeHead(code, {
-        "Content-Type": type,
-        "Content-Encoding": "gzip",
-        "Cache-Control": thisCacheControl,
-        "Last-Modified": lastModified,
-        "X-Content-Type-Options": "nosniff",
-      })
-    else
-      response.writeHead(code, {
-        "Content-Type": type,
-        "Content-Encoding": "gzip",
-        "Cache-Control": cacheControl.mutable,
-        "X-Content-Type-Options": "nosniff",
-      })
+    var headObject = {
+      "Content-Type": type,
+      "Cache-Control": code == 200 ? lastModified : cacheControl.mutable,
+      "Last-Modified": lastModified,
+      "X-Content-Type-Options": "nosniff",
+    }
 
-    fs.createReadStream(file).pipe(zlib.createGzip()).pipe(response)
+    var stream = fs.createReadStream(file)
+    if(noGzip.every(function (name) {
+      return !name.exec(file)
+    }))
+    {
+      headObject["Content-Encoding"] = "gzip"
+      stream = stream.pipe(zlib.createGzip())
+    }
+    response.writeHead(code, headObject)
+    stream.pipe(response)
 
   })
 

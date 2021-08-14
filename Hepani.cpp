@@ -149,7 +149,7 @@ string *NameCache::find(int pid)
 
 NameCache name_cache("name.txt");
 
-inline static void general_loading_assign(Particle &particle)
+inline void general_loading_assign(Particle &particle)
 {
   particle.r = {0.0};
   particle.v = particle.p / particle.e;
