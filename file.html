@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <title>Upload</title>
     <style>
-      fieldset label { line-height: 24px; }
-      #timetext { width: 600px; }
+      fieldset { display: inline-block; min-width: 750px; }
+      fieldset label { line-height: 26px; }
+      fieldset #timetext { width: 600px; }
     </style>
   </head>
   <body>
@@ -43,25 +44,21 @@
     <form id="upload" action="/" method="post" enctype="multipart/form-data">
       <fieldset>
         <legend>Upload a file</legend>
-        <label for="type">Select a type:</label>
+        <label for="type">Type:</label>
         <select name="type" id="type">
           <option value="py8log" selected="selected">running log from pythia8</option>
           <option value="hepmc2">HepMC2 file</option>
           <option value="hepani">Hepani JSON file</option>
         </select>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <label for="input">Select a file:</label>
+        &nbsp;&nbsp;
+        <label for="input">File:</label>
         <input type="file" name="input" id="input" />
-        <input type="checkbox" name="gzip" id="gzip" />
-        <label for="gzip">gzip</label>
+        &nbsp;&nbsp;
+        <label for="gzip">Compress:</label>
+        <input type="checkbox" name="gzip" id="gzip" /><label for="gzip">gzip</label>
         <br />
-        <label for="timetext">Specify durations:</label>
+        <label for="timetext">Durations:</label>
         <input type="text" name="timetext" id="timetext" value="{0:1,1:1}" />
-        <br />
-        <label for="submit">Check twice and click:</label>
-        <!--
-          <input type="submit" id="submit" value="upload" />
-        -->
         <button onclick="return submitUpload()" id="submit">upload</button>
         <br />
       </fieldset>
@@ -71,7 +68,7 @@
     Note:
     Please check the box before <strong>gzip</strong> if the file already compressed with gzip).
     If no file selected, an example of selected type will be used.
-    A JavaScript Object literal is expected in textbox after <strong>Specify durations</strong>.
+    A JavaScript Object literal is expected in textbox after <strong>Durations</strong>.
     </p>
     <p>
     For more information about <em>pythia8</em>, see: <a href="https://pythia.org/" target="_black">PYTHIA official site</a>.
