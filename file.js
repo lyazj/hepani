@@ -5,6 +5,7 @@ function submitUpload() {
   var fileType = type.value
   var file = input.files[0]
   var gzipChecked = gzip.checked
+  var timeText = timetext.value
 
   function readJSON() {
     var fileReader = new FileReader()
@@ -47,6 +48,19 @@ function submitUpload() {
     type: fileType,
     empty: !file,
   }
+  try {
+    var timeObject = new Function("return new Object(" + timeText + ")")()
+    for(var index in timeObject)
+    {
+      var indexValue = Number.parseInt(index)
+      if(Number.isNaN(indexValue))
+        throw index
+      requireArguments["d" + indexValue] = timeObject[index]
+    }
+  } catch(err) {
+    alert("Invalid Timeline input.")
+    return false
+  }
 
   var first = true
   for(var item in requireArguments)
@@ -65,8 +79,8 @@ function submitUpload() {
   function sendRequest(buf) {
     var xhr = new XMLHttpRequest()
     xhr.open("post", url, true)
-    xhr.setRequestHeader('Content-Type', 'application/octet-stream')
-    xhr.setRequestHeader('Content-Encoding', 'gzip')
+    xhr.setRequestHeader("Content-Type", "application/octet-stream")
+    xhr.setRequestHeader("Content-Encoding", "gzip")
     xhr.send(buf)
     xhr.onload = function () {
       onloadJSON(this)

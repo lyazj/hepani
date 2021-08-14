@@ -148,7 +148,7 @@ function procedure(request, response) {
   while(pathname[0] == '/')
     pathname = pathname.slice(1)
   if(!pathname)
-    pathname = "index.html"
+    pathname = "ani.html"
 
   console.log(new Date().toLocaleString() + "  "
     + request.method + ": " + request.url + " -> " + pathname)
