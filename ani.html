@@ -6,18 +6,6 @@
     <link rel="stylesheet" href="ani.css" />
   </head>
   <body>
-    <script src="load.js"></script>
-    <script>
-      loadJS("three.min.js", function () {
-        loadJS("OrbitControls.js", function () {
-          loadJS("io.js", function () {
-            loadJS("ani.js", function () {
-              requestJSON()
-            })
-          })
-        })
-      })
-    </script>
     <header id="header">
       <h1>Welcome to Hign Energy Physics Animation Page</h1>
     </header>
@@ -51,7 +39,7 @@
         <a href="javascript:writePage('file.html')">
           <li class="function"><img class="icon" alt="" src="file.svg" /><span class="name">File</span></li>
         </a>
-        <a href="javascript:void(0)">
+        <a href="javascript:writePage('file.html')">
           <li class="function"><img class="icon" alt="" src="time.svg" /><span class="name">Time</span></li>
         </a>
         <a href="javascript:void(0)">
@@ -77,6 +65,18 @@
           about.href = "#header"; aboutText.innerHTML = "About";
         }
       }
+    </script>
+    <script src="load.js"></script>
+    <script>
+      loadJS("https://threejs.org/build/three.min.js", function () {
+        loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
+          loadJS("io.js", function () {
+            loadJS("ani.js", function () {
+              requestJSON()
+            })
+          })
+        })
+      })
     </script>
   </body>
 </html>
