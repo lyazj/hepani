@@ -262,19 +262,20 @@ static auto general_process(Particles &particles, Parindex &parindex,
   particles.resize(parindex.size());
   for(uint32_t i = 0; i < parindex.size(); ++i)
     for(uint32_t j = 0; j < parindex[i].size(); ++j)
-      for(uint32_t p = i;
-          p < pars[parindex[i][j]].death && p < parindex.size(); ++p)
-      {
-        particles[p].push_back(pars[parindex[i][j]]);
-        if(p)
-        {
-          double time(timeline[p - 1]);
-          uint32_t birth(particles[p].back().birth);
-          if(birth)
-            time -= timeline[birth - 1];
-          particles[p].back().r += particles[p].back().v * time;
-        }
-      }
+      particles[i].push_back(pars[parindex[i][j]]);
+      // for(uint32_t p = i;
+      //     p < pars[parindex[i][j]].death && p < parindex.size(); ++p)
+      // {
+      //   particles[p].push_back(pars[parindex[i][j]]);
+      //   if(p)
+      //   {
+      //     double time(timeline[p - 1]);
+      //     uint32_t birth(particles[p].back().birth);
+      //     if(birth)
+      //       time -= timeline[birth - 1];
+      //     particles[p].back().r += particles[p].back().v * time;
+      //   }
+      // }
 
   return true;
 }

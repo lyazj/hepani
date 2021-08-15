@@ -5,7 +5,7 @@
     <title>Hepani</title>
     <link rel="stylesheet" href="ani.css" />
   </head>
-  <body>
+  <body onload="initialize(true)">
     <header id="header">
       <h1>Welcome to Hign Energy Physics Animation Page</h1>
     </header>
@@ -36,14 +36,14 @@
     <aside>
       <ul class="functions">
         <li class="function"><img class="icon" alt="" src="functions.svg" /><span class="name">Functions</span></li>
-        <a href="javascript:writePage('file.html')">
+        <a href="javascript:stop();writePage('file.html')">
           <li class="function"><img class="icon" alt="" src="file.svg" /><span class="name">File</span></li>
         </a>
-        <a href="javascript:writePage('file.html')">
+        <a href="javascript:stop();writePage('file.html')">
           <li class="function"><img class="icon" alt="" src="time.svg" /><span class="name">Time</span></li>
         </a>
-        <a href="javascript:void(0)">
-          <li class="function"><img class="icon" alt="" src="start.svg" /><span class="name">Start</span></li>
+        <a href="javascript:startStop()">
+          <li class="function"><img class="icon" alt="" src="start.svg" /><span class="name" id="start_stop">Start</span></li>
         </a>
         <a href="javascript:downloadJSON()">
           <li class="function"><img class="icon" alt="" src="download.svg" /><span class="name">Save</span></li>

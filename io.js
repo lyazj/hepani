@@ -99,11 +99,62 @@ function writePage(url, callback) {
 }
 
 // @noexcept
+function hideElements() {
+  var children = document.body.children
+  for(var i = 0; i < children.length; ++i)
+  {
+    children[i].styleDisplay = children[i].style.display
+    children[i].style.display = "none"
+  }
+  document.body.style.background = "none"
+}
+
+// @noexcept
+function displayElements() {
+  var children = document.body.children
+  for(var i = 0; i < children.length; ++i)
+    if(typeof(children[i].styleDisplay) != "undefined")
+    {
+      children[i].style.display = children[i].styleDisplay
+      delete children[i].styleDisplay
+    }
+  document.body.style.background = ""
+}
+
+// @noexcept
+function enterIframe(url) {
+  hideElements()
+  var iframe = document.createElement("iframe")
+  iframe.src = url
+  iframe.style.position = "absolute"
+  iframe.style.width = "100%"
+  iframe.style.height = "100%"
+  iframe.style.top = 0
+  iframe.style.left = 0
+  iframe.style.margin = 0
+  iframe.style.padding = 0
+  iframe.style.border = "none"
+  document.body.appendChild(iframe)
+}
+
+// @noexcept
+function leaveIframe() {
+  var iframes = document.getElementsByTagName("iframe")
+  while(iframes.length)
+  {
+    console.log(iframes[0])
+    iframes[0].parentElement.removeChild(iframes[0])
+  }
+  displayElements()
+}
+
+// @noexcept
 function receiveJSONContent(content) {
   try {
     var data = JSON.parse(content)
     particles = data.particles
     timeline = data.timeline
+    timeline[-1] = 0
   } catch(err) {
     particles = []
     timeline = []
@@ -111,15 +162,13 @@ function receiveJSONContent(content) {
       alert("Invalid JSON content: " + content)
     content = undefined
   }
-  try {
-    initialize()
-  } catch(err) { }
+  initialize(true)
   if(_jsonFile)
     URL.revokeObjectURL(_jsonFile)
-  _jsonFile = content ? new File(
+  _jsonFile = content && new File(
     [content], jsonName, {type: "application/json"}
-  ) : undefined
-  _jsonBlobURL = _jsonFile ? URL.createObjectURL(_jsonFile) : undefined
+  )
+  _jsonBlobURL = _jsonFile && URL.createObjectURL(_jsonFile)
 }
 
 // @noexcept
@@ -176,17 +225,13 @@ function downloadJSON() {
 // @effective: async
 // @noexcept
 function getDescription(id, callback) {
-  if(!id)
-    id = 0
-  if(!callback)
-    callback = alert
   var xhr = new XMLHttpRequest()
-  xhr.open("get", "description?id=" + encodeURIComponent(id), true)
+  xhr.open("get", "description?id=" + encodeURIComponent(id || 0), true)
   xhr.send()
   xhr.onload = function () {
     if(this.status == 200)
-      callback(this.responseText)
+      (callback || alert)(this.responseText)
     else
-      return alert("HTTP Error " + this.status + ": " + this.responseText)
+      alert("HTTP Error " + this.status + ": " + this.responseText)
   }
 }
