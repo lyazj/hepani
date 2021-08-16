@@ -185,10 +185,10 @@ function updateSize() {
   camera.aspect = innerWidth / innerHeight
   camera.near = 0.1
   camera.far = 1000
-  camera.position.set(25, 25, 25)
+  camera.position.set(20, 10, 0)
   camera.lookAt(scene.position)
   camera.updateProjectionMatrix()
-  point.position.set(60, 80, 100)
+  point.position.set(40, 20, 0)
   renderer.setSize(innerWidth, innerHeight)
   render()
 }
@@ -247,9 +247,18 @@ function startStop() {
     start()
 }
 
-// TODO: classify particles
 function getParticleColor(particleData) {
-  return 0x0000ff
+  var color = 0
+  var proportion = particleData.e / particles[0][0].e
+  if(proportion >= 0 && proportion <= 1)
+  {
+    proportion = Math.pow(proportion, 0.5)
+    color += proportion * 0xff0000 + (1 - proportion) * 0x0000ff
+  }
+  var ratio = particleData.m / particleData.e
+  if(ratio >= 0 && ratio <= 1)
+    color += ratio * 0x00ff00
+  return Math.round(color)
 }
 
 // @noexcept
@@ -293,7 +302,7 @@ function getIntersectMaterial(particleData) {
 
 class ParticleMesh extends THREE.Mesh {
 
-  static geometry = new THREE.SphereGeometry(2)
+  static geometry = new THREE.SphereGeometry(1)
 
   // @noexcept: super
   constructor(data) {
