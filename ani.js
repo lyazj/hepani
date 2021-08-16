@@ -20,15 +20,6 @@ const intersectColorEnhancement = 0x7f
 
 scene.add(axesHelper)
 scene.add(point)
-addEventListener("mousemove", (evt) => {
-  mouse.x = evt.clientX / innerWidth * 2 - 1
-  mouse.y = evt.clientY / innerHeight * -2 + 1
-  updateIntersect()
-})
-addEventListener("click", (evt) => {
-  if(intersect)
-    onclickIntersect(intersect.object)
-})
 
 /* inner variables */
 var _initializeState
@@ -85,7 +76,9 @@ function onclickIntersect(particleMesh) {
 }
 
 // @noexcept
+// @safe: duplicate calling
 function updateControls() {
+
   if(controls)
   {
     controls.removeEventListener("change", render)
@@ -93,6 +86,23 @@ function updateControls() {
   }
   controls = new THREE.OrbitControls(camera, renderer.domElement)
   controls.addEventListener("change", render)
+
+  function onmousemove(evt) {
+    mouse.x = evt.clientX / innerWidth * 2 - 1
+    mouse.y = evt.clientY / innerHeight * -2 + 1
+    updateIntersect()
+  }
+
+  function onclick(evt) {
+    if(intersect)
+      onclickIntersect(intersect.object)
+  }
+
+  removeEventListener("mousemove", onmousemove)
+  removeEventListener("click", onclick)
+  addEventListener("mousemove", onmousemove)
+  addEventListener("click", onclick)
+
 }
 
 // @noexcept
