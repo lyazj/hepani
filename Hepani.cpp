@@ -470,10 +470,9 @@ bool System::from_hepmc2(istream &is)
   swap(pars, partmps);
 
   for(uint32_t i : parindex[1])
-  {
     pars[0].e += pars[i].e;
-    pars[0].m += pars[i].m;
-  }
+  particles[0][0].e = particles[0][0].m = pars[0].m = pars[0].e;
+
   return true;
 }
 
