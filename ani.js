@@ -11,28 +11,19 @@ const renderer = new THREE.WebGLRenderer({alpha: true})
 const axesHelper = new THREE.AxesHelper(100)
 const point = new THREE.PointLight(0xffffff)
 const raycaster = new THREE.Raycaster()
+const mouse = new THREE.Vector2()
 const particleMaterials = { }
 const particleMeshes = { }
 
-const intersectColorIncrement = 0x202020
+// @require: 0x00 < ICI < 0x80
+const intersectColorEnhancement = 0x7f
 
 scene.add(axesHelper)
 scene.add(point)
 addEventListener("mousemove", (evt) => {
-  var mouse = new THREE.Vector2()
   mouse.x = evt.clientX / innerWidth * 2 - 1
   mouse.y = evt.clientY / innerHeight * -2 + 1
-  raycaster.setFromCamera(mouse, camera)
-  var intersectNew = raycaster.intersectObjects(scene.children)[0]
-  if(intersectNew != intersect)
-  {
-    if(intersect)
-      onloseIntersect(intersect.object)
-    intersect = intersectNew
-    if(intersect)
-      ongetIntersect(intersect.object)
-    render()
-  }
+  updateIntersect()
 })
 addEventListener("click", (evt) => {
   if(intersect)
@@ -66,7 +57,31 @@ function onloseIntersect(particleMesh) {
 function onclickIntersect(particleMesh) {
   if(!(particleMesh instanceof ParticleMesh))
     return
-  getDescription(particleMesh.data.id)
+  getDescription(particleMesh.data.id, function (description) {
+    var isDisplayingOriginal = isDisplaying()
+    if(isDisplayingOriginal)
+      stop()
+    alert(
+      "Particle No." + particleMesh.data.no +
+      "\n----------------------------------------\n" +
+      "Birth: " + particleMesh.data.birth + "        " +
+      "Death: " + particleMesh.data.death + "\n" +
+      "Status: " + particleMesh.data.status + "        " +
+      "Colours: " + particleMesh.data.colours + "        " +
+      "Energy: " + particleMesh.data.e + " MeV\n" +
+      "Velocity: (c) " + particleMesh.data.v + "\n" +
+      "Position at birth: (cΔt) " + particleMesh.data.r + "\n" +
+      "Mothers: " + particleMesh.data.momset + "\n" +
+      "Daughters: " + particleMesh.data.dauset + "\n\n" +
+      "General Description" +
+      "\n----------------------------------------\n" +
+      description
+    )
+    if(intersect)
+      onloseIntersect(intersect.object)
+    if(isDisplayingOriginal)
+      start()
+  })
 }
 
 // @noexcept
@@ -78,6 +93,21 @@ function updateControls() {
   }
   controls = new THREE.OrbitControls(camera, renderer.domElement)
   controls.addEventListener("change", render)
+}
+
+// @noexcept
+function updateIntersect() {
+  raycaster.setFromCamera(mouse, camera)
+  var intersectNew = raycaster.intersectObjects(scene.children)[0]
+  if(intersectNew != intersect)
+  {
+    if(intersect)
+      onloseIntersect(intersect.object)
+    intersect = intersectNew
+    if(intersect)
+      ongetIntersect(intersect.object)
+    render()
+  }
 }
 
 // @noexcept
@@ -193,8 +223,13 @@ function stop() {
 }
 
 // @noexcept
+function isDisplaying() {
+  return !!_animationDate
+}
+
+// @noexcept
 function startStop() {
-  if(_animationDate)
+  if(isDisplaying())
     stop()
   else
     start()
@@ -207,9 +242,23 @@ function getParticleColor(particleData) {
 
 // @noexcept
 function getIntersectColor(particleData) {
-  return (
-    getParticleColor(particleData) + intersectColorIncrement + 0xffffff
-  ) % 0xffffff
+  function enhance(val) {
+    if(val < 0x7f)
+      return val + intersectColorEnhancement
+    else
+      return val - intersectColorEnhancement
+  }
+  var color = getParticleColor(particleData)
+  var b = enhance(color & 0xff)
+  color >>= 8
+  var g = enhance(color & 0xff)
+  color >>= 8
+  color = enhance(color & 0xff)
+  color <<= 8
+  color += g
+  color <<= 8
+  color += b
+  return color
 }
 
 // @noexcept
