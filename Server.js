@@ -122,7 +122,8 @@ function writeFile(response, file, type, code, ims) {
 
     var headObject = {
       "Content-Type": type,
-      "Cache-Control": code == 200 ? lastModified : cacheControl.mutable,
+      "Cache-Control": code == 200 ?
+        thisCacheControl : cacheControl.mutable,
       "Last-Modified": lastModified,
       "X-Content-Type-Options": "nosniff",
     }
