@@ -2,30 +2,47 @@
 
 var time
 var phase
+var controls
 
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera()
 const renderer = new THREE.WebGLRenderer({alpha: true})
 const axesHelper = new THREE.AxesHelper(100)
-const controls = new THREE.OrbitControls(camera, renderer.domElement)
 const point = new THREE.PointLight(0xffffff)
+const raycaster = new THREE.Raycaster()
+const mouse = new THREE.Vector2()
 const particleMaterials = { }
 const particleMeshes = { }
 
 scene.add(axesHelper)
 scene.add(point)
-controls.addEventListener('change', function () {
-  renderer.render(scene, camera)
-})
 
 /* inner variables */
 var _initializeState
 var _animationDate
 
+// @noexcept
+function render() {
+  renderer.render(scene, camera)
+}
+
+// @noexcept
+function updateControls() {
+  if(controls)
+  {
+    controls.removeEventListener("change", render)
+    controls.dispose()
+  }
+  controls = new THREE.OrbitControls(camera, renderer.domElement)
+  controls.addEventListener("change", render)
+}
+
+// @noexcept
 function checkTimePhase() {
   return time >= timeline[phase - 1] && time < timeline[phase]
 }
 
+// @noexcept
 function updatePhase() {
   if(checkTimePhase())
     return false
@@ -36,6 +53,7 @@ function updatePhase() {
   return true
 }
 
+// @noexcept
 function updateParticles(timeSpan) {
   if(updatePhase())
   {
@@ -48,10 +66,7 @@ function updateParticles(timeSpan) {
     }
     for(var no in particleMeshes)
       if(!particleMeshes[no].check())
-      {
-        particleMeshes[no].remove()
-        delete particleMeshes[no]
-      }
+        removeParticleMesh(no)
     particles[phase].forEach(function (particle) {
       createParticleMesh(particle)
     })
@@ -63,10 +78,13 @@ function updateParticles(timeSpan) {
 // @noexcept
 function clearParticles() {
   for(var no in particleMeshes)
-  {
-    particleMeshes[no].remove()
-    delete particleMeshes[no]
-  }
+    removeParticleMesh(no)
+}
+
+// @noexcept
+function clearParticleMaterials() {
+  for(var color in particleMaterials)
+    removeParticleMaterial(color)
 }
 
 // @noexcept
@@ -87,7 +105,7 @@ function updateSize() {
   camera.updateProjectionMatrix()
   point.position.set(60, 80, 100)
   renderer.setSize(innerWidth, innerHeight)
-  renderer.render(scene, camera)
+  render()
 }
 
 // @noexcept
@@ -97,6 +115,7 @@ function initialize(doubleCallingNeeded) {
   time = 0.0
   phase = -1
   clearParticles()
+  clearParticleMaterials()
   removeCanvases()
   document.body.appendChild(renderer.domElement)
   updateSize()
@@ -105,7 +124,7 @@ function initialize(doubleCallingNeeded) {
 
 // @noexcept
 function animate() {
-  renderer.render(scene, camera)
+  render()
   if(!_animationDate)
     return
   var now = new Date()
@@ -143,6 +162,7 @@ function getParticleColor(particleData) {
   return 0x0000ff
 }
 
+// @noexcept
 function getParticleMaterial(particleData) {
   var particleColor = getParticleColor(particleData)
   return particleMaterials[particleColor] =
@@ -155,6 +175,7 @@ class ParticleMesh extends THREE.Mesh {
 
   static geometry = new THREE.SphereGeometry(2)
 
+  // @noexcept: super
   constructor(data) {
     super(ParticleMesh.geometry, getParticleMaterial(data))
     this.data = data
@@ -162,41 +183,64 @@ class ParticleMesh extends THREE.Mesh {
     scene.add(this)
   }
 
+  // @noexcept
   initialize() {
-    this.position.x = this.data.r[0]
-    this.position.y = this.data.r[1]
-    this.position.z = this.data.r[2]
+    this.position.fromArray(this.data.r)
   }
 
+  // @noexcept
+  getVelocity() {
+    return new THREE.Vector3().fromArray(this.data.v)
+  }
+
+  // @noexcept
+  getDisplacement(timeSpan) {
+    return this.getVelocity().multiplyScalar(timeSpan)
+  }
+
+  // @noexcept
   translate(timeSpan) {
-    this.position.x += this.data.v[0] * timeSpan
-    this.position.y += this.data.v[1] * timeSpan
-    this.position.z += this.data.v[2] * timeSpan
+    this.position.add(this.getDisplacement(timeSpan))
   }
 
+  // @noexcept
   remove() {
     scene.remove(this)
   }
 
+  // @noexcept
   check() {
-    if(phase >= this.data.birth &&
-      (this.data.death == -1 || phase < this.data.death))
+    if(phase >= this.data.birth && (
+      this.data.death == -1 || phase < this.data.death
+    ))
       return true
     return false
   }
 
 }
 
+// @noexcept
+// @safe: duplicate calling
 function createParticleMesh(particleData) {
   var particleNo = particleData.no
   return particleMeshes[particleNo] =
     particleMeshes[particleNo] || new ParticleMesh(particleData)
 }
 
-function removeParticleMesh(particleData) {
-  var particleMesh = particleMeshes[particleData.no]
-  if(!particleMesh)
-    return false
-  particleMesh.remove()
-  return true
+// @noexpect
+// @safe: duplicate calling
+function removeParticleMesh(particleNo) {
+  if(!particleMeshes[particleNo])
+    return
+  particleMeshes[particleNo].remove()
+  delete particleMeshes[particleNo]
+}
+
+// @noexpect
+// @safe: duplicate calling
+function removeParticleMaterial(particleColor) {
+  if(!particleMaterials[particleColor])
+    return
+  particleMaterials[particleColor].dispose()
+  delete particleMaterials[particleColor]
 }
