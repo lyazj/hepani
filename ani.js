@@ -3,6 +3,7 @@
 var time
 var phase
 var controls
+var intersect
 
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera()
@@ -10,12 +11,33 @@ const renderer = new THREE.WebGLRenderer({alpha: true})
 const axesHelper = new THREE.AxesHelper(100)
 const point = new THREE.PointLight(0xffffff)
 const raycaster = new THREE.Raycaster()
-const mouse = new THREE.Vector2()
 const particleMaterials = { }
 const particleMeshes = { }
 
+const intersectColorIncrement = 0x202020
+
 scene.add(axesHelper)
 scene.add(point)
+addEventListener("mousemove", (evt) => {
+  var mouse = new THREE.Vector2()
+  mouse.x = evt.clientX / innerWidth * 2 - 1
+  mouse.y = evt.clientY / innerHeight * -2 + 1
+  raycaster.setFromCamera(mouse, camera)
+  var intersectNew = raycaster.intersectObjects(scene.children)[0]
+  if(intersectNew != intersect)
+  {
+    if(intersect)
+      onloseIntersect(intersect.object)
+    intersect = intersectNew
+    if(intersect)
+      ongetIntersect(intersect.object)
+    render()
+  }
+})
+addEventListener("click", (evt) => {
+  if(intersect)
+    onclickIntersect(intersect.object)
+})
 
 /* inner variables */
 var _initializeState
@@ -24,6 +46,27 @@ var _animationDate
 // @noexcept
 function render() {
   renderer.render(scene, camera)
+}
+
+// @noexcept
+function ongetIntersect(particleMesh) {
+  if(!(particleMesh instanceof ParticleMesh))
+    return
+  particleMesh.material = getIntersectMaterial(particleMesh.data)
+}
+
+// @noexcept
+function onloseIntersect(particleMesh) {
+  if(!(particleMesh instanceof ParticleMesh))
+    return
+  particleMesh.material = getParticleMaterial(particleMesh.data)
+}
+
+// @noexcept
+function onclickIntersect(particleMesh) {
+  if(!(particleMesh instanceof ParticleMesh))
+    return
+  getDescription(particleMesh.data.id)
 }
 
 // @noexcept
@@ -163,8 +206,24 @@ function getParticleColor(particleData) {
 }
 
 // @noexcept
+function getIntersectColor(particleData) {
+  return (
+    getParticleColor(particleData) + intersectColorIncrement + 0xffffff
+  ) % 0xffffff
+}
+
+// @noexcept
 function getParticleMaterial(particleData) {
   var particleColor = getParticleColor(particleData)
+  return particleMaterials[particleColor] =
+    particleMaterials[particleColor] || new THREE.MeshLambertMaterial({
+      color: particleColor,
+    })
+}
+
+// @noexcept
+function getIntersectMaterial(particleData) {
+  var particleColor = getIntersectColor(particleData)
   return particleMaterials[particleColor] =
     particleMaterials[particleColor] || new THREE.MeshLambertMaterial({
       color: particleColor,
