@@ -1,9 +1,11 @@
 "use strict"
 
+var fps
 var time
 var phase
 var controls
 var intersect
+var labelOverlaps = { }
 
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera()
@@ -22,7 +24,7 @@ scene.add(point)
 const intersectColorEnhancement = 0x7f
 
 const particleRadius = 1
-const minLabelDistance = 8
+const minLabelDistance = 10
 
 // @require: labelWidth >> labelHeight
 const labelWidth = 1200
@@ -30,7 +32,8 @@ const labelHeight = 200
 
 /* inner variables */
 var _initializeState
-var _animationDate
+var _animationTimeStamp
+var _labelIntervalID
 
 // @noexcept
 function render() {
@@ -147,6 +150,7 @@ function updatePhase() {
 
 // @noexcept
 function updateParticles(timeSpan) {
+  fps = 1 / timeSpan
   if(updatePhase())
   {
     if(phase >= particles.length)
@@ -217,14 +221,13 @@ function initialize(doubleCallingNeeded) {
 // @noexcept
 function animate() {
   render()
-  if(!_animationDate)
+  if(!_animationTimeStamp)
     return
-  var now = new Date()
-  var timeSpan = (now - _animationDate) / 1000
-  _animationDate = now
+  var now = performance.now()
+  var timeSpan = (now - _animationTimeStamp) / 1000
+  _animationTimeStamp = now
   time += timeSpan
   updateParticles(timeSpan)
-  updateLabelOverlaps()
   requestAnimationFrame(animate)
 }
 
@@ -232,21 +235,26 @@ function animate() {
 function start() {
   if(isLoading())
     return alert("Loading component, please wait...")
-  _animationDate = new Date()
+  _animationTimeStamp = performance.now()
   start_stop.innerHTML = "Stop"
   animate()
+  if(_labelIntervalID)
+    clearInterval(_labelIntervalID)
+  _labelIntervalID = setInterval(updateLabelOverlaps, 500)
 }
 
 // @noexcept
 function stop() {
-  _animationDate = undefined
+  _animationTimeStamp = undefined
   start_stop.innerHTML = "Start"
   animate()
+  clearInterval(_labelIntervalID)
+  _labelIntervalID = undefined
 }
 
 // @noexcept
 function isDisplaying() {
-  return !!_animationDate
+  return !!_animationTimeStamp
 }
 
 // @noexcept
@@ -321,7 +329,7 @@ class ParticleMesh extends THREE.Mesh {
     super(ParticleMesh.geometry, getParticleMaterial(data))
     this.data = data
     this.initialize()
-    createLabel(data)
+    createLabel(data, getObjectUV(this))
     scene.add(this)
   }
 
@@ -354,7 +362,7 @@ class ParticleMesh extends THREE.Mesh {
     {
       label.style.left = position[0] + "px"
       label.style.top = position[1] + "px"
-      if(label.overlap)
+      if(labelOverlaps[label.id])
         label.style.visibility = "hidden"
       else
         label.style.visibility = "visible"
@@ -417,8 +425,9 @@ function getObjectUV(object) {
   ]
 }
 
+/* position required for repressing glitter */
 // @noexpect
-function createLabel(particleData) {
+function createLabel(particleData, position) {
   var label = document.createElement("span")
   label.className = "label"
   label.id = particleData.no
@@ -426,32 +435,61 @@ function createLabel(particleData) {
   label.style.color = "#" + new THREE.Color(
     0xffffff - getParticleColor(particleData)
   ).getHexString()
+  label.style.visibility = "hidden"
+  label.style.left = position[0] || 0 + "px"
+  label.style.top = position[1] || 0 + "px"
+  updateLabelOverlap(label)
   labels.appendChild(label)
   return label
+}
+
+// @noexcept
+function updateLabelOverlap(label) {
+  var all = labels.children
+  var overlaps = labelOverlaps
+  var overlap
+  for(var i = 0; i < all.length; ++i)
+  {
+    var l = all[i]
+    if(!l)
+      return
+    if(l == label)
+      continue
+    if(getLabelDistance(l, label) < minLabelDistance)
+      overlap = overlap || !overlaps[l.id]
+  }
+  overlaps[label.id] = overlap
 }
 
 // @noexpect
 function updateLabelOverlaps() {
   var all = labels.children
+  var overlaps = { }
   for(var i = 0; i < all.length; ++i)
-    // try {
-      all[i].overlap = false
-    // } catch(err) { }
-  for(var i = 0; i < all.length; ++i)
+  {
+    var l1 = all[i]
+    if(!l1)
+      return
     for(var j = 0; j < i; ++j)
-      // try {
-        if(getLabelDistance(all[i], all[j]) < minLabelDistance)
-          if(!all[i].overlap)
-            all[j].overlap = true
-      // } catch(err) { }
+    {
+      var l2 = all[j]
+      if(!l2)
+        return
+      if(getLabelDistance(l1, l2) < minLabelDistance)
+        overlaps[l1.id] = overlaps[l1.id] || !overlaps[l2.id]
+    }
+  }
+  labelOverlaps = overlaps
 }
 
+/* donot use offset... */
 // @noexpect
 function getLabelDistance(l1, l2) {
-  return new THREE.Vector2(
-    l1.offsetLeft - l2.offsetLeft,
-    l1.offsetTop - l2.offsetTop
+  var rst = new THREE.Vector2(
+    l1.style.left.slice(0, -2) - l2.style.left.slice(0, -2),
+    l1.style.top.slice(0, -2) - l2.style.top.slice(0, -2)
   ).length()
+  return rst
 }
 
 // function createLabelCanvas(particleData) {
