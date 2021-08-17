@@ -27,7 +27,7 @@ var fileType = {
   css:  "text/css;charset=utf-8",
   json: "application/json;charset=utf-8",
   zmem: "application/octet-stream",
-  py:   "text/plain",
+  py:   "text/plain;charset=utf-8",
   // ...
 }
 
