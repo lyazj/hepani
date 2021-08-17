@@ -30,6 +30,6 @@ pypyjs-0.4.0: pypyjs-0.4.0.tar.gz
 	if [ ! -d $@ ]; then tar zxf $<; fi
 
 pypyjs-0.4.0/lib/pid.py: pid.py.gz
-	gzip -c $< > $@
+	gzip -dc $< > $@
 
 .PHONY: clean
