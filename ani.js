@@ -185,10 +185,10 @@ function updateSize() {
   camera.aspect = innerWidth / innerHeight
   camera.near = 0.1
   camera.far = 1000
-  camera.position.set(20, 10, 0)
+  camera.position.set(20, 20, 20)
   camera.lookAt(scene.position)
   camera.updateProjectionMatrix()
-  point.position.set(40, 20, 0)
+  point.position.set(40, 40, 40)
   renderer.setSize(innerWidth, innerHeight)
   render()
 }
@@ -249,17 +249,18 @@ function startStop() {
 
 // @noexcept
 function getParticleColor(particleData) {
-  var color = 0
-  var proportion = particleData.e / particles[0][0].e
-  if(proportion >= 0 && proportion <= 1)
-  {
-    proportion = Math.pow(proportion, 0.5)
-    color += proportion * 0xff0000 + (1 - proportion) * 0x0000ff
-  }
-  var ratio = particleData.m / particleData.e
-  if(ratio >= 0 && ratio <= 1)
-    color += ratio * 0x00ff00
-  return Math.round(color)
+  return PID.getColor(particleData.id)
+  // var color = 0
+  // var proportion = particleData.e / particles[0][0].e
+  // if(proportion >= 0 && proportion <= 1)
+  // {
+  //   proportion = Math.pow(proportion, 0.5)
+  //   color += proportion * 0xff0000 + (1 - proportion) * 0x0000ff
+  // }
+  // var ratio = particleData.m / particleData.e
+  // if(ratio >= 0 && ratio <= 1)
+  //   color += ratio * 0x00ff00
+  // return Math.round(color)
 }
 
 // @noexcept
