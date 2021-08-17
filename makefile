@@ -1,6 +1,6 @@
 #!/usr/bin/env -S make -f
 
-all = name.txt description.json Hepani output.json output.json.gz py8log.json hepmc2.json
+all = name.txt description.json Hepani output.json output.json.gz py8log.json hepmc2.json pypyjs-0.4.0
 
 all: $(all)
 
@@ -25,5 +25,8 @@ output.json: py8log.json
 
 output.json.gz: output.json
 	gzip -kc $< > $@
+
+pypyjs-0.4.0: pypyjs-0.4.0.tar.gz
+	if [ ! -d $@ ]; then tar zxf $<; ln pid.py pypyjs-0.4.0/lib; fi
 
 .PHONY: clean

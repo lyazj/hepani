@@ -247,6 +247,7 @@ function startStop() {
     start()
 }
 
+// @noexcept
 function getParticleColor(particleData) {
   var color = 0
   var proportion = particleData.e / particles[0][0].e
