@@ -15,11 +15,18 @@ const mouse = new THREE.Vector2()
 const particleMaterials = { }
 const particleMeshes = { }
 
+scene.add(axesHelper)
+scene.add(point)
+
 // @require: 0x00 < ICI < 0x80
 const intersectColorEnhancement = 0x7f
 
-scene.add(axesHelper)
-scene.add(point)
+const particleRadius = 1
+const minLabelDistance = 8
+
+// @require: labelWidth >> labelHeight
+const labelWidth = 1200
+const labelHeight = 200
 
 /* inner variables */
 var _initializeState
@@ -217,11 +224,14 @@ function animate() {
   _animationDate = now
   time += timeSpan
   updateParticles(timeSpan)
+  updateLabelOverlaps()
   requestAnimationFrame(animate)
 }
 
 // @noexcept
 function start() {
+  if(isLoading())
+    return alert("Loading component, please wait...")
   _animationDate = new Date()
   start_stop.innerHTML = "Stop"
   animate()
@@ -304,13 +314,14 @@ function getIntersectMaterial(particleData) {
 
 class ParticleMesh extends THREE.Mesh {
 
-  static geometry = new THREE.SphereGeometry(1)
+  static geometry = new THREE.SphereGeometry(particleRadius)
 
   // @noexcept: super
   constructor(data) {
     super(ParticleMesh.geometry, getParticleMaterial(data))
     this.data = data
     this.initialize()
+    createLabel(data)
     scene.add(this)
   }
 
@@ -330,12 +341,31 @@ class ParticleMesh extends THREE.Mesh {
   }
 
   // @noexcept
+  getLabel() {
+    return document.getElementById(this.data.no)
+  }
+
+  // @noexcept
   translate(timeSpan) {
     this.position.add(this.getDisplacement(timeSpan))
+    var position = getObjectUV(this)
+    var label = this.getLabel()
+    if(label)
+    {
+      label.style.left = position[0] + "px"
+      label.style.top = position[1] + "px"
+      if(label.overlap)
+        label.style.visibility = "hidden"
+      else
+        label.style.visibility = "visible"
+    }
   }
 
   // @noexcept
   remove() {
+    var label = this.getLabel()
+    if(label)
+      label.parentElement.removeChild(label)
     scene.remove(this)
   }
 
@@ -375,3 +405,84 @@ function removeParticleMaterial(particleColor) {
   particleMaterials[particleColor].dispose()
   delete particleMaterials[particleColor]
 }
+
+// @noexpect
+function getObjectUV(object) {
+  var position = new THREE.Vector3()
+  object.getWorldPosition(position)
+  position = position.project(camera)
+  return [
+    innerWidth / 2 * (1 + position.x),
+    innerHeight / 2 * (1 - position.y)
+  ]
+}
+
+// @noexpect
+function createLabel(particleData) {
+  var label = document.createElement("span")
+  label.className = "label"
+  label.id = particleData.no
+  label.innerHTML = particleData.name
+  label.style.color = "#" + new THREE.Color(
+    0xffffff - getParticleColor(particleData)
+  ).getHexString()
+  labels.appendChild(label)
+  return label
+}
+
+// @noexpect
+function updateLabelOverlaps() {
+  var all = labels.children
+  for(var i = 0; i < all.length; ++i)
+    // try {
+      all[i].overlap = false
+    // } catch(err) { }
+  for(var i = 0; i < all.length; ++i)
+    for(var j = 0; j < i; ++j)
+      // try {
+        if(getLabelDistance(all[i], all[j]) < minLabelDistance)
+          if(!all[i].overlap)
+            all[j].overlap = true
+      // } catch(err) { }
+}
+
+// @noexpect
+function getLabelDistance(l1, l2) {
+  return new THREE.Vector2(
+    l1.offsetLeft - l2.offsetLeft,
+    l1.offsetTop - l2.offsetTop
+  ).length()
+}
+
+// function createLabelCanvas(particleData) {
+//   var canvas = document.createElement("canvas")
+//   canvas.width = labelWidth
+//   canvas.height = labelWidth
+//   var context = canvas.getContext("2d")
+//   context.font = labelHeight + "px Arial"
+//   context.textAlign = "center"
+//   context.textBaseline = "middle"
+//   context.fillStyle = "#00ff00"
+//   context.fillText(particleData.name,
+//     canvas.width / 2, canvas.height / 2, labelWidth
+//   )
+//   return canvas
+// }
+// 
+// function createLabelTexture(particleData) {
+//   return new THREE.CanvasTexture(createLabelCanvas(particleData))
+// }
+// 
+// function createLabelMaterial(particleData) {
+//   return new THREE.SpriteMaterial({
+//     color: 0xff00ff,
+//     map: createLabelTexture(particleData),
+//   })
+// }
+// 
+// function createLabel(particleData) {
+//   var label = new THREE.Sprite(createLabelMaterial(particleData))
+//   label.position.setZ(particleRadius * 2)
+//   label.scale.set(10, 10, 1)
+//   return label
+// }

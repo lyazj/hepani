@@ -9,19 +9,28 @@ var timeline = []
 /* set it as false to disable JSON auto-requesting once */
 var shouldRequestJSON = true
 
+/* nonnegtive required */
+var loadingCount = loadingCount || 0
+
 const jsonName = "animation.json"
 
 /* inner variables */
 var _jsonFile
 var _jsonBlobURL
-var _isLoading = false
+
+// @noexcept
+function isLoading() {
+  return !!loadingCount
+}
 
 /* should be called when body.onload emits at home page */
 // @noexcept
 function updateLoading(is) {
   if(typeof(is) != "undefined")
-    _isLoading = is
-  if(_isLoading)
+    loadingCount += !!is * 2 - 1
+  if(loadingCount < 0)
+    loadingCount = 0
+  if(loadingCount)
   {
     hideAxes()
     createLoading()
@@ -31,7 +40,6 @@ function updateLoading(is) {
     removeLoading()
     displayAxes()
   }
-  return _isLoading
 }
 
 // @effective: sync
@@ -69,6 +77,14 @@ function createLoading() {
   elem.style.textAlign = "center"
   elem.innerHTML = "Loading..."
   document.body.appendChild(elem)
+}
+
+// @effective: sync
+// @noexcept
+function createError() {
+  createLoading()
+  loading.id = "error"
+  error.innerHTML = "Error"
 }
 
 // @effective: sync

@@ -7,7 +7,7 @@ body {
 }
 
 header, footer, aside {
-  z-index: 1;
+  z-index: 100;
 }
 
 header, footer {
@@ -118,4 +118,27 @@ aside .functions a .function:hover {
 
 aside .functions > .function:first-of-type {
   display: block;
+}
+
+#labels {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+#labels .label {
+  font: 12px Arial;
+  position: absolute;
+  width: 100px;
+  height: 16px;
+  margin-left: -50px;
+  margin-top: -8px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

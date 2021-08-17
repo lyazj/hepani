@@ -5,7 +5,11 @@
     <title>Hepani</title>
     <link rel="stylesheet" href="ani.css" />
   </head>
-  <body onload="initialize(true);updateControls()">
+  <body onload="initialize(true);updateControls();updateLoading(false)">
+    <script>
+      var loadingCount = loadingCount + 1 || 1
+      try { updateLoading() } catch(err) { }
+    </script>
     <header id="header">
       <h1>Welcome to Hign Energy Physics Animation Page</h1>
     </header>
@@ -57,6 +61,7 @@
         <p class="notes">注：请点击About查看备案信息。</p>
       </ul>
     </aside>
+    <div id="labels"></div>
     <script>
       function onclickAbout() {
         if(aboutText.innerHTML == "About") {
