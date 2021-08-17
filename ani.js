@@ -436,8 +436,8 @@ function createLabel(particleData, position) {
     0xffffff - getParticleColor(particleData)
   ).getHexString()
   label.style.visibility = "hidden"
-  label.style.left = position[0] || 0 + "px"
-  label.style.top = position[1] || 0 + "px"
+  label.style.left = position[0] + "px"
+  label.style.top = position[1] + "px"
   updateLabelOverlap(label)
   labels.appendChild(label)
   return label
@@ -485,11 +485,10 @@ function updateLabelOverlaps() {
 /* donot use offset... */
 // @noexpect
 function getLabelDistance(l1, l2) {
-  var rst = new THREE.Vector2(
+  return new THREE.Vector2(
     l1.style.left.slice(0, -2) - l2.style.left.slice(0, -2),
     l1.style.top.slice(0, -2) - l2.style.top.slice(0, -2)
   ).length()
-  return rst
 }
 
 // function createLabelCanvas(particleData) {
