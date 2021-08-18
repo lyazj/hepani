@@ -542,7 +542,7 @@ function updateLabelOverlap(label) {
 
 // @noexpect
 function updateLabelOverlaps() {
-  if(!_shouldDisplayLabels)
+  if(!_shouldDisplayLabels || !labels)
     return
   var all = labels.children
   var overlaps = { }
