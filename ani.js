@@ -524,6 +524,9 @@ function createLabel(particleData, position) {
 function updateLabelOverlap(label) {
   if(!_shouldDisplayLabels)
     return
+  var labels = document.getElementById("labels")
+  if(!labels)
+    return
   var all = labels.children
   var overlaps = labelOverlaps
   var overlap
@@ -542,7 +545,10 @@ function updateLabelOverlap(label) {
 
 // @noexpect
 function updateLabelOverlaps() {
-  if(!_shouldDisplayLabels || !labels)
+  if(!_shouldDisplayLabels)
+    return
+  var labels = document.getElementById("labels")
+  if(!labels)
     return
   var all = labels.children
   var overlaps = { }
