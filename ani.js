@@ -230,7 +230,7 @@ function updateStatus() {
     phaseStatus.innerHTML = phase
   _fpsAccumulate += fps
   ++_fpsCount
-  if(_fpsCount == 100)
+  if(_fpsCount == 20)
   {
     fpsStatus.innerHTML = (_fpsAccumulate / _fpsCount).toFixed(2)
     _fpsCount = _fpsAccumulate = 0
