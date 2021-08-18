@@ -3,10 +3,10 @@
 /* read / write access rules for outer only */
 
 /* double, accurate position on timeline, read-write */
-var time
+var time = 0.0
 
 /* unsigned, block index on timeline, read-only */
-var phase
+var phase = -1
 
 /* OrbitControls, read-only */
 var controls
@@ -35,6 +35,7 @@ const intersectColorEnhancement = 0x7f
 
 const particleRadius = 1
 const minLabelDistance = 20
+const arrowLengthUnit = 4
 
 // // @require: labelWidth >> labelHeight
 // const labelWidth = 1200
@@ -44,6 +45,7 @@ const minLabelDistance = 20
 var _initializeState
 var _animationTimeStamp
 var _shouldDisplayLabels
+var _shouldDisplayArrows
 var _labelIntervalID
 var _timeRecord = []
 
@@ -249,6 +251,7 @@ function initialize(doubleCallingNeeded) {
   onresize = updateSize
   enableDisplayLabels()
   enableUpdateLabelOverlaps()
+  disableDisplayArrows()
 }
 
 // @noexcept
@@ -359,6 +362,7 @@ class ParticleMesh extends THREE.Mesh {
     this.data = data
     this.initialize()
     createLabel(data, getObjectUV(this))
+    this.createArrow()
     scene.add(this)
   }
 
@@ -379,7 +383,8 @@ class ParticleMesh extends THREE.Mesh {
 
   // @noexcept
   translate(timeSpan) {
-    this.position.add(this.getDisplacement(timeSpan))
+    var displacement = this.getDisplacement(timeSpan)
+    this.position.add(displacement)
   }
 
   // @noexcept
@@ -419,6 +424,36 @@ class ParticleMesh extends THREE.Mesh {
     ))
       return true
     return false
+  }
+
+  // @noexcept
+  createArrow() {
+    if(!this.velocityArrow)
+    {
+      var velocity = this.getVelocity()
+      var length = velocity.length()
+      this.velocityArrow = new THREE.ArrowHelper(
+        velocity.normalize(),
+        new THREE.Vector3(),
+        length * arrowLengthUnit,
+        this.material.color.getHex()
+      )
+      if(_shouldDisplayArrows)
+        this.add(this.velocityArrow)
+    }
+    return this.velocityArrow
+  }
+
+  // @noexcept
+  hideArrow() {
+    if(this.velocityArrow && this.children.indexOf(this.velocityArrow) > -1)
+      this.remove(this.velocityArrow)
+  }
+
+  // @noexcept
+  displayArrow() {
+    if(this.velocityArrow && this.children.indexOf(this.velocityArrow) < 0)
+      this.add(this.velocityArrow)
   }
 
 }
@@ -567,6 +602,25 @@ function disableUpdateLabelOverlaps() {
   _labelIntervalID = undefined
 }
 
+// @noexcept
+function enableDisplayArrows() {
+  checkDisplayArrows.checked = _shouldDisplayArrows = true
+  scene.children.forEach(function (mesh) {
+    if(mesh instanceof ParticleMesh)
+      mesh.displayArrow()
+  })
+}
+
+// @noexcept
+function disableDisplayArrows() {
+  checkDisplayArrows.checked = _shouldDisplayArrows = false
+  scene.children.forEach(function (mesh) {
+    if(mesh instanceof ParticleMesh)
+      mesh.hideArrow()
+  })
+}
+
+// @noexcept
 function onchangeCheckDisplayLabels() {
   if(checkDisplayLabels.checked)
     enableDisplayLabels()
@@ -574,11 +628,20 @@ function onchangeCheckDisplayLabels() {
     disableDisplayLabels()
 }
 
+// @noexcept
 function onchangeCheckUpdateLabelOverlaps() {
   if(checkUpdateLabelOverlaps.checked)
     enableUpdateLabelOverlaps()
   else
     disableUpdateLabelOverlaps()
+}
+
+// @noexcept
+function onchangeCheckDisplayArrows() {
+  if(checkDisplayArrows.checked)
+    enableDisplayArrows()
+  else
+    disableDisplayArrows()
 }
 
 // function createLabelCanvas(particleData) {
