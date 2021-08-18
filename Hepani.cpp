@@ -152,7 +152,10 @@ NameCache name_cache("name.txt");
 inline void general_loading_assign(Particle &particle)
 {
   particle.r = {0.0};
-  particle.v = particle.p / particle.e;
+  if(particle.e)
+    particle.v = particle.p / particle.e;
+  else
+    particle.v = {0.0};
   particle.birth = particle.death = phase_undef;
 }
 
