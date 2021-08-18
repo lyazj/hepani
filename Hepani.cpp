@@ -240,6 +240,18 @@ static auto general_process(Particles &particles, Parindex &parindex,
   for(uint32_t i = 1; i < timeline.size(); ++i)
     timeline[i] += timeline[i - 1];
 
+  /* find central process */
+  size_t phase_central(find_if(parindex.begin(), parindex.end(),
+        [&](const vector<uint32_t> &index) {
+          return any_of(index.begin(), index.end(),
+              [&](uint32_t i) {
+                int status(abs(pars[i].status));
+                return status >= 21 && status <= 23;
+              });
+        }) - parindex.begin());
+  if(phase_central >= parindex.size())
+    return false;
+
   /* do general calculation orderly */
   assert(parindex[0].size() == 1 && parindex[0][0] == 0);
   pars[0].death = 1;
