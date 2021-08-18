@@ -62,6 +62,19 @@
       </ul>
     </aside>
     <div id="labels"></div>
+    <div id="statuses">
+      <div class="status">time: <span id="timeStatus">null</span></div>
+      <div class="status">phase: <span id="phaseStatus">null</span></div>
+      <div class="status">fps: <span id="fpsStatus">null</span></div>
+      <div class="status" style="float: right">
+        <input type="checkbox" id="checkUpdateLabelOverlaps" />
+        update label overlaps
+      </div>
+      <div class="status" style="float: right">
+        <input type="checkbox" id="checkDisplayLabels" />
+        display labels
+      </div>
+    </div>
     <script>
       function onclickAbout() {
         if(aboutText.innerHTML == "About") {
@@ -77,8 +90,9 @@
         loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
           loadJS("io.js", function () {
             loadJS("ani.js", function () {
-              requestJSON()
-              loadJS("pid.js")
+              loadJS("pid.js", function () {
+                requestJSON()
+              })
             })
           })
         })

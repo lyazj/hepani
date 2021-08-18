@@ -3,7 +3,7 @@
 /* read / write access rules for outer only */
 
 /* double, monitor performance, read-only */
-var fps
+var fps = 0
 
 /* double, accurate position on timeline, read-write */
 var time
@@ -37,7 +37,7 @@ scene.add(point)
 const intersectColorEnhancement = 0x7f
 
 const particleRadius = 1
-const minLabelDistance = 10
+const minLabelDistance = 20
 
 // @require: labelWidth >> labelHeight
 const labelWidth = 1200
@@ -48,12 +48,15 @@ var _initializeState
 var _animationTimeStamp
 var _shouldDisplayLabels
 var _labelIntervalID
+var _fpsCount = 0
+var _fpsAccumulate = 0
 
 // @noexcept
 function render() {
   for(var no in particleMeshes)
     particleMeshes[no].updateLabel()
   renderer.render(scene, camera)
+  updateStatus()
 }
 
 // @noexcept
@@ -217,6 +220,21 @@ function updateSize() {
   point.position.set(40, 40, 40)
   renderer.setSize(innerWidth, innerHeight)
   render()
+}
+
+// @noexcept
+function updateStatus() {
+  if(timeStatus)
+    timeStatus.innerHTML = time.toFixed(3) + " s"
+  if(phaseStatus)
+    phaseStatus.innerHTML = phase
+  _fpsAccumulate += fps
+  ++_fpsCount
+  if(_fpsCount == 100)
+  {
+    fpsStatus.innerHTML = (_fpsAccumulate / _fpsCount).toFixed(2)
+    _fpsCount = _fpsAccumulate = 0
+  }
 }
 
 // @noexcept
@@ -517,7 +535,7 @@ function getLabelDistance(l1, l2) {
 
 // @noexcept
 function enableDisplayLabels() {
-  _shouldDisplayLabels = true
+  checkDisplayLabels.checked = _shouldDisplayLabels = true
   var all = labels.children
   for(var i = 0; i < all.length; ++i)
     all[i].style.display = "inline-block"
@@ -525,7 +543,7 @@ function enableDisplayLabels() {
 
 // @noexcept
 function disableDisplayLabels() {
-  _shouldDisplayLabels = false
+  checkDisplayLabels.checked = _shouldDisplayLabels = false
   var all = labels.children
   for(var i = 0; i < all.length; ++i)
     all[i].style.display = "none"
@@ -533,6 +551,7 @@ function disableDisplayLabels() {
 
 // @noexcept
 function enableUpdateLabelOverlaps() {
+  checkUpdateLabelOverlaps.checked = true
   if(_labelIntervalID)
     clearInterval(_labelIntervalID)
   _labelIntervalID = setInterval(updateLabelOverlaps, 500)
@@ -540,8 +559,23 @@ function enableUpdateLabelOverlaps() {
 
 // @noexcept
 function disableUpdateLabelOverlaps() {
+  checkUpdateLabelOverlaps.checked = false
   clearInterval(_labelIntervalID)
   _labelIntervalID = undefined
+}
+
+checkDisplayLabels.onchange = function() {
+  if(checkDisplayLabels.checked)
+    enableDisplayLabels()
+  else
+    disableDisplayLabels()
+}
+
+checkUpdateLabelOverlaps.onchange = function() {
+  if(checkUpdateLabelOverlaps.checked)
+    enableUpdateLabelOverlaps()
+  else
+    disableUpdateLabelOverlaps()
 }
 
 // function createLabelCanvas(particleData) {
