@@ -6,6 +6,7 @@ function submitUpload() {
   var file = input.files[0]
   var gzipChecked = gzip.checked
   var timeText = timetext.value
+  var eventText = eventtext.value
 
   function readJSON() {
     var fileReader = new FileReader()
@@ -44,9 +45,21 @@ function submitUpload() {
   }
 
   var url = "upload"
+  if(!eventText)
+    eventText = "notset"
+  else
+  {
+    eventText = Number.parseInt(eventText)
+    if(!(eventText >= 0))
+    {
+      alert("Invalid event index.")
+      return false
+    }
+  }
   var requireArguments = {
     type: fileType,
     empty: !file,
+    event: eventText,
   }
   try {
     var timeObject = new Function("return new Object(" + timeText + ")")()

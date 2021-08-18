@@ -348,12 +348,20 @@ static bool load_py8log(Parpy8logs &parpy8logs, const string &log)
 
 
 /* pars undefined if false returned */
-static bool load_hepmc2(Pars &pars, istream &is)
+static bool load_hepmc2(Pars &pars, istream &is, size_t index)
 {
   HepMC2RandomAccessor h2ra(is);
   GenEvent evt;
-  if(!h2ra.read_event(evt))
-    return false;
+  if(index == (size_t)-1)
+  {
+    if(!h2ra.read_event(evt))
+      return false;
+  }
+  else
+  {
+    if(!h2ra.read_event(index, evt))
+      return false;
+  }
 
   pars = {{
     .no = 0,
@@ -449,14 +457,14 @@ bool System::from_py8log(istream &is)
   return true;
 }
 
-bool System::from_hepmc2(istream &is)
+bool System::from_hepmc2(istream &is, size_t index)
 {
   ostringstream oss;
   oss << is.rdbuf();
   istringstream iss(oss.str());
 
   Pars partmps;
-  if(!load_hepmc2(partmps, iss))
+  if(!load_hepmc2(partmps, iss, index))
     return false;
 
   Particles partitmps;
@@ -539,9 +547,14 @@ int main(int argc, char *argv[])
   }
   else if(args["type"] == "hepmc2")
   {
-    if(!system.from_hepmc2(cin))
+    size_t index;
+    if(args["event"] == "notset")
+      index = -1;
+    else
+      index = atoll(args["event"].data());
+    if(!system.from_hepmc2(cin, index))
     {
-      cerr << "Invalid input file." << endl;
+      cerr << "Invalid input file or index out of range." << endl;
       return 1;
     }
   }

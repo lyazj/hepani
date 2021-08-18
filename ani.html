@@ -67,12 +67,12 @@
       <div class="status">phase: <span id="phaseStatus">null</span></div>
       <div class="status">fps: <span id="fpsStatus">null</span></div>
       <div class="status" style="float: right">
-        <input type="checkbox" id="checkUpdateLabelOverlaps" />
-        update label overlaps
+        <input type="checkbox" id="checkUpdateLabelOverlaps" onchange="onchangeCheckUpdateLabelOverlaps()" />
+        <label for="checkUpdateLabelOverlaps">update label overlaps</label>
       </div>
       <div class="status" style="float: right">
-        <input type="checkbox" id="checkDisplayLabels" />
-        display labels
+        <input type="checkbox" id="checkDisplayLabels" onchange="onchangeCheckDisplayLabels()" />
+        <label for="checkDisplayLabels">display labels</label>
       </div>
     </div>
     <script>

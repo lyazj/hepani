@@ -569,14 +569,14 @@ function disableUpdateLabelOverlaps() {
   _labelIntervalID = undefined
 }
 
-checkDisplayLabels.onchange = function() {
+function onchangeCheckDisplayLabels() {
   if(checkDisplayLabels.checked)
     enableDisplayLabels()
   else
     disableDisplayLabels()
 }
 
-checkUpdateLabelOverlaps.onchange = function() {
+function onchangeCheckUpdateLabelOverlaps() {
   if(checkUpdateLabelOverlaps.checked)
     enableUpdateLabelOverlaps()
   else

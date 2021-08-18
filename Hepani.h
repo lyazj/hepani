@@ -134,7 +134,7 @@ struct System {
   Timeline    timeline;
 
   bool from_py8log(std::istream &);
-  bool from_hepmc2(std::istream &);
+  bool from_hepmc2(std::istream &, size_t index = -1);
   bool to_json(std::ostream &) const;
 };
 

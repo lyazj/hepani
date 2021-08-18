@@ -6,7 +6,8 @@
     <style>
       fieldset { display: inline-block; max-width: 800px; box-sizing: border-box; }
       fieldset label { line-height: 26px; }
-      fieldset #timetext { width: 600px; }
+      fieldset #timetext { width: 475px; }
+      fieldset #eventtext { width: 50px; }
     </style>
   </head>
   <body>
@@ -52,11 +53,14 @@
         </select>
         &nbsp;&nbsp;
         <label for="input">File:</label>
-        <input type="file" name="input" id="input" />
+        <input type="file" name="input" id="input" onchange="onchangeInput()" />
         &nbsp;&nbsp;
         <label for="gzip">Compressed:</label>
         <input type="checkbox" name="gzip" id="gzip" /><label for="gzip">gzip</label>
         <br />
+        <label for="eventtext">Event:</label>
+        <input type="text" name="eventtext" id="eventtext">
+        &nbsp;&nbsp;
         <label for="timetext">Durations:</label>
         <input type="text" name="timetext" id="timetext" value="{0:0.001,1:5}" />
         <button onclick="return submitUpload()" id="submit">upload</button>
