@@ -1,10 +1,23 @@
 "use strict"
 
+/* read / write access rules for outer only */
+
+/* double, monitor performance, read-only */
 var fps
+
+/* double, accurate position on timeline, read-write */
 var time
+
+/* unsigned, block index on timeline, read-only */
 var phase
+
+/* OrbitControls, read-only */
 var controls
+
+/* mouse over the Object3D, read-only */
 var intersect
+
+/* visibility: hidden, {DOM-id: DOM-span}, read-only */
 var labelOverlaps = { }
 
 const scene = new THREE.Scene()
@@ -33,10 +46,13 @@ const labelHeight = 200
 /* inner variables */
 var _initializeState
 var _animationTimeStamp
+var _shouldDisplayLabels
 var _labelIntervalID
 
 // @noexcept
 function render() {
+  for(var no in particleMeshes)
+    particleMeshes[no].updateLabel()
   renderer.render(scene, camera)
 }
 
@@ -150,7 +166,6 @@ function updatePhase() {
 
 // @noexcept
 function updateParticles(timeSpan) {
-  fps = 1 / timeSpan
   if(updatePhase())
   {
     if(phase >= particles.length)
@@ -216,6 +231,8 @@ function initialize(doubleCallingNeeded) {
   document.body.appendChild(renderer.domElement)
   updateSize()
   onresize = updateSize
+  enableDisplayLabels()
+  enableUpdateLabelOverlaps()
 }
 
 // @noexcept
@@ -227,6 +244,7 @@ function animate() {
   var timeSpan = (now - _animationTimeStamp) / 1000
   _animationTimeStamp = now
   time += timeSpan
+  fps = 1 / timeSpan
   updateParticles(timeSpan)
   requestAnimationFrame(animate)
 }
@@ -238,9 +256,6 @@ function start() {
   _animationTimeStamp = performance.now()
   start_stop.innerHTML = "Stop"
   animate()
-  if(_labelIntervalID)
-    clearInterval(_labelIntervalID)
-  _labelIntervalID = setInterval(updateLabelOverlaps, 500)
 }
 
 // @noexcept
@@ -248,8 +263,6 @@ function stop() {
   _animationTimeStamp = undefined
   start_stop.innerHTML = "Start"
   animate()
-  clearInterval(_labelIntervalID)
-  _labelIntervalID = undefined
 }
 
 // @noexcept
@@ -349,15 +362,21 @@ class ParticleMesh extends THREE.Mesh {
   }
 
   // @noexcept
+  translate(timeSpan) {
+    this.position.add(this.getDisplacement(timeSpan))
+  }
+
+  // @noexcept
   getLabel() {
     return document.getElementById(this.data.no)
   }
 
   // @noexcept
-  translate(timeSpan) {
-    this.position.add(this.getDisplacement(timeSpan))
-    var position = getObjectUV(this)
+  updateLabel() {
+    if(!_shouldDisplayLabels)
+      return
     var label = this.getLabel()
+    var position = getObjectUV(this)
     if(label)
     {
       label.style.left = position[0] + "px"
@@ -435,6 +454,7 @@ function createLabel(particleData, position) {
   label.style.color = "#" + new THREE.Color(
     0xffffff - getParticleColor(particleData)
   ).getHexString()
+  label.style.display = _shouldDisplayLabels ? "inline-block" : "none"
   label.style.visibility = "hidden"
   label.style.left = position[0] + "px"
   label.style.top = position[1] + "px"
@@ -445,6 +465,8 @@ function createLabel(particleData, position) {
 
 // @noexcept
 function updateLabelOverlap(label) {
+  if(!_shouldDisplayLabels)
+    return
   var all = labels.children
   var overlaps = labelOverlaps
   var overlap
@@ -463,6 +485,8 @@ function updateLabelOverlap(label) {
 
 // @noexpect
 function updateLabelOverlaps() {
+  if(!_shouldDisplayLabels)
+    return
   var all = labels.children
   var overlaps = { }
   for(var i = 0; i < all.length; ++i)
@@ -489,6 +513,35 @@ function getLabelDistance(l1, l2) {
     l1.style.left.slice(0, -2) - l2.style.left.slice(0, -2),
     l1.style.top.slice(0, -2) - l2.style.top.slice(0, -2)
   ).length()
+}
+
+// @noexcept
+function enableDisplayLabels() {
+  _shouldDisplayLabels = true
+  var all = labels.children
+  for(var i = 0; i < all.length; ++i)
+    all[i].style.display = "inline-block"
+}
+
+// @noexcept
+function disableDisplayLabels() {
+  _shouldDisplayLabels = false
+  var all = labels.children
+  for(var i = 0; i < all.length; ++i)
+    all[i].style.display = "none"
+}
+
+// @noexcept
+function enableUpdateLabelOverlaps() {
+  if(_labelIntervalID)
+    clearInterval(_labelIntervalID)
+  _labelIntervalID = setInterval(updateLabelOverlaps, 500)
+}
+
+// @noexcept
+function disableUpdateLabelOverlaps() {
+  clearInterval(_labelIntervalID)
+  _labelIntervalID = undefined
 }
 
 // function createLabelCanvas(particleData) {
