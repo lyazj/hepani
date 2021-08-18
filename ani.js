@@ -580,7 +580,10 @@ function getLabelDistance(l1, l2) {
 
 // @noexcept
 function enableDisplayLabels() {
-  checkDisplayLabels.checked = _shouldDisplayLabels = true
+  _shouldDisplayLabels = true
+  var checkDisplayLabels = document.getElementById("checkDisplayLabels")
+  if(checkDisplayLabels)
+    checkDisplayLabels.checked = true
   var all = labels.children
   for(var i = 0; i < all.length; ++i)
     all[i].style.display = "inline-block"
@@ -588,7 +591,10 @@ function enableDisplayLabels() {
 
 // @noexcept
 function disableDisplayLabels() {
-  checkDisplayLabels.checked = _shouldDisplayLabels = false
+  _shouldDisplayLabels = false
+  var checkDisplayLabels = document.getElementById("checkDisplayLabels")
+  if(checkDisplayLabels)
+    checkDisplayLabels.checked = false
   var all = labels.children
   for(var i = 0; i < all.length; ++i)
     all[i].style.display = "none"
@@ -596,7 +602,10 @@ function disableDisplayLabels() {
 
 // @noexcept
 function enableUpdateLabelOverlaps() {
-  checkUpdateLabelOverlaps.checked = true
+  var checkUpdateLabelOverlaps =
+    document.getElementById("checkUpdateLabelOverlaps")
+  if(checkUpdateLabelOverlaps)
+    checkUpdateLabelOverlaps.checked = true
   if(_labelIntervalID)
     clearInterval(_labelIntervalID)
   _labelIntervalID = setInterval(updateLabelOverlaps, 500)
@@ -604,14 +613,20 @@ function enableUpdateLabelOverlaps() {
 
 // @noexcept
 function disableUpdateLabelOverlaps() {
-  checkUpdateLabelOverlaps.checked = false
+  var checkUpdateLabelOverlaps =
+    document.getElementById("checkUpdateLabelOverlaps")
+  if(checkUpdateLabelOverlaps)
+    checkUpdateLabelOverlaps.checked = false
   clearInterval(_labelIntervalID)
   _labelIntervalID = undefined
 }
 
 // @noexcept
 function enableDisplayArrows() {
-  checkDisplayArrows.checked = _shouldDisplayArrows = true
+  _shouldDisplayArrows = true
+  var checkDisplayArrows = document.getElementById("checkDisplayArrows")
+  if(checkDisplayArrows)
+    checkDisplayArrows.checked = true
   scene.children.forEach(function (mesh) {
     if(mesh instanceof ParticleMesh)
       mesh.displayArrow()
@@ -620,7 +635,10 @@ function enableDisplayArrows() {
 
 // @noexcept
 function disableDisplayArrows() {
-  checkDisplayArrows.checked = _shouldDisplayArrows = false
+  _shouldDisplayArrows = false
+  var checkDisplayArrows = document.getElementById("checkDisplayArrows")
+  if(checkDisplayArrows)
+    checkDisplayArrows.checked = false
   scene.children.forEach(function (mesh) {
     if(mesh instanceof ParticleMesh)
       mesh.hideArrow()
