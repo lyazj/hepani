@@ -2,9 +2,6 @@
 
 /* read / write access rules for outer only */
 
-/* double, monitor performance, read-only */
-var fps = 0
-
 /* double, accurate position on timeline, read-write */
 var time
 
@@ -48,8 +45,7 @@ var _initializeState
 var _animationTimeStamp
 var _shouldDisplayLabels
 var _labelIntervalID
-var _fpsCount = 0
-var _fpsAccumulate = 0
+var _timeRecord = []
 
 // @noexcept
 function render() {
@@ -228,12 +224,14 @@ function updateStatus() {
     timeStatus.innerHTML = time.toFixed(3) + " s"
   if(phaseStatus)
     phaseStatus.innerHTML = phase
-  _fpsAccumulate += fps
-  ++_fpsCount
-  if(_fpsCount == 20)
+  if(_timeRecord.length >= 20)
   {
-    fpsStatus.innerHTML = (_fpsAccumulate / _fpsCount).toFixed(2)
-    _fpsCount = _fpsAccumulate = 0
+    var times = _timeRecord
+    _timeRecord = []
+    var timeSum = 0
+    for(var i = 0; i < times.length; ++i)
+      timeSum += times[i]
+    fpsStatus.innerHTML = (times.length / timeSum).toFixed(2)
   }
 }
 
@@ -262,7 +260,7 @@ function animate() {
   var timeSpan = (now - _animationTimeStamp) / 1000
   _animationTimeStamp = now
   time += timeSpan
-  fps = 1 / timeSpan
+  _timeRecord.push(timeSpan)
   updateParticles(timeSpan)
   requestAnimationFrame(animate)
 }
