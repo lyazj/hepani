@@ -39,9 +39,9 @@ const intersectColorEnhancement = 0x7f
 const particleRadius = 1
 const minLabelDistance = 20
 
-// @require: labelWidth >> labelHeight
-const labelWidth = 1200
-const labelHeight = 200
+// // @require: labelWidth >> labelHeight
+// const labelWidth = 1200
+// const labelHeight = 200
 
 /* inner variables */
 var _initializeState
@@ -472,11 +472,16 @@ function createLabel(particleData, position) {
   label.style.color = "#" + new THREE.Color(
     0xffffff - getParticleColor(particleData)
   ).getHexString()
-  label.style.display = _shouldDisplayLabels ? "inline-block" : "none"
-  label.style.visibility = "hidden"
-  label.style.left = position[0] + "px"
-  label.style.top = position[1] + "px"
-  updateLabelOverlap(label)
+  if(_shouldDisplayLabels)
+  {
+    label.style.display = "inline-block"
+    label.style.visibility = "hidden"
+    label.style.left = position[0] + "px"
+    label.style.top = position[1] + "px"
+    updateLabelOverlap(label)
+  }
+  else
+    label.style.display = "none"
   labels.appendChild(label)
   return label
 }
