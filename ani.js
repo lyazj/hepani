@@ -438,22 +438,23 @@ class ParticleMesh extends THREE.Mesh {
         length * arrowLengthUnit,
         this.material.color.getHex()
       )
-      if(_shouldDisplayArrows)
-        this.add(this.velocityArrow)
+      this.add(this.velocityArrow)
+      if(!_shouldDisplayArrows)
+        this.velocityArrow.visible = false
     }
     return this.velocityArrow
   }
 
   // @noexcept
   hideArrow() {
-    if(this.velocityArrow && this.children.indexOf(this.velocityArrow) > -1)
-      this.remove(this.velocityArrow)
+    if(this.velocityArrow)
+      this.velocityArrow.visible = false
   }
 
   // @noexcept
   displayArrow() {
-    if(this.velocityArrow && this.children.indexOf(this.velocityArrow) < 0)
-      this.add(this.velocityArrow)
+    if(this.velocityArrow)
+      this.velocityArrow.visible = true
   }
 
 }
