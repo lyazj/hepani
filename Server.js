@@ -199,7 +199,7 @@ function procedure(request, response) {
       argArray.push(query[item])
     }
 
-    var process = child_process.spawn("./Hepani", argArray)
+    var process = child_process.spawn("bin/Hepani", argArray)
 
     var sout = ""
     var serr = ""
