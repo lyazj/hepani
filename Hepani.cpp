@@ -17,6 +17,7 @@
 #include "Hepani.h"
 
 #include <map>
+#include <deque>
 #include <sstream>
 #include <fstream>
 #include <iomanip>
@@ -198,8 +199,9 @@ static auto get_birth(uint32_t i, T &pars) ->
 
 /* parindex and pars undefined if false returned */
 template<class T>
-static auto general_process(Particles &particles, Parindex &parindex,
-    T &pars, Durations &durations, Timeline &timeline) ->
+static auto general_process(
+    Particles &particles, Parindex &parindex, T &pars,
+    Durations &durations, Timeline &timeline, uint32_t &phase_central) ->
   typename enable_if<is_base_of<Particle,
   typename remove_reference<decltype(pars[0])>::type
   >::value, bool>::type
@@ -239,38 +241,76 @@ static auto general_process(Particles &particles, Parindex &parindex,
   }
   for(uint32_t i = 1; i < timeline.size(); ++i)
     timeline[i] += timeline[i - 1];
+  auto get_endtime([&](uint32_t p) {
+    return p == (uint32_t)-1 ? 0.0 : timeline[p];
+  });
+  auto get_timespan([&](uint32_t p1, uint32_t p2) {
+    return get_endtime(p1 - 1) - get_endtime(p2 - 1);
+  });
 
   /* find central process */
-  size_t phase_central(find_if(parindex.begin(), parindex.end(),
-        [&](const vector<uint32_t> &index) {
-          return any_of(index.begin(), index.end(),
-              [&](uint32_t i) {
-                int status(abs(pars[i].status));
-                return status >= 21 && status <= 23;
-              });
-        }) - parindex.begin());
+  phase_central = find_if(parindex.begin(), parindex.end(),
+      [&](const vector<uint32_t> &index) {
+        return any_of(index.begin(), index.end(),
+            [&](uint32_t i) {
+              int status(abs(pars[i].status));
+              return status >= 21 && status <= 23;
+            });
+      }) - parindex.begin();
   if(phase_central >= parindex.size())
     return false;
 
   /* do general calculation orderly */
-  assert(parindex[0].size() == 1 && parindex[0][0] == 0);
-  pars[0].death = 1;
-  for(uint32_t i : parindex[1])
-    pars[i].r = -pars[i].v * (timeline[1] - timeline[0]);
-  for(uint32_t p = 2; p < parindex.size(); ++p)
+  for(uint32_t p = 0; p < parindex.size(); ++p)
+    for(uint32_t i : parindex[p])
+      for(uint32_t m : pars[i].momset)
+        pars[m].death = min(pars[m].death, p);
+  for(uint32_t i : parindex[phase_central])
+    pars[i].r = {0.0};
+  for(uint32_t p = phase_central + 1; p < parindex.size(); ++p)
     for(uint32_t i : parindex[p])
     {
       double e_sum = 0.0;
       for(uint32_t m : pars[i].momset)
       {
+        if(pars[m].birth < phase_central)
+          continue;
         e_sum += pars[m].e;
-        pars[i].r += pars[m].e * (pars[m].r + pars[m].v *
-            (timeline[p - 1] - timeline[pars[m].birth - 1]));
-        pars[m].death = min(pars[m].death, p);
+        pars[i].r += pars[m].e * (
+            pars[m].r + pars[m].v * get_timespan(p, pars[m].birth));
+        if(e_sum)
+          pars[i].r /= e_sum;
       }
+    }
+  deque<uint32_t> excepts;
+  for(uint32_t p = phase_central - 1; p != (uint32_t)-1; --p)
+    for(uint32_t i : parindex[p])
+    {
+      set<uint32_t> daus(pars[i].dauset);
+      if(daus.empty())
+      {
+        excepts.push_front(pars[i].no);
+        continue;
+      }
+      auto iter(min_element(
+            daus.begin(), daus.end(), [&](size_t d1, size_t d2) {
+              return pars[d1].birth < pars[d2].birth;
+            }));
+      uint32_t d(*iter);
+      pars[i].r = pars[d].r + pars[d].v * get_timespan(p, pars[d].birth);
+    }
+  for(uint32_t i : excepts)
+  {
+    double e_sum = 0.0;
+    for(uint32_t m : pars[i].momset)
+    {
+      e_sum += pars[m].e;
+      pars[i].r += pars[m].e * (pars[m].r +
+          pars[m].v * get_timespan(pars[i].birth, pars[m].birth));
       if(e_sum)
         pars[i].r /= e_sum;
     }
+  }
 
   /* make result copy */
   particles.clear();
@@ -463,7 +503,8 @@ bool System::from_py8log(istream &is)
   Particles partitmps;
   Parindex paridxtmp;
   if(!general_process(
-        partitmps, paridxtmp, parpy8tmps, durations, timeline))
+        partitmps, paridxtmp, parpy8tmps,
+        durations, timeline, phase_central))
     return false;
 
   swap(particles, partitmps);
@@ -485,7 +526,8 @@ bool System::from_hepmc2(istream &is, size_t index)
   Particles partitmps;
   Parindex paridxtmp;
   if(!general_process(
-        partitmps, paridxtmp, partmps, durations, timeline))
+        partitmps, paridxtmp, partmps,
+        durations, timeline, phase_central))
     return false;
 
   swap(particles, partitmps);

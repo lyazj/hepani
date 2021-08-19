@@ -222,7 +222,7 @@ function updateSize() {
 
 // @noexcept
 function updateStatus() {
-  if(timeStatus)
+  if(timeStatus && timeline && timeline[-1] == 0)
     timeStatus.innerHTML = time.toFixed(3)
       + " / " + timeline[timeline.length - 1].toFixed(3) + " s"
   if(phaseStatus)
@@ -243,6 +243,8 @@ function updateStatus() {
       else
         fpsStatus.style.color = "yellow"
     }
+    else
+      fpsStatus.style.color = ""
   }
 }
 
