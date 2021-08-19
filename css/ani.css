@@ -1,0 +1,167 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background: lightblue url(
+    https://mediaarchive.cern.ch/MediaArchive/Photo/Public/2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg
+  ) no-repeat fixed center / cover;
+  user-select: none;
+}
+
+header, footer, aside {
+  z-index: 100;
+}
+
+header, footer {
+  position: absolute;
+  width: 100%;
+  font-size: 14px;
+  text-align: center;
+}
+
+aside {
+  position: fixed;
+  height: 100%;
+}
+
+header h1 {
+  color: yellow;
+}
+
+footer {
+  top: 100%;
+  overflow: hidden;
+  color: white;
+  background-color: navy;
+}
+
+footer img {
+  height: 12px;
+  width: 12px;
+}
+
+footer a, aside a {
+  color: inherit;
+  text-decoration: none;
+}
+
+aside .functions {
+  position: absolute;
+  top: 15%;
+  margin: 0;
+  padding: 10px;
+  color: #dfdfdf;
+  display: block;
+  list-style: none;
+  box-sizing: border-box;
+}
+
+aside .functions .function {
+  margin: 5px;
+  padding: 5px;
+  display: none;
+}
+
+aside .functions > .function {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+aside .functions .function .icon {
+  width: 30px;
+  height: 30px;
+  display: inline;
+  vertical-align: middle;
+}
+
+aside .functions .function .name::before {
+  content: " ";
+}
+
+aside .functions .function .name {
+  height: 30px;
+  display: none;
+}
+
+aside .functions .notes {
+  font-size: 12px;
+  display: none;
+}
+
+aside .functions:hover {
+  background-color: #202020;
+  height: 85%;
+}
+
+aside .functions:hover .function {
+  display: block;
+  width: 180px;
+  overflow: hidden;
+}
+
+aside .functions:hover > .function {
+  border-bottom: 1px solid white;
+  margin-bottom: 10px;
+}
+
+aside .functions:hover .function .name {
+  display: inline;
+}
+
+aside .functions:hover .notes {
+  display: block;
+}
+
+aside .functions a .function:hover {
+  color: #202020;
+  background-color: #dfdfdf;
+}
+
+aside .functions > .function:first-of-type {
+  display: block;
+}
+
+#labels {
+  position: absolute;
+  z-index: 1;
+  width: 0;
+  height: 0;
+  margin: 0;
+  left: 0;
+  top: 0;
+}
+
+#labels .label {
+  font: 12px Arial;
+  position: absolute;
+  width: 100px;
+  height: 16px;
+  margin-left: -50px;
+  margin-top: -8px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#statuses {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 16px;
+  font-size: 16px;
+  top: 100%;
+  left: 0;
+  margin-top: -36px;
+  margin-left: 0;
+  padding: 5px;
+  color: white;
+}
+
+#statuses .status {
+  float: left;
+  margin: 0 20px;
+}
+
+#statuses a {
+  color: inherit;
+}
