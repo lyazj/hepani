@@ -16,11 +16,14 @@
 
 #pragma once
 
+#include <math.h>
 #include <stddef.h>
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
 #include <utility>
+
+#define KVP(var) #var, var
 
 namespace CTjson {
 
@@ -82,7 +85,8 @@ public:
   }
   ojsonstream &indent()
   {
-    base() << std::string(_depth * _ind_cnt, _ind_char);
+    for(depth_type i = 0; i < _depth; ++i)
+      base() << _ind_char;
     return *this;
   }
   ojsonstream &setbreakline(bool b)
@@ -137,47 +141,27 @@ inline ojsonstream &operator<<(ojsonstream &ojs, nullptr_t)
   return ojs;
 }
 
-static ojsonstream &operator<<(ojsonstream &ojs, const std::string &str)
-{
-  ojs.base() << "\"";
-  for(char c : str)
-  {
-    if(isprint(c))
-    {
-      if(c == '\"') ojs.base() << "\\\"";
-      // else if(c == '\'') ojs.base() << "\\\'";
-      else if(c == '\\') ojs.base() << "\\\\";
-      else ojs.base() << (c);
-    }
-    else if(c == '\n') ojs.base() << "\\n";
-    else if(c == '\r') ojs.base() << "\\r";
-    else if(c == '\t') ojs.base() << "\\t";
-    // else if(c == '\v') ojs.base() << "\\v";
-    // else if(c == '\0') ojs.base() << "\\0";
-    // else if(c == '\a') ojs.base() << "\\a";
-    else if(c == '\b') ojs.base() << "\\b";
-    else if(c == '\f') ojs.base() << "\\f";
-    else
-    {
-      ojs.base() << "\\x" << std::hex << (unsigned)c << std::dec;
-    }
-  }
-  ojs.base() << "\"";
-  return ojs;
-}
+ojsonstream &operator<<(ojsonstream &, char);
+ojsonstream &operator<<(ojsonstream &, const char *);
+ojsonstream &operator<<(ojsonstream &, const std::string &);
 
-inline ojsonstream &operator<<(ojsonstream &ojs, const char *str)
+template<class T>
+inline auto operator<<(ojsonstream &ojs, const T &t)
+  -> typename std::enable_if<
+  std::is_floating_point<T>::value,
+  ojsonstream &>::type
 {
-  if(!str)
+  if(isnan(t) || isinf(t))
     return ojs << nullptr;
-
-  return ojs << std::string(str);
+  ojs.base() << t;
+  return ojs;
 }
 
 template<class T>
 inline auto operator<<(ojsonstream &ojs, const T &t)
-  -> typename
-  std::enable_if<std::is_arithmetic<T>::value, ojsonstream &>::type
+  -> typename std::enable_if<
+  std::is_integral<T>::value,
+  ojsonstream &>::type
 {
   ojs.base() << t;
   return ojs;
@@ -265,6 +249,13 @@ inline auto prt_obj(ojsonstream &ojs, Args &&...args)
   ojs.base() << '}';
 
   return ojs;
+}
+
+template<class T>
+inline auto operator<<(ojsonstream &ojs, const T &t)
+  -> decltype(t.print(ojs))
+{
+  return t.print(ojs);
 }
 
 }  // namespace CTjson
