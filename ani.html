@@ -31,7 +31,7 @@
       <br />
       <a target="_black" href="https://beian.miit.gov.cn">京ICP备2021021905号</a>
       <a target="_balck" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=53010202001297">
-        <img src="beian.png" alt="" />滇公网安备 53010202001297号
+        <img src="img/beian.png" alt="" />滇公网安备 53010202001297号
       </a>
       &nbsp;
       Copyright (C) 2021 <a target="_black" href="https://github.com/lyazj/hepani">Hepani@lyazj</a>
@@ -39,24 +39,24 @@
     </footer>
     <aside>
       <ul class="functions">
-        <li class="function"><img class="icon" alt="" src="functions.svg" /><span class="name">Functions</span></li>
+        <li class="function"><img class="icon" alt="" src="/img/functions.svg" /><span class="name">Functions</span></li>
         <a href="javascript:stop();writePage('file.html')">
-          <li class="function"><img class="icon" alt="" src="file.svg" /><span class="name">File</span></li>
+          <li class="function"><img class="icon" alt="" src="/img/file.svg" /><span class="name">File</span></li>
         </a>
         <a href="javascript:stop();writePage('file.html')">
-          <li class="function"><img class="icon" alt="" src="time.svg" /><span class="name">Time</span></li>
+          <li class="function"><img class="icon" alt="" src="/img/time.svg" /><span class="name">Time</span></li>
         </a>
         <a href="javascript:startStop()">
-          <li class="function"><img class="icon" alt="" src="start.svg" /><span class="name" id="start_stop">Start</span></li>
+          <li class="function"><img class="icon" alt="" src="/img/start.svg" /><span class="name" id="start_stop">Start</span></li>
         </a>
         <a href="javascript:downloadJSON()">
-          <li class="function"><img class="icon" alt="" src="download.svg" /><span class="name">Save</span></li>
+          <li class="function"><img class="icon" alt="" src="/img/download.svg" /><span class="name">Save</span></li>
         </a>
         <a href="coming.html" target="_black">
-          <li class="function"><img class="icon" alt="" src="help.svg" /><span class="name">Help</span></li>
+          <li class="function"><img class="icon" alt="" src="/img/help.svg" /><span class="name">Help</span></li>
         </a>
         <a id="about" href="#footer" onclick="onclickAbout()">
-          <li class="function"><img class="icon" alt="" src="about.svg" /><span class="name" id="aboutText">About</span></li>
+          <li class="function"><img class="icon" alt="" src="/img/about.svg" /><span class="name" id="aboutText">About</span></li>
         </a>
         <p class="notes">注：请点击About查看备案信息。</p>
       </ul>
@@ -88,13 +88,13 @@
         }
       }
     </script>
-    <script src="load.js"></script>
+    <script src="/js/load.js"></script>
     <script>
       loadJS("https://threejs.org/build/three.min.js", function () {
         loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
-          loadJS("io.js", function () {
-            loadJS("ani.js", function () {
-              loadJS("pid.js", function () {
+          loadJS("/js/io.js", function () {
+            loadJS("/js/ani.js", function () {
+              loadJS("/js/pid.js", function () {
                 requestJSON()
               })
             })

@@ -1,29 +1,36 @@
 #!/usr/bin/env -S make -f
 
-all = name.txt description.json Hepani output.json output.json.gz py8log.json hepmc2.json
+all = cache \
+      cache/name.txt \
+      cache/description.json \
+      Hepani \
+      example/output.json \
+      example/output.json.gz \
+      example/py8log.json \
+      example/hepmc2.json \
 
 all: $(all)
 
 clean:
-	$(RM) $(all)
+	rm -rf $(all)
 
-name.txt description.json : Cache.py
+cache cache/name.txt cache/description.json : Cache.py
 	./$<
 
-%: %.cpp
-	g++ -O2 $(filter %.cpp,$^) -o $@ -lHepMC3
+Hepani:
+	g++ -O2 src/* -o $@ -Iinclude -lHepMC3
 	strip $@
 
-py8log.json: Hepani
-	./$< --type py8log --d0 0.001 --d1 2 < input.txt >$@
+example/py8log.json: Hepani
+	./$< --type py8log --d0 0.001 --d1 5 < example/input.txt >$@
 
-hepmc2.json: Hepani
-	./$< --type hepmc2 --d0 0.001 --d1 2 < input.hepmc >$@
+example/hepmc2.json: Hepani
+	./$< --type hepmc2 --d0 0.001 --d1 5 < example/input.hepmc >$@
 
-output.json: py8log.json
+example/output.json: example/py8log.json
 	ln -f $< $@
 
-output.json.gz: output.json
+example/output.json.gz: example/output.json
 	gzip -c $< > $@
 
 .PHONY: clean

@@ -19,8 +19,6 @@ var fileBlock = [
 var fileType = {
   ico:  "image/x-icon",
   png:  "image/png",
-  jpg:  "image/jpeg",
-  jpeg: "image/jpeg",
   svg:  "image/svg+xml;charset=utf-8",
   html: "text/html;charset=utf-8",
   js:   "text/javascript;charset=utf-8",
@@ -42,25 +40,22 @@ var cacheControl = {
 }
 
 cacheControl = Object.assign(cacheControl, {
-  "favicon.ico"      : cacheControl.static,
-  "beian.png"        : cacheControl.static,
-  "404.html"         : cacheControl.static,
-  "406.html"         : cacheControl.static,
-  "500.html"         : cacheControl.static,
-  "coming.html"      : cacheControl.static,
-  "ani.html"         : cacheControl.mutable,
-  "ani.css"          : cacheControl.mutable,
-  "ani.js"           : cacheControl.mutable,
-  "about.svg"        : cacheControl.static,
-  "download.svg"     : cacheControl.static,
-  "file.svg"         : cacheControl.static,
-  "functions.svg"    : cacheControl.static,
-  "help.svg"         : cacheControl.static,
-  "start.svg"        : cacheControl.static,
-  "time.svg"         : cacheControl.static,
-  // "bg.jpg"           : cacheControl.static,
-  // "OrbitControls.js" : cacheControl.static,
-  // "three.min.js"     : cacheControl.static,
+  "favicon.ico"          : cacheControl.static,
+  "404.html"             : cacheControl.static,
+  "406.html"             : cacheControl.static,
+  "500.html"             : cacheControl.static,
+  "coming.html"          : cacheControl.static,
+  "ani.html"             : cacheControl.mutable,
+  "ani.css"              : cacheControl.mutable,
+  "ani.js"               : cacheControl.mutable,
+  "img/beian.png"        : cacheControl.static,
+  "img/about.svg"        : cacheControl.static,
+  "img/download.svg"     : cacheControl.static,
+  "img/file.svg"         : cacheControl.static,
+  "img/functions.svg"    : cacheControl.static,
+  "img/help.svg"         : cacheControl.static,
+  "img/start.svg"        : cacheControl.static,
+  "img/time.svg"         : cacheControl.static,
 })
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
@@ -148,7 +143,7 @@ function writeError(response, code) {
 }
 
 function writeExample(response, type) {
-  writeFile(response, type + ".json", fileType.json)
+  writeFile(response, "example/" + type + ".json", fileType.json)
 }
 
 function procedure(request, response) {

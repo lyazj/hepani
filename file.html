@@ -80,14 +80,14 @@
     For help, see: <a href="coming.html" target="_black">help page</a>.
     </p>
 
-    <script src="load.js"></script>
+    <script src="/js/load.js"></script>
     <script>
       loadJS("https://cdn.bootcdn.net/ajax/libs/pako/2.0.4/pako.min.js")
-      loadJS("io.js")
-      loadJS("file.js")
+      loadJS("/js/io.js")
+      loadJS("/js/file.js")
       loadJS("https://threejs.org/build/three.min.js", function () {
         loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
-          loadJS("ani.js")
+          loadJS("/js/ani.js")
         })
       })
     </script>
