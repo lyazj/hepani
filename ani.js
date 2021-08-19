@@ -33,7 +33,7 @@ scene.add(point)
 // @require: 0x00 < ICI < 0x80
 const intersectColorEnhancement = 0x7f
 
-const particleRadius = 0.5
+const particleRadius = 1
 const minLabelDistance = 20
 const arrowLengthUnit = 4
 
@@ -212,7 +212,7 @@ function updateSize() {
   camera.aspect = innerWidth / innerHeight
   camera.near = 0.1
   camera.far = 1000
-  camera.position.set(10, 10, 10)
+  camera.position.set(20, 20, 20)
   camera.lookAt(scene.position)
   camera.updateProjectionMatrix()
   point.position.set(40, 40, 40)
@@ -697,7 +697,7 @@ function onchangeCheckDisplayArrows() {
 // @noexcept
 function changeTime(timeNew) {
   var timeMax = timeline[timeline.length - 1]
-  if(timeNew < 0 || timeNew > timeMax)
+  if(!(timeNew >= 0 && timeNew <= timeMax))
     return false
   var timeOriginal = time
   time = timeNew
