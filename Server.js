@@ -43,7 +43,7 @@ var cacheControl = {
 
 cacheControl = Object.assign(cacheControl, {
   "favicon.ico"      : cacheControl.static,
-  // "beian.png"        : cacheControl.static,
+  "beian.png"        : cacheControl.static,
   "404.html"         : cacheControl.static,
   "406.html"         : cacheControl.static,
   "500.html"         : cacheControl.static,
