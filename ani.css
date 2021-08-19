@@ -161,3 +161,7 @@ aside .functions > .function:first-of-type {
   float: left;
   margin: 0 20px;
 }
+
+#statuses a {
+  color: inherit;
+}

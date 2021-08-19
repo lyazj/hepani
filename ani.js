@@ -2,7 +2,7 @@
 
 /* read / write access rules for outer only */
 
-/* double, accurate position on timeline, read-write */
+/* double, accurate position on timeline, read-only */
 var time = 0.0
 
 /* unsigned, block index on timeline, read-only */
@@ -33,7 +33,7 @@ scene.add(point)
 // @require: 0x00 < ICI < 0x80
 const intersectColorEnhancement = 0x7f
 
-const particleRadius = 1
+const particleRadius = 0.5
 const minLabelDistance = 20
 const arrowLengthUnit = 4
 
@@ -212,7 +212,7 @@ function updateSize() {
   camera.aspect = innerWidth / innerHeight
   camera.near = 0.1
   camera.far = 1000
-  camera.position.set(20, 20, 20)
+  camera.position.set(10, 10, 10)
   camera.lookAt(scene.position)
   camera.updateProjectionMatrix()
   point.position.set(40, 40, 40)
@@ -223,9 +223,10 @@ function updateSize() {
 // @noexcept
 function updateStatus() {
   if(timeStatus)
-    timeStatus.innerHTML = time.toFixed(3) + " s"
+    timeStatus.innerHTML = time.toFixed(3)
+      + " / " + timeline[timeline.length - 1].toFixed(3) + " s"
   if(phaseStatus)
-    phaseStatus.innerHTML = phase
+    phaseStatus.innerHTML = phase + " / " + timeline.length
   if(_timeRecord.length >= 20)
   {
     var times = _timeRecord
@@ -233,7 +234,15 @@ function updateStatus() {
     var timeSum = 0
     for(var i = 0; i < times.length; ++i)
       timeSum += times[i]
-    fpsStatus.innerHTML = (times.length / timeSum).toFixed(2)
+    var fps = times.length / timeSum
+    fpsStatus.innerHTML = fps.toFixed(2)
+    if(fps < 24)
+    {
+      if(fps < 12)
+        fpsStatus.style.color = "red"
+      else
+        fpsStatus.style.color = "yellow"
+    }
   }
 }
 
@@ -255,16 +264,21 @@ function initialize(doubleCallingNeeded) {
 }
 
 // @noexcept
-function animate() {
+function procedure(timeSpan) {
   render()
+  time += timeSpan
+  updateParticles(timeSpan)
+}
+
+// @noexcept
+function animate() {
   if(!_animationTimeStamp)
     return
   var now = performance.now()
   var timeSpan = (now - _animationTimeStamp) / 1000
   _animationTimeStamp = now
-  time += timeSpan
   _timeRecord.push(timeSpan)
-  updateParticles(timeSpan)
+  procedure(timeSpan)
   requestAnimationFrame(animate)
 }
 
@@ -281,7 +295,7 @@ function start() {
 function stop() {
   _animationTimeStamp = undefined
   start_stop.innerHTML = "Start"
-  animate()
+  render()
 }
 
 // @noexcept
@@ -362,7 +376,8 @@ class ParticleMesh extends THREE.Mesh {
     this.data = data
     this.initialize()
     createLabel(data, getObjectUV(this))
-    this.createArrow()
+    if(_shouldDisplayArrows)
+      this.createArrow()
     scene.add(this)
   }
 
@@ -439,10 +454,7 @@ class ParticleMesh extends THREE.Mesh {
         this.material.color.getHex()
       )
       this.add(this.velocityArrow)
-      if(!_shouldDisplayArrows)
-        this.velocityArrow.visible = false
     }
-    return this.velocityArrow
   }
 
   // @noexcept
@@ -455,6 +467,8 @@ class ParticleMesh extends THREE.Mesh {
   displayArrow() {
     if(this.velocityArrow)
       this.velocityArrow.visible = true
+    else
+      this.createArrow()
   }
 
 }
@@ -509,10 +523,13 @@ function createLabel(particleData, position) {
   if(_shouldDisplayLabels)
   {
     label.style.display = "inline-block"
-    label.style.visibility = "hidden"
     label.style.left = position[0] + "px"
     label.style.top = position[1] + "px"
-    updateLabelOverlap(label)
+    if(_labelIntervalID)
+    {
+      label.style.visibility = "hidden"
+      updateLabelOverlap(label)
+    }
   }
   else
     label.style.display = "none"
@@ -619,6 +636,14 @@ function disableUpdateLabelOverlaps() {
     checkUpdateLabelOverlaps.checked = false
   clearInterval(_labelIntervalID)
   _labelIntervalID = undefined
+  var all = labels.children
+  for(var i = 0; i < all.length; ++i)
+  {
+    label = all[i]
+    if(!label)
+      return
+    label[i].style.visibility = "visible"
+  }
 }
 
 // @noexcept
@@ -669,6 +694,44 @@ function onchangeCheckDisplayArrows() {
     disableDisplayArrows()
 }
 
+// @noexcept
+function changeTime(timeNew) {
+  var timeMax = timeline[timeline.length - 1]
+  if(timeNew < 0 || timeNew > timeMax)
+    return false
+  var timeOriginal = time
+  time = timeNew
+  if(checkTimePhase())
+    updateParticles(time - timeOriginal)
+  else
+  {
+    clearParticles()
+    phase = 0
+    while(timeline[phase] <= time)
+      ++phase
+    for(var p = 0; p <= phase; ++p)
+      for(var i = 0; i < particles[p].length; ++i)
+      {
+        var particle = particles[p][i]
+        if(particle.death == -1 || particle.death > phase)
+          createParticleMesh(particle)
+            .translate(time - timeline[particle.birth - 1])
+      }
+  }
+  render()
+  return true
+}
+
+// @noexcept
+function promptChangeTime() {
+  stop()
+  var timeMax = timeline[timeline.length - 1]
+  if(!changeTime(Number.parseFloat(
+    prompt("Change time: (second, 0~" + timeMax.toFixed(3) + ")")
+  )))
+    alert("Not changed: Invalid time!")
+}
+
 // function createLabelCanvas(particleData) {
 //   var canvas = document.createElement("canvas")
 //   canvas.width = labelWidth
@@ -680,7 +743,7 @@ function onchangeCheckDisplayArrows() {
 //   context.fillStyle = "#00ff00"
 //   context.fillText(particleData.name,
 //     canvas.width / 2, canvas.height / 2, labelWidth
-//   )
+//   New
 //   return canvas
 // }
 // 
