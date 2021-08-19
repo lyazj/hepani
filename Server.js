@@ -60,9 +60,9 @@ cacheControl = Object.assign(cacheControl, {
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
 var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
-var description = JSON.parse(fs.readFileSync("description.json"))
+var description = JSON.parse(fs.readFileSync("cache/description.json"))
 var descriptionMstring =
-  fs.statSync("description.json").mtime.toUTCString()
+  fs.statSync("cache/description.json").mtime.toUTCString()
 var descriptionMtime = new Date(descriptionMstring)
 
 function writeFile(response, file, type, code, ims) {
@@ -139,7 +139,7 @@ function writeFile(response, file, type, code, ims) {
 }
 
 function writeError(response, code) {
-  writeFile(response, code + ".html", "text/html", code)
+  writeFile(response, "error/" + code + ".html", "text/html", code)
 }
 
 function writeExample(response, type) {
