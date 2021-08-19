@@ -728,9 +728,11 @@ function changeTime(timeNew) {
 function promptChangeTime() {
   stop()
   var timeMax = timeline[timeline.length - 1]
-  if(!changeTime(Number.parseFloat(
+  var timeInput =
     prompt("Change time: (second, 0~" + timeMax.toFixed(3) + ")")
-  )))
+  if(timeInput == null)
+    return
+  if(!changeTime(Number.parseFloat(timeInput)))
     alert("Not changed: Invalid time!")
 }
 
