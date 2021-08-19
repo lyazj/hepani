@@ -42,7 +42,7 @@
     </p>
     <p>Let's have a try!</p>
 
-    <form id="upload" action="/" method="post" enctype="multipart/form-data">
+    <form id="upload" action="javascript:void(0)" method="post" enctype="multipart/form-data">
       <fieldset>
         <legend>Upload a file</legend>
         <label for="type">Type:</label>
@@ -80,14 +80,14 @@
     For help, see: <a href="coming.html" target="_black">help page</a>.
     </p>
 
-    <script src="/js/load.js"></script>
+    <script src="js/load.js"></script>
     <script>
       loadJS("https://cdn.bootcdn.net/ajax/libs/pako/2.0.4/pako.min.js")
-      loadJS("/js/io.js")
-      loadJS("/js/file.js")
+      loadJS("js/io.js")
+      loadJS("js/file.js")
       loadJS("https://threejs.org/build/three.min.js", function () {
         loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
-          loadJS("/js/ani.js")
+          loadJS("js/ani.js")
         })
       })
     </script>

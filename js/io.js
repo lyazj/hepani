@@ -218,7 +218,7 @@ function requestJSON() {
 
   var xhr = new XMLHttpRequest()
   onrequestJSON(xhr)
-  xhr.open("get", "/example/output.json", true)
+  xhr.open("get", "example/output.json", true)
   xhr.send()
   xhr.onload = function () {
     onloadJSON(this)

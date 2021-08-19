@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Hepani</title>
-    <link rel="stylesheet" href="ani.css" />
+    <link rel="stylesheet" href="css/ani.css" />
   </head>
   <body onload="initialize(true);updateControls();updateLoading(false)">
     <script>
@@ -39,24 +39,24 @@
     </footer>
     <aside>
       <ul class="functions">
-        <li class="function"><img class="icon" alt="" src="/img/functions.svg" /><span class="name">Functions</span></li>
+        <li class="function"><img class="icon" alt="" src="img/functions.svg" /><span class="name">Functions</span></li>
         <a href="javascript:stop();writePage('file.html')">
-          <li class="function"><img class="icon" alt="" src="/img/file.svg" /><span class="name">File</span></li>
+          <li class="function"><img class="icon" alt="" src="img/file.svg" /><span class="name">File</span></li>
         </a>
         <a href="javascript:stop();writePage('file.html')">
-          <li class="function"><img class="icon" alt="" src="/img/time.svg" /><span class="name">Time</span></li>
+          <li class="function"><img class="icon" alt="" src="img/time.svg" /><span class="name">Time</span></li>
         </a>
         <a href="javascript:startStop()">
-          <li class="function"><img class="icon" alt="" src="/img/start.svg" /><span class="name" id="start_stop">Start</span></li>
+          <li class="function"><img class="icon" alt="" src="img/start.svg" /><span class="name" id="start_stop">Start</span></li>
         </a>
         <a href="javascript:downloadJSON()">
-          <li class="function"><img class="icon" alt="" src="/img/download.svg" /><span class="name">Save</span></li>
+          <li class="function"><img class="icon" alt="" src="img/download.svg" /><span class="name">Save</span></li>
         </a>
         <a href="coming.html" target="_black">
-          <li class="function"><img class="icon" alt="" src="/img/help.svg" /><span class="name">Help</span></li>
+          <li class="function"><img class="icon" alt="" src="img/help.svg" /><span class="name">Help</span></li>
         </a>
         <a id="about" href="#footer" onclick="onclickAbout()">
-          <li class="function"><img class="icon" alt="" src="/img/about.svg" /><span class="name" id="aboutText">About</span></li>
+          <li class="function"><img class="icon" alt="" src="img/about.svg" /><span class="name" id="aboutText">About</span></li>
         </a>
         <p class="notes">注：请点击About查看备案信息。</p>
       </ul>
@@ -88,13 +88,13 @@
         }
       }
     </script>
-    <script src="/js/load.js"></script>
+    <script src="js/load.js"></script>
     <script>
       loadJS("https://threejs.org/build/three.min.js", function () {
         loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
-          loadJS("/js/io.js", function () {
-            loadJS("/js/ani.js", function () {
-              loadJS("/js/pid.js", function () {
+          loadJS("js/io.js", function () {
+            loadJS("js/ani.js", function () {
+              loadJS("js/pid.js", function () {
                 requestJSON()
               })
             })
