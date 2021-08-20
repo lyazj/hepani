@@ -1,6 +1,11 @@
 #!/usr/bin/env -S make -f
 
-all = cache \
+src = $(shell ls src/*.cpp)
+obj = $(shell ls src/*.cpp | sed -e 's/\.cpp$$/\.o/g')
+dep = $(shell ls src/*.cpp | sed -e 's/\.cpp$$/\.d/g')
+all = $(obj) \
+      $(dep) \
+      cache \
       cache/name.txt \
       cache/description.json \
       bin/Hepani \
@@ -9,7 +14,11 @@ all = cache \
       example/py8log.json \
       example/hepmc2.json \
 
-all: $(all)
+CXX = g++
+CXXFLAGS = -O2 -Wall -Wshadow -Wextra -Iinclude
+LDFLAGS = -lHepMC3
+
+all: $(all) clean_dep
 
 clean:
 	rm -rf $(all)
@@ -17,9 +26,9 @@ clean:
 cache cache/name.txt cache/description.json : bin/Cache
 	./$<
 
-bin/Hepani:
-	g++ -g src/*.cpp -o $@ -Iinclude -lHepMC3
-	# strip $@
+bin/Hepani: $(obj)
+	$(CXX) $(filter %.o,$^) -o $@ $(LDFLAGS)
+	strip $@
 
 example/py8log.json: bin/Hepani
 	./$< --type py8log --d0 0.001 --d1 5 < example/input.txt >$@
@@ -33,4 +42,18 @@ example/output.json: example/py8log.json
 example/output.json.gz: example/output.json
 	gzip -c $< > $@
 
-.PHONY: clean
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(filter %.cpp,$^) -o $@ -c
+
+%.d: %.cpp
+	$(CXX) $(CXXFLAGS) $< -MM > $@
+
+clean_obj:
+	$(RM) $(obj)
+
+clean_dep:
+	$(RM) $(dep)
+
+include $(dep)
+
+.PHONY: clean clean_obj clean_dep

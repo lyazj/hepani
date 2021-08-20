@@ -96,12 +96,16 @@ bool System::load_hepmc2(istream &is)
 {
   HepMC2RandomAccessor h2ra(is);
   GenEvent evt;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses"
   if(event_index == (uint32_t)-1 && !h2ra.read_event(evt)
       || event_index != (uint32_t)-1 && !h2ra.read_event(event_index, evt))
   {
     cerr << "Invalid HepMC2 file or index out of range." << endl;
     return false;
   }
+#pragma GCC diagnostic pop
 
   Particles pps;
   pps.emplace_back(new Particle(particle_zero));
@@ -114,6 +118,9 @@ bool System::load_hepmc2(istream &is)
       cerr << "Invalid particle index: " + to_string(no) + "." << endl;
       return false;
     }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
     Particle *pp(new Particle(ParticleBase {
       .no = no,
       .id = pgp->pid(),
@@ -121,6 +128,8 @@ bool System::load_hepmc2(istream &is)
       .colours = { },
       .m = pgp->generated_mass(),
     }));
+#pragma GCC diagnostic pop
+
     vector<string> attribs(pgp->attribute_names());
     if(find(attribs.begin(), attribs.end(), "flow1") != attribs.end())
       pp->colours[0] = pgp->attribute<IntAttribute>("flow1")->value();

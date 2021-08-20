@@ -96,11 +96,15 @@ bool ArgParser::run(istream &is, ostream &os) noexcept(false)
     throw runtime_error("Running program with argument parsing error.");
   if(!_ready)
     throw runtime_error("Running program without argument parsing.");
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
   map<string, string> args;
   System system;
   swap(args, this->args);
   swap(system, this->system);
   _ready = false;
+#pragma GCC diagnostic pop
 
   if(args["type"] == "py8log")
     return system.from_py8log(is) && system.to_json(os);
