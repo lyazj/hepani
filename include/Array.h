@@ -14,9 +14,32 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "System.h"
+#pragma once
 
-int main()
-{
+#include "CTjsonExtension.h"
 
-}
+namespace Hepani {
+
+struct Array {
+  double data[3];
+
+  double &operator[](size_t);
+  const double &operator[](size_t) const;
+
+  Array operator+() const;
+  Array operator-() const;
+  Array &operator+=(const Array &);
+  Array &operator-=(const Array &);
+  Array &operator*=(double);
+  Array &operator/=(double);
+
+  CTjson::ojsonstream &print(CTjson::ojsonstream &) const;
+};
+
+Array operator+(const Array &, const Array &);
+Array operator-(const Array &, const Array &);
+Array operator*(const Array &, double);
+Array operator*(double, const Array &);
+Array operator/(const Array &, double);
+
+}  // namespace Hepani

@@ -14,9 +14,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "System.h"
+#pragma once
 
-int main()
-{
+namespace Hepani {
 
-}
+class ArgParser {
+
+};
+
+}  // namespace Hepani

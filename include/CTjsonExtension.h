@@ -14,9 +14,30 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "System.h"
+#pragma once
 
-int main()
+#include "CTjson.h"
+
+#include <memory>
+
+#include <stdint.h>
+
+namespace CTjson {
+
+template<>
+inline ojsonstream &operator<<(ojsonstream &ojs, const uint32_t &t)
 {
-
+  ojs.base() << (int32_t)t;
+  return ojs;
 }
+
+template<class T>
+inline auto operator<<(ojsonstream &ojs, const std::shared_ptr<T> &t)
+  -> decltype(ojs << *t)
+{
+  if(t == nullptr)
+    return ojs << nullptr;
+  return ojs << *t;
+}
+
+}  // namespace CTjson

@@ -14,9 +14,44 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "System.h"
+#include "NameCache.h"
 
-int main()
+#include <fstream>
+
+using namespace std;
+
+NameCache::NameCache(istream &is)
 {
-
+  int pid;
+  char buf;
+  string name;
+  while(is >> pid && is >> buf)
+  {
+    if(buf != ':')
+    {
+      is.setstate(is.failbit);
+      break;
+    }
+    if(!getline(is, name))
+      break;
+    data[pid] = name;
+  }
 }
+
+NameCache::NameCache(const string &filename)
+{
+  ifstream ifs(filename);
+  NameCache nc(ifs);
+  if(ifs.eof())
+    operator=(nc);
+}
+
+string *NameCache::find(int pid)
+{
+  auto iter(data.find(pid));
+  if(iter == data.end())
+    return nullptr;
+  return &iter->second;
+}
+
+NameCache name_cache("cache/name.txt");

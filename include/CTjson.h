@@ -83,12 +83,6 @@ public:
       : 0;
     return *this;
   }
-  ojsonstream &indent()
-  {
-    for(depth_type i = 0; i < _depth; ++i)
-      base() << _ind_char;
-    return *this;
-  }
   ojsonstream &setbreakline(bool b)
   {
     _breakline = b;
@@ -97,7 +91,10 @@ public:
   ojsonstream &breakline()
   {
     if(_breakline)
+    {
       base() << '\n';
+      indent();
+    }
     return *this;
   }
   ojsonstream &setspace(bool b)
@@ -118,22 +115,22 @@ private:
   size_t      _ind_cnt;
   bool        _breakline;
   bool        _space;
+
+  ojsonstream &indent()
+  {
+    size_t num(_depth * _ind_cnt);
+    for(depth_type i = 0; i < num; ++i)
+      base() << _ind_char;
+    return *this;
+  }
 };
 
-typedef ojsonstream &iomanip(ojsonstream &);
-
-inline ojsonstream &operator<<(ojsonstream &ojs, iomanip &iom)
+inline ojsonstream &operator<<(
+    ojsonstream &ojs, std::ostream &(*manip)(std::ostream &))
 {
-  return iom(ojs);
+  manip(ojs.base());
+  return ojs;
 }
-
-// for performance, no explicit flushing
-inline ojsonstream &endl(ojsonstream &ojs)
-{
-  return ojs.breakline().indent();
-}
-
-// more iomanips to be added...
 
 inline ojsonstream &operator<<(ojsonstream &ojs, nullptr_t)
 {
@@ -203,7 +200,7 @@ auto operator<<(ojsonstream &ojs, const T &t)
   -> decltype(prt_pair(ojs, std::begin(t)->first, std::begin(t)->second))
 {
   ojs.base() << '{';
-  ojs.enter() << endl;
+  ojs.enter().breakline();
 
   auto it_beg(std::begin(t)), it_end(std::end(t));
   if(it_beg != it_end)
@@ -214,12 +211,12 @@ auto operator<<(ojsonstream &ojs, const T &t)
   while(it_beg != it_end)
   {
     ojs.base() << ',';
-    ojs << endl;
+    ojs.breakline();
     prt_pair(ojs, it_beg->first, it_beg->second);
     ++it_beg;
   }
 
-  ojs.leave() << endl;
+  ojs.leave().breakline();
   ojs.base() << '}';
 
   return ojs;
@@ -232,7 +229,7 @@ inline auto prt_pair(ojsonstream &ojs,
 {
   prt_pair(ojs, key, value);
   ojs.base() << ',';
-  ojs << endl;
+  ojs.breakline();
   return prt_pair(ojs, std::forward<Args>(args)...);
 }
 
@@ -241,11 +238,11 @@ inline auto prt_obj(ojsonstream &ojs, Args &&...args)
   -> decltype(prt_pair(ojs, std::forward<Args>(args)...))
 {
   ojs.base() << '{';
-  ojs.enter() << endl;
+  ojs.enter().breakline();
 
   prt_pair(ojs, std::forward<Args>(args)...);
 
-  ojs.leave() << endl;
+  ojs.leave().breakline();
   ojs.base() << '}';
 
   return ojs;

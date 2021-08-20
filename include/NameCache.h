@@ -14,9 +14,20 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "System.h"
+#include <string>
+#include <iostream>
+#include <unordered_map>
 
-int main()
-{
+#pragma once
 
-}
+class NameCache {
+public:
+  NameCache(const std::string &);
+  std::string *find(int);
+
+private:
+  NameCache(std::istream &);
+  std::unordered_map<int, std::string> data;
+};
+
+extern NameCache name_cache;

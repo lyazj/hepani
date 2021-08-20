@@ -14,9 +14,31 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "System.h"
+#pragma once
 
-int main()
-{
+#include "CTjsonExtension.h"
 
-}
+#include <map>
+#include <vector>
+
+namespace Hepani {
+
+constexpr double duration_min = 0.001;
+constexpr double duration_default = 1.0;
+
+class Timeline {
+public:
+  void set_duration(uint32_t, double);
+  void reset_durations();
+  void build(uint32_t);
+  uint32_t size() const { return built.size(); }
+  double operator[](uint32_t) const;
+  double get_span(uint32_t, uint32_t) const;
+  CTjson::ojsonstream &print(CTjson::ojsonstream &) const;
+
+private:
+  std::map<uint32_t, double> raw;
+  std::vector<double> built;
+};
+
+}  // namespace Hepani
