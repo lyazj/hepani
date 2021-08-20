@@ -18,8 +18,8 @@ cache cache/name.txt cache/description.json : bin/Cache
 	./$<
 
 bin/Hepani:
-	g++ -O2 src/*.cpp -o $@ -Iinclude -lHepMC3
-	strip $@
+	g++ -g src/*.cpp -o $@ -Iinclude -lHepMC3
+	# strip $@
 
 example/py8log.json: bin/Hepani
 	./$< --type py8log --d0 0.001 --d1 5 < example/input.txt >$@

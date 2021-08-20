@@ -27,21 +27,23 @@ typedef std::map<uint32_t, Particles> ParticleDJIndex;
 
 class System {
 public:
+  uint32_t         event_index = (uint32_t)-1;
+  Timeline         timeline;
+
   bool from_py8log(std::istream &);
-  bool from_hepmc2(std::istream &, size_t = (size_t)-1);
+  bool from_hepmc2(std::istream &);
   std::ostream &to_json(std::ostream &) const;
 
-// private:
+private:
   std::string      input_type;
   std::string      time_stamp;
   Particles        particles;
   ParticleIndex    particle_index;
   ParticleDJIndex  particle_dj_index;
-  Timeline         timeline;
-  uint32_t         central_phase;
+  uint32_t         central_phase = phase_undef;
 
   bool load_py8log(std::istream &);
-  bool load_hepmc2(std::istream &, size_t);
+  bool load_hepmc2(std::istream &);
   bool process_all();
 
   bool build_index();

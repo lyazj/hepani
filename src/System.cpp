@@ -92,14 +92,14 @@ bool System::load_py8log(istream &is)
   return true;
 }
 
-bool System::load_hepmc2(istream &is, size_t index)
+bool System::load_hepmc2(istream &is)
 {
   HepMC2RandomAccessor h2ra(is);
   GenEvent evt;
-  if(index == (size_t)-1 && !h2ra.read_event(evt)
-      || index != (size_t)-1 && !h2ra.read_event(index, evt))
+  if(event_index == (uint32_t)-1 && !h2ra.read_event(evt)
+      || event_index != (uint32_t)-1 && !h2ra.read_event(event_index, evt))
   {
-    cerr << "Invalid HepMC2 file." << endl;
+    cerr << "Invalid HepMC2 file or index out of range." << endl;
     return false;
   }
 
@@ -297,10 +297,10 @@ bool System::from_py8log(istream &is)
   return load_py8log(is) && process_all();
 }
 
-bool System::from_hepmc2(istream &is, size_t index)
+bool System::from_hepmc2(istream &is)
 {
   input_type.assign("hepmc2");
-  return load_hepmc2(is, index) && process_all();
+  return load_hepmc2(is) && process_all();
 }
 
 ostream &System::to_json(ostream &os) const
@@ -311,12 +311,15 @@ ostream &System::to_json(ostream &os) const
   prt_obj(
       ojs,
       "input", input_type,
+      "event", event_index,
       "stamp", time_stamp,
       KVP(timeline),
       "central", central_phase,
       "particles", particle_index
   );
-  return os;
+  if(!os)
+    cerr << "Error writing output." << endl;
+  return os << endl;
 }
 
 }  // namesapce Hepani

@@ -16,10 +16,47 @@
 
 #pragma once
 
+#include "System.h"
+
+#include <sstream>
+
 namespace Hepani {
 
 class ArgParser {
+public:
+  ArgParser() = default;
+  ArgParser(int argc, char *argv[]) { parse(argc, argv); }
+  
+  bool parse(int, char *[]);
+  void reset();
+  bool ready() { return _ready; }
+  bool error() { return _error; }
+  bool run(std::istream & = std::cin,
+      std::ostream & = std::cout) noexcept(false);
 
+private:
+  bool _ready = false;
+  bool _error = false;
+  std::map<std::string, std::string> args;
+  std::istringstream iss;
+  System system;
+
+  template<class T> T parse(std::string) noexcept(false);
 };
+
+template<class T>
+T ArgParser::parse(std::string arg) noexcept(false)
+{
+  T t;
+  iss.clear();
+  iss.str(arg);
+  if(iss >> t)
+    return t;
+  throw std::runtime_error("Invalid argument: " + std::string(arg) + ".");
+}
+
+extern template int ArgParser::parse(std::string);
+
+extern template double ArgParser::parse(std::string);
 
 }  // namespace Hepani

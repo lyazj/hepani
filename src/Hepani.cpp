@@ -14,9 +14,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "System.h"
+#include "ArgParser.h"
 
-int main()
+using namespace Hepani;
+
+int main(int argc, char **argv)
 {
-
+  ArgParser parser(argc, argv);
+  return !(parser.ready() && parser.run());
 }
