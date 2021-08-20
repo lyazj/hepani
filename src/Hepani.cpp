@@ -18,7 +18,7 @@
 
 using namespace Hepani;
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
   ArgParser parser(argc, argv);
   return !(parser.ready() && parser.run());

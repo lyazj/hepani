@@ -56,7 +56,6 @@ T ArgParser::parse(std::string arg) noexcept(false)
 }
 
 extern template int ArgParser::parse(std::string);
-
 extern template double ArgParser::parse(std::string);
 
 }  // namespace Hepani
