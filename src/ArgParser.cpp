@@ -20,8 +20,8 @@ using namespace std;
 
 namespace Hepani {
 
-template int ArgParser::parse(std::string);
-template double ArgParser::parse(std::string);
+template int ArgParser::parse(string);
+template double ArgParser::parse(string);
 
 bool ArgParser::parse(int argc, char *argv[])
 {
