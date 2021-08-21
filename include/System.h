@@ -17,7 +17,6 @@
 #pragma once
 
 #include "Particle.h"
-#include "Timeline.h"
 
 namespace Hepani {
 
@@ -48,7 +47,7 @@ private:
 
   bool build_index();
   void build_timeline();
-  uint32_t find_central_phase();
+  bool find_central_phase();
   void calc_dynamics();
   void write_time_stamp();
 

@@ -28,7 +28,7 @@ const Particle particle_zero(ParticleBase {
   .name = "(system)",
   .status = 11,
   .colours = {0},
-  .r = {0.0},
+  .r = {NAN, NAN, NAN},
   .v = {0.0},
   .p = {0.0},
   .e = 0.0,
@@ -66,7 +66,7 @@ void Particle::initialize()
   string *pname(name_cache.find(id));
   if(pname)
     name = *pname;
-  r = {0.0};
+  r = {NAN, NAN, NAN};
   v = e ? p / e : Array{0.0};
   birth = death = phase_undef;
   dj_parent = no;
@@ -94,6 +94,18 @@ uint32_t Particle::dj_find(vector<ParticlePtr> &pps)
   if(dj_parent == no)
     return no;
   return dj_parent = pps[dj_parent]->dj_find(pps);
+}
+
+Array Particle::get_position(
+    uint32_t phase, const Timeline &timeline) const
+{
+  return r + v * timeline.get_span(phase, birth);
+}
+
+void Particle::set_position(
+    const Array &pos, uint32_t phase, const Timeline &timeline)
+{
+  r = pos + v * timeline.get_span(birth, phase);
 }
 
 istream &operator>>(istream &is, Particle8 &particle8)

@@ -1,11 +1,9 @@
 #!/usr/bin/env -S make -f
 
 src = $(shell ls src/*.cpp)
-obj = $(shell ls src/*.cpp | sed -e 's/\.cpp$$/\.o/g')
-dep = $(shell ls src/*.cpp | sed -e 's/\.cpp$$/\.d/g')
-all = $(obj) \
-      $(dep) \
-      cache \
+obj = $(shell ls src/*.cpp | sed -e 's/\.cpp$$/\.o/')
+dep = $(shell ls src/*.cpp | sed -e 's/\.cpp$$/\.d/')
+all = cache \
       cache/name.txt \
       cache/description.json \
       bin/Hepani \
@@ -18,10 +16,10 @@ CXX = g++
 CXXFLAGS = -O2 -Wall -Wshadow -Wextra -Iinclude
 LDFLAGS = -lHepMC3
 
-all: $(all) clean_dep
+all: $(all)
 
 clean:
-	rm -rf $(all)
+	rm -rf $(obj) $(dep) $(all)
 
 cache cache/name.txt cache/description.json : bin/Cache
 	./$<
@@ -46,7 +44,8 @@ example/output.json.gz: example/output.json
 	$(CXX) $(CXXFLAGS) $(filter %.cpp,$^) -o $@ -c
 
 %.d: %.cpp
-	$(CXX) $(CXXFLAGS) $< -MM > $@
+	@set -e; dep=`$(CXX) $(CXXFLAGS) $< -MM | sed -e 's/\\\\$$//'`; \
+	    (echo $$dep; echo $$dep | sed -e 's/\.o:/\.d:/') > $@
 
 clean_obj:
 	$(RM) $(obj)

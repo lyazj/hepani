@@ -17,6 +17,7 @@
 #pragma once
 
 #include "Array.h"
+#include "Timeline.h"
 
 #include <set>
 #include <vector>
@@ -61,6 +62,8 @@ struct Particle : ParticleBase {
   void initialize();
   void dj_union(Particle &, std::vector<ParticlePtr> &);
   uint32_t dj_find(std::vector<ParticlePtr> &);
+  Array get_position(uint32_t, const Timeline &) const;
+  void set_position(const Array &, uint32_t, const Timeline &);
   CTjson::ojsonstream &print(CTjson::ojsonstream &) const;
 };
 

@@ -256,7 +256,7 @@ void System::build_timeline()
   timeline.build(particle_index.size());
 }
 
-uint32_t System::find_central_phase()
+bool System::find_central_phase()
 {
   auto find = [&](uint32_t status) {
     for(const Particles &pps : particle_index)
@@ -268,7 +268,12 @@ uint32_t System::find_central_phase()
   for(uint32_t status : {22, 23, 21})
     if((central_phase = find(status)) != phase_undef)
       break;
-  return central_phase;
+  if(central_phase == phase_undef)
+  {
+    cerr << "Cannot find central phase." << endl;
+    return false;
+  }
+  return true;
 }
 
 void System::calc_dynamics()
@@ -290,11 +295,8 @@ bool System::process_all()
   if(!build_index())
     return false;
   build_timeline();
-  if(find_central_phase() == phase_undef)
-  {
-    cerr << "Cannot find central phase." << endl;
+  if(!find_central_phase())
     return false;
-  }
   calc_dynamics();
   write_time_stamp();
   return true;
