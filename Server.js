@@ -41,13 +41,13 @@ var cacheControl = {
 
 cacheControl = Object.assign(cacheControl, {
   "favicon.ico"          : cacheControl.static,
-  "404.html"             : cacheControl.static,
-  "406.html"             : cacheControl.static,
-  "500.html"             : cacheControl.static,
+  "error/404.html"       : cacheControl.static,
+  "error/406.html"       : cacheControl.static,
+  "error/500.html"       : cacheControl.static,
   "coming.html"          : cacheControl.static,
   "ani.html"             : cacheControl.mutable,
-  "ani.css"              : cacheControl.mutable,
-  "ani.js"               : cacheControl.mutable,
+  "css/ani.css"          : cacheControl.mutable,
+  "js/ani.js"            : cacheControl.mutable,
   "img/beian.png"        : cacheControl.static,
   "img/about.svg"        : cacheControl.static,
   "img/download.svg"     : cacheControl.static,
