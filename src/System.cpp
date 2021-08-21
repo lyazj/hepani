@@ -251,29 +251,49 @@ bool System::build_index()
   return true;
 }
 
+bool System::find_centrals()
+{
+  uint32_t c_phase(phase_undef);
+  Particles c_particles;
+  uint32_t c_status((uint32_t)-1);
+
+  auto find = [&](uint32_t object_status) {
+    for(const Particles &pps : particle_index)
+      for(const ParticlePtr &pp : pps)
+      {
+        uint32_t status(abs(pp->status));
+        if(c_status == (uint32_t)-1)
+        {
+          if(status == object_status)
+          {
+            c_phase = pp->birth;
+            c_particles.push_back(pp);
+            c_status = status;
+          }
+        }
+        else if(status == c_status)
+          c_particles.push_back(pp);
+      }
+    return c_status;
+  };
+  for(uint32_t object_status : {22, 23, 21})
+    if(find(object_status) != (uint32_t)-1)
+      break;
+
+  if(c_status == (uint32_t)-1)
+  {
+    cerr << "Cannot find central particles." << endl;
+    return false;
+  }
+  swap(central_phase, c_phase);
+  swap(central_particles, c_particles);
+  swap(central_status, c_status);
+  return true;
+}
+
 void System::build_timeline()
 {
   timeline.build(particle_index.size());
-}
-
-bool System::find_central_phase()
-{
-  auto find = [&](uint32_t status) {
-    for(const Particles &pps : particle_index)
-      for(const ParticlePtr &pp : pps)
-        if(abs(pp->status) == status)
-          return pp->birth;
-    return phase_undef;
-  };
-  for(uint32_t status : {22, 23, 21})
-    if((central_phase = find(status)) != phase_undef)
-      break;
-  if(central_phase == phase_undef)
-  {
-    cerr << "Cannot find central phase." << endl;
-    return false;
-  }
-  return true;
 }
 
 void System::calc_dynamics()
@@ -309,11 +329,9 @@ void System::write_time_stamp()
 
 bool System::process_all()
 {
-  if(!build_index())
+  if(!build_index() || !find_centrals())
     return false;
   build_timeline();
-  if(!find_central_phase())
-    return false;
   calc_dynamics();
   write_time_stamp();
   return true;
@@ -342,7 +360,9 @@ ostream &System::to_json(ostream &os) const
       "event", event_index,
       "stamp", time_stamp,
       KVP(timeline),
-      "central", central_phase,
+      KVP(central_phase),
+      KVP(central_particles),
+      KVP(central_status),
       "particles", particle_index
   );
   if(!os)

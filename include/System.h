@@ -40,14 +40,16 @@ private:
   ParticleIndex    particle_index;
   ParticleDJIndex  particle_dj_index;
   uint32_t         central_phase = phase_undef;
+  Particles        central_particles;
+  uint32_t         central_status = (uint32_t)-1;
 
   bool load_py8log(std::istream &);
   bool load_hepmc2(std::istream &);
   bool process_all();
 
   bool build_index();
+  bool find_centrals();
   void build_timeline();
-  bool find_central_phase();
   void calc_dynamics();
   void write_time_stamp();
 

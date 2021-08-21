@@ -96,7 +96,10 @@ function onclickIntersect(particleMesh) {
       description
     )
     if(intersect)
+    {
       onloseIntersect(intersect.object)
+      intersect = undefined
+    }
     if(isDisplayingOriginal)
       start()
   })
