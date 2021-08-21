@@ -94,7 +94,9 @@ bool System::load_py8log(istream &is)
 
 bool System::load_hepmc2(istream &is)
 {
-  HepMC2RandomAccessor h2ra(is);
+  stringstream ss;
+  ss << is.rdbuf();
+  HepMC2RandomAccessor h2ra(ss);
   GenEvent evt;
 
 #pragma GCC diagnostic push
