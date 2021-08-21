@@ -278,7 +278,24 @@ bool System::find_central_phase()
 
 void System::calc_dynamics()
 {
-
+  particle_index[0][0]->r = {0.0};
+  if(particle_index.size() > 1)
+    for(const ParticlePtr &pp : particle_index[1])
+      pp->set_position({0.0}, central_phase, timeline);
+  for(uint32_t phase = 2; phase < particle_index.size(); ++phase)
+    for(const ParticlePtr &pp : particle_index[phase])
+    {
+      double e_sum(0.0);
+      pp->r = {0.0};
+      for(uint32_t m : pp->momset)
+      {
+        e_sum +=
+          particles[m]->e;
+        pp->r +=
+          particles[m]->e * particles[m]->get_position(phase, timeline);
+      }
+      pp->r /= e_sum;  // NAN(C++) -> null(JSON) -> NaN(js) -> 0(three.js)
+    }
 }
 
 void System::write_time_stamp()
