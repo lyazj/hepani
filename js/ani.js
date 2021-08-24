@@ -37,10 +37,6 @@ const particleRadius = 1
 const minLabelDistance = 20
 const arrowLengthUnit = 4
 
-// // @require: labelWidth >> labelHeight
-// const labelWidth = 1200
-// const labelHeight = 200
-
 /* inner variables */
 var _initializeState
 var _animationTimeStamp
@@ -48,6 +44,7 @@ var _shouldDisplayLabels
 var _shouldDisplayArrows
 var _labelIntervalID
 var _timeRecord = []
+var _gifBlobURL
 
 // @noexcept
 function render() {
@@ -739,35 +736,36 @@ function promptChangeTime() {
     alert("Not changed: Invalid time!")
 }
 
-// function createLabelCanvas(particleData) {
-//   var canvas = document.createElement("canvas")
-//   canvas.width = labelWidth
-//   canvas.height = labelWidth
-//   var context = canvas.getContext("2d")
-//   context.font = labelHeight + "px Arial"
-//   context.textAlign = "center"
-//   context.textBaseline = "middle"
-//   context.fillStyle = "#00ff00"
-//   context.fillText(particleData.name,
-//     canvas.width / 2, canvas.height / 2, labelWidth
-//   New
-//   return canvas
-// }
-// 
-// function createLabelTexture(particleData) {
-//   return new THREE.CanvasTexture(createLabelCanvas(particleData))
-// }
-// 
-// function createLabelMaterial(particleData) {
-//   return new THREE.SpriteMaterial({
-//     color: 0xff00ff,
-//     map: createLabelTexture(particleData),
-//   })
-// }
-// 
-// function createLabel(particleData) {
-//   var label = new THREE.Sprite(createLabelMaterial(particleData))
-//   label.position.setZ(particleRadius * 2)
-//   label.scale.set(10, 10, 1)
-//   return label
-// }
+// @noexcept
+function downloadGIF() {
+  if(!GIF)
+    alert("No GIF support yet.")
+  var gif = new GIF({
+    repeat: 0,  // forever
+    quality: 10,  // pixel sample interval
+    workers: 8,
+    workerScript: "js/gif.worker.js",
+    debug: false,
+  })
+  stop()
+  for(var t = 0; t < timeline[timeline.length - 1]; t += 0.1)
+  {
+    changeTime(t)
+    gif.addFrame(renderer.domElement, {
+      delay: 100,
+      copy: true,
+    })
+  }
+  start()
+  gif.on("finished", (blob) => {
+    if(_gifBlobURL)
+      URL.revokeObjectURL(_gifBlobURL)
+    var a = document.createElement("a")
+    _gifBlobURL = a.href = URL.createObjectURL(blob)
+    a.download = "animation.gif"
+    a.click()
+  })
+  gif.render()
+  alert("Rendering started. " +
+    "File downloading will be started after rendering finished.")
+}

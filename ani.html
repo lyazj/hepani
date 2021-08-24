@@ -52,6 +52,9 @@
         <a href="javascript:downloadJSON()">
           <li class="function"><img class="icon" alt="" src="img/download.svg" /><span class="name">Save</span></li>
         </a>
+        <a href="javascript:downloadGIF()">
+          <li class="function"><img class="icon" alt="" src="img/download_gif.svg" /><span class="name">Save GIF</span></li>
+        </a>
         <a href="coming.html" target="_black">
           <li class="function"><img class="icon" alt="" src="img/help.svg" /><span class="name">Help</span></li>
         </a>
@@ -96,6 +99,7 @@
             loadJS("js/ani.js", function () {
               loadJS("js/pid.js", function () {
                 requestJSON()
+                loadJS("js/gif.js")
               })
             })
           })
