@@ -741,9 +741,9 @@ function promptChangeTime() {
 function downloadGIF() {
   if(_gifRendering)
     return alert("Please wait for GIF rendering...")
-  _gifRendering = true
   if(!GIF)
-    alert("No GIF support yet.")
+    return alert("No GIF support yet.")
+  _gifRendering = true
   var gif = new GIF({
     repeat: 0,  // forever
     quality: 10,  // pixel sample interval
