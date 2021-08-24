@@ -227,7 +227,7 @@ function updateStatus() {
     timeStatus.innerHTML = time.toFixed(3)
       + " / " + timeline[timeline.length - 1].toFixed(3) + " s"
   if(phaseStatus)
-    phaseStatus.innerHTML = phase + " / " + timeline.length
+    phaseStatus.innerHTML = phase + " / " + (timeline.length - 1)
   if(_timeRecord.length >= 20)
   {
     var times = _timeRecord
