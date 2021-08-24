@@ -44,6 +44,7 @@ var _shouldDisplayLabels
 var _shouldDisplayArrows
 var _labelIntervalID
 var _timeRecord = []
+var _gifRendering
 var _gifBlobURL
 
 // @noexcept
@@ -738,6 +739,9 @@ function promptChangeTime() {
 
 // @noexcept
 function downloadGIF() {
+  if(_gifRendering)
+    return alert("Please wait for GIF rendering...")
+  _gifRendering = true
   if(!GIF)
     alert("No GIF support yet.")
   var gif = new GIF({
@@ -758,6 +762,7 @@ function downloadGIF() {
   }
   start()
   gif.on("finished", (blob) => {
+    _gifRendering = false
     if(_gifBlobURL)
       URL.revokeObjectURL(_gifBlobURL)
     var a = document.createElement("a")
