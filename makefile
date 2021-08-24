@@ -45,7 +45,7 @@ example/output.json.gz: example/output.json
 
 %.d: %.cpp
 	@set -e; dep=`$(CXX) $(CXXFLAGS) $< -MM | sed -e 's/\\\\$$//'`; \
-	    (echo $$dep; echo $$dep | sed -e 's/\.o:/\.d:/') > $@
+	    (echo src/$$dep; echo src/$$dep | sed -e 's/\.o:/\.d:/') > $@
 
 clean_obj:
 	$(RM) $(obj)
