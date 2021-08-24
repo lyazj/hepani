@@ -27,6 +27,11 @@ var fileType = {
   // ...
 }
 
+fileType = Object.assign(fileType, {
+  map: fileType.json,
+  // ...
+})
+
 var noGzip = [
   /.*\.png$/,
   /.*\.jpg$/,
