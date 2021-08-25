@@ -57,22 +57,16 @@ function render() {
 
 // @noexcept
 function ongetIntersect(particleMesh) {
-  if(!(particleMesh instanceof ParticleMesh))
-    return
   particleMesh.material = getIntersectMaterial(particleMesh.data)
 }
 
 // @noexcept
 function onloseIntersect(particleMesh) {
-  if(!(particleMesh instanceof ParticleMesh))
-    return
   particleMesh.material = getParticleMaterial(particleMesh.data)
 }
 
 // @noexcept
 function onclickIntersect(particleMesh) {
-  if(!(particleMesh instanceof ParticleMesh))
-    return
   getDescription(particleMesh.data.id, function (description) {
     var isDisplayingOriginal = isDisplaying()
     if(isDisplayingOriginal)
@@ -95,7 +89,7 @@ function onclickIntersect(particleMesh) {
     )
     if(intersect)
     {
-      onloseIntersect(intersect.object)
+      onloseIntersect(intersect)
       intersect = undefined
     }
     if(isDisplayingOriginal)
@@ -113,7 +107,7 @@ function onmousemove(evt) {
 // @noexcept
 function onclick(evt) {
   if(intersect)
-    onclickIntersect(intersect.object)
+    onclickIntersect(intersect)
 }
 
 // @noexcept
@@ -138,14 +132,24 @@ function updateControls() {
 // @noexcept
 function updateIntersect() {
   raycaster.setFromCamera(mouse, camera)
-  var intersectNew = raycaster.intersectObjects(scene.children)[0]
+  var intersects = raycaster.intersectObjects(scene.children)
+  var intersectNew
+  for(var i = 0; i < intersects.length; ++i)
+  {
+    var object = intersects[i].object
+    if(object instanceof ParticleMesh)
+    {
+      intersectNew = object
+      break
+    }
+  }
   if(intersectNew != intersect)
   {
     if(intersect)
-      onloseIntersect(intersect.object)
+      onloseIntersect(intersect)
     intersect = intersectNew
     if(intersect)
-      ongetIntersect(intersect.object)
+      ongetIntersect(intersect)
     render()
   }
 }
