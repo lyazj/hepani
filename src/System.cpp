@@ -223,10 +223,13 @@ bool System::build_index()
       particles[*i1]->dj_union(*particles[*i2++], particles);
   }
 
-  particle_dj_index.clear();
+  map<uint32_t, Particles> par_dj_index;
+  vector<Particles> par_index;
+  swap(particle_index, par_index);
+  swap(particle_dj_index, par_dj_index);
+
   for(const ParticlePtr &pp : particles)
     particle_dj_index[pp->dj_find(particles)].push_back(pp);
-  particle_index.clear();
   for(auto p : particle_dj_index)
   {
     uint32_t birth;
@@ -235,6 +238,8 @@ bool System::build_index()
     }
     catch(const runtime_error &err) {
       cerr << err.what() << endl;
+      swap(particle_index, par_index);
+      swap(particle_dj_index, par_dj_index);
       return false;
     }
     if(particle_index.size() <= birth)
