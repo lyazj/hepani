@@ -1,2 +1,2 @@
 # hepani
-Hign Energy Physics Animation Tools
+High Energy Physics Animation Tools
