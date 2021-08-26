@@ -191,11 +191,50 @@ var PID = {
     isBottomBaryon  : 0xffff00,
   },
 
-  getColor: (pid) => {
-    for(var func in PID.colors)
-      if(PID[func](pid))
-        return PID.colors[func]
-    return 0xffffff
+  sizes: {
+    isQuark         : particleRadius,
+    isLepton        : particleRadius,
+    isGHB           : particleRadius,
+    isSpecial       : particleRadius,
+    isMC            : particleRadius,
+    isDiquark       : particleRadius,
+    isSUSY          : particleRadius,
+    isLightI1Meson  : particleRadius,
+    isLightI0Meson  : particleRadius,
+    isStrangeMeson  : particleRadius,
+    isCharmedMeson  : particleRadius,
+    isBottomMeson   : particleRadius,
+    isCcbarMeson    : particleRadius,
+    isBbbarMeson    : particleRadius,
+    isLightBaryon   : particleRadius,
+    isStrangeBaryon : particleRadius,
+    isCharmedBaryon : particleRadius,
+    isBottomBaryon  : particleRadius,
+  },
+
+  getPIDMatch: (particleData) => {
+    if(particleData.pidMatch === undefined)
+    {
+      particleData.pidMatch = null
+      for(var func in PID.colors)
+        if(PID[func](particleData.id))
+          particleData.pidMatch = func
+    }
+    return particleData.pidMatch
+  },
+
+  getColor: (particleData) => {
+    var pidMatch = PID.getPIDMatch(particleData)
+    if(!pidMatch)
+      return 0xffffff
+    return PID.colors[pidMatch]
+  },
+
+  getSize: (particleData) => {
+    var pidMatch = PID.getPIDMatch(particleData)
+    if(!pidMatch)
+      return particleRadius
+    return PID.sizes[pidMatch]
   },
 
 }
@@ -263,11 +302,41 @@ var STATUS = {
     isDecay      : "lightskyblue",
   },
 
-  getColor: (status) => {
-    for(var func in STATUS.colors)
-      if(STATUS[func](status))
-        return STATUS.colors[func]
-    return 0xffffff
+  sizes: {
+    isBeam       : particleRadius,
+    isHard       : particleRadius * 2,
+    isMPI        : particleRadius,
+    isISR        : particleRadius,
+    isFSR        : particleRadius,
+    isRemnant    : particleRadius,
+    isHadronPrep : particleRadius,
+    isHadron     : particleRadius,
+    isDecay      : particleRadius,
+  },
+
+  getStatusMatch: (particleData) => {
+    if(particleData.statusMatch === undefined)
+    {
+      particleData.statusMatch = null
+      for(var func in STATUS.colors)
+        if(STATUS[func](particleData.status))
+          particleData.statusMatch = func
+    }
+    return particleData.statusMatch
+  },
+
+  getColor: (particleData) => {
+    var statusMatch = STATUS.getStatusMatch(particleData)
+    if(!statusMatch)
+      return 0xffffff
+    return STATUS.colors[statusMatch]
+  },
+
+  getSize: (particleData) => {
+    var statusMatch = STATUS.getStatusMatch(particleData)
+    if(!statusMatch)
+      return particleRadius
+    return STATUS.sizes[statusMatch]
   },
 
 }
@@ -281,11 +350,27 @@ PID.resetColor = new Function(
 STATUS.resetColor = new Function(
   "STATUS.colors = JSON.parse('" + JSON.stringify(STATUS.colors) + "')"
 )
+PID.resetSize = new Function(
+  "PID.sizes = JSON.parse('" + JSON.stringify(PID.sizes) + "')"
+)
+STATUS.resetSize = new Function(
+  "STATUS.sizes = JSON.parse('" + JSON.stringify(STATUS.sizes) + "')"
+)
 
 function resetColor() {
   if(colorScheme == "class")
     PID.resetColor()
   else if(colorScheme == "status")
     STATUS.resetColor()
-  updateColorScheme()
+  updateColorConfig()
+  updateParticleColors()
+}
+
+function resetSize() {
+  if(sizeScheme == "class")
+    PID.resetSize()
+  else if(sizeScheme == "status")
+    STATUS.resetSize()
+  updateSizeConfig()
+  updateParticleSizes()
 }

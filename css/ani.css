@@ -171,9 +171,9 @@ aside .functions > .function:first-of-type {
   top: 50%;
   left: 50%;
   width: 800px;
-  height: 400px;
+  height: 450px;
   margin-left: -400px;
-  margin-top: -200px;
+  margin-top: -225px;
   z-index: 100;
   background: rgba(80, 192, 255, 0.9);
   border-radius: 20px;
@@ -199,7 +199,17 @@ aside .functions > .function:first-of-type {
 }
 
 #config > * {
+  clear: left;
+}
+
+#config > * > * {
   clear: both;
+}
+
+#config .choices {
+  height: 20px;
+  line-height: 20px;
+  margin: 10px 0;
 }
 
 #config .choices .choice {
@@ -222,19 +232,21 @@ aside .functions > .function:first-of-type {
   border: 1px solid yellow;
 }
 
-#config .color-selector {
+#config .color-selector, #config .size-editor {
   float: left;
   margin: 5px;
   text-align: center;
   width: 138px;
 }
 
-#config .color-selector input[type="color"] {
+#config .color-selector input[type="color"], #config .size-editor input[type="text"] {
   width: 40px;
   height: 20px;
   display: inline-block;
   border: none;
   padding: 0;
+  margin: 5px 0;
+  box-sizing: border-box;
 }
 
 #config .color-selector input[type="color"]:hover {
@@ -243,4 +255,13 @@ aside .functions > .function:first-of-type {
 
 #config .color-selector input[type="color"]:active {
   outline: 1px solid yellow;
+}
+
+#config .page-contral {
+  float: right;
+  padding: 0 10px;
+}
+
+#config .config-page {
+  display: none;
 }

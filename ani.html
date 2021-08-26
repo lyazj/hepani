@@ -95,21 +95,42 @@
     </script>
     <div id="config">
       <div id="close"><a href="javascript:hideConfig()">×</a></div>
-      <h3>Color Configuration</h3>
-      <form class="choices" action="javascript:resetColor()">
-        Classify by:
-        <span class="choice">
-          <input id="color-scheme-class" name="color-scheme" type="radio" value="class" onchange="onchangeColorScheme(this)" />
-          <label for="color-scheme-class">class</label>
-        </span>
-        <span class="choice">
-          <input id="color-scheme-status" name="color-scheme" type="radio" value="status" onchange="onchangeColorScheme(this)" />
-          <label for="color-scheme-status">status</label>
-        </span>
-        <span class="choice"><button>reset current scheme</button></span>
-      </form>
-      <h4>Color Scheme</h4>
-      <form id="color-selectors"></form>
+      <div class="config-page" id="config-1">
+        <h3>Configuration</h3>
+        <h4>Color Scheme</h4>
+        <form class="choices" action="javascript:resetColor()">
+          Classify by:
+          <span class="choice">
+            <input id="color-scheme-class" name="color-scheme" type="radio" value="class" onchange="onchangeColorScheme(this)" />
+            <label for="color-scheme-class">class</label>
+          </span>
+          <span class="choice">
+            <input id="color-scheme-status" name="color-scheme" type="radio" value="status" onchange="onchangeColorScheme(this)" />
+            <label for="color-scheme-status">status</label>
+          </span>
+          <span class="choice"><button>reset current scheme</button></span>
+        </form>
+        <form id="color-selectors"></form>
+      </div>
+      <div class="config-page" id="config-2">
+        <h3>Configuration</h3>
+        <h4>Size Scheme</h4>
+        <form class="choices" action="javascript:resetSize()">
+          Classify by:
+          <span class="choice">
+            <input id="size-scheme-class" name="size-scheme" type="radio" value="class" onchange="onchangeSizeScheme(this)" />
+            <label for="size-scheme-class">class</label>
+          </span>
+          <span class="choice">
+            <input id="size-scheme-status" name="size-scheme" type="radio" value="status" onchange="onchangeSizeScheme(this)" />
+            <label for="size-scheme-status">status</label>
+          </span>
+          <span class="choice"><button>reset current scheme</button></span>
+        </form>
+        <form id="size-editors"></form>
+      </div>
+      <div class="page-contral" style="margin-right:-10px"><a href="javascript:configNextPage()">Next</a></div>
+      <div class="page-contral"><a href="javascript:configPreviousPage()">Previous</a></div>
     </div>
     <script src="js/load.js"></script>
     <script>
@@ -120,7 +141,7 @@
               loadJS("js/particle.js", function () {
                 requestJSON()
                 loadJS("js/gif.js")
-                updateColorScheme()
+                updateConfig()
               })
             })
           })

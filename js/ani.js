@@ -20,6 +20,9 @@ var labelOverlaps = { }
 /* read-write */
 var colorScheme = "class"
 
+/* read-write */
+var sizeScheme = "class"
+
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera()
 const renderer = new THREE.WebGLRenderer({alpha: true})
@@ -27,6 +30,7 @@ const axesHelper = new THREE.AxesHelper(100)
 const point = new THREE.PointLight(0xffffff)
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
+const particleGeometries = { }
 const particleMaterials = { }
 const particleMeshes = { }
 
@@ -49,6 +53,7 @@ var _labelIntervalID
 var _timeRecord = []
 var _gifRendering
 var _gifBlobURL
+var _configPage
 
 // @noexcept
 function render() {
@@ -204,6 +209,12 @@ function clearParticles() {
 }
 
 // @noexcept
+function clearParticleGeometries() {
+  for(var size in particleGeometries)
+    removeParticleGeometry(size)
+}
+
+// @noexcept
 function clearParticleMaterials() {
   for(var color in particleMaterials)
     removeParticleMaterial(color)
@@ -265,6 +276,7 @@ function initialize(doubleCallingNeeded) {
   time = 0.0
   phase = -1
   clearParticles()
+  clearParticleGeometries()
   clearParticleMaterials()
   removeCanvases()
   document.body.appendChild(renderer.domElement)
@@ -274,6 +286,8 @@ function initialize(doubleCallingNeeded) {
   enableUpdateLabelOverlaps()
   disableDisplayArrows()
   document.getElementById("color-scheme-" + colorScheme)
+    .checked = "checked"
+  document.getElementById("size-scheme-" + sizeScheme)
     .checked = "checked"
 }
 
@@ -326,22 +340,30 @@ function startStop() {
 }
 
 // @noexcept
+function getParticleSize(particleData) {
+  if(sizeScheme == "class")
+    return PID.getSize(particleData)
+  if(sizeScheme == "status")
+    return STATUS.getSize(particleData)
+}
+
+// @noexcept
 function getParticleColor(particleData) {
-  if(colorScheme == "pid")
-    return PID.getColor(particleData.id)
+  if(colorScheme == "class")
+    return PID.getColor(particleData)
   if(colorScheme == "status")
-    return STATUS.getColor(particleData.status)
-  var color = 0
-  var proportion = particleData.e / particles[0][0].e
-  if(proportion >= 0 && proportion <= 1)
-  {
-    proportion = Math.pow(proportion, 0.5)
-    color += proportion * 0xff0000 + (1 - proportion) * 0x0000ff
-  }
-  var ratio = particleData.m / particleData.e
-  if(ratio >= 0 && ratio <= 1)
-    color += ratio * 0x00ff00
-  return Math.round(color)
+    return STATUS.getColor(particleData)
+  // var color = 0
+  // var proportion = particleData.e / particles[0][0].e
+  // if(proportion >= 0 && proportion <= 1)
+  // {
+  //   proportion = Math.pow(proportion, 0.5)
+  //   color += proportion * 0xff0000 + (1 - proportion) * 0x0000ff
+  // }
+  // var ratio = particleData.m / particleData.e
+  // if(ratio >= 0 && ratio <= 1)
+  //   color += ratio * 0x00ff00
+  // return Math.round(color)
 }
 
 // @noexcept
@@ -366,6 +388,13 @@ function getIntersectColor(particleData) {
 }
 
 // @noexcept
+function getParticleGeometry(particleData) {
+  var particleSize = getParticleSize(particleData)
+  return particleGeometries[particleSize] =
+    particleGeometries[particleSize] || new THREE.SphereGeometry(particleSize)
+}
+
+// @noexcept
 function getParticleMaterial(particleData) {
   var particleColor = getParticleColor(particleData)
   return particleMaterials[particleColor] =
@@ -385,11 +414,9 @@ function getIntersectMaterial(particleData) {
 
 class ParticleMesh extends THREE.Mesh {
 
-  static geometry = new THREE.SphereGeometry(particleRadius)
-
   // @noexcept: super
   constructor(data) {
-    super(ParticleMesh.geometry, getParticleMaterial(data))
+    super(getParticleGeometry(data), getParticleMaterial(data))
     this.data = data
     this.initialize()
     createLabel(this)
@@ -510,11 +537,11 @@ function createParticleMesh(particleData) {
 
 // @noexpect
 // @safe: duplicate calling
-function removeParticleMesh(particleNo) {
-  if(!particleMeshes[particleNo])
+function removeParticleGeometry(particleSize) {
+  if(!particleGeometries[particleSize])
     return
-  particleMeshes[particleNo].remove()
-  delete particleMeshes[particleNo]
+  particleGeometries[particleSize].dispose()
+  delete particleGeometries[particleSize]
 }
 
 // @noexpect
@@ -524,6 +551,15 @@ function removeParticleMaterial(particleColor) {
     return
   particleMaterials[particleColor].dispose()
   delete particleMaterials[particleColor]
+}
+
+// @noexpect
+// @safe: duplicate calling
+function removeParticleMesh(particleNo) {
+  if(!particleMeshes[particleNo])
+    return
+  particleMeshes[particleNo].remove()
+  delete particleMeshes[particleNo]
 }
 
 // @noexpect
@@ -800,34 +836,96 @@ function downloadGIF() {
     "File downloading will be started after rendering finished.")
 }
 
+// @noexcept
 function hideConfig() {
   config.style.display = "none"
 }
 
+// @noexcept
 function displayConfig() {
   stop()
   config.style.display = "block"
+  var page = document.getElementById("config-" + _configPage)
+  if(page)
+    page.style.display = "none"
+  _configPage = 1
+  page = document.getElementById("config-" + _configPage)
+  page.style.display = "block"
 }
 
+// @noexcept
+function configNextPage() {
+  var page = document.getElementById("config-" + _configPage)
+  if(page)
+    page.style.display = "none"
+  ++_configPage
+  page = document.getElementById("config-" + _configPage)
+  if(!page)
+  {
+    _configPage = 1
+    page = document.getElementById("config-" + _configPage)
+  }
+  page.style.display = "block"
+}
+
+// @noexcept
+function configPreviousPage() {
+  var page = document.getElementById("config-" + _configPage)
+  if(page)
+    page.style.display = "none"
+  --_configPage
+  page = document.getElementById("config-" + _configPage)
+  if(!page)
+  {
+    _configPage = 1
+    while(document.getElementById("config-" + _configPage))
+      ++_configPage
+    page = document.getElementById("config-" + --_configPage)
+  }
+  page.style.display = "block"
+}
+
+// @noexcept
 function onchangeColorScheme(radio) {
   colorScheme = radio.value
-  updateColorScheme()
+  updateColorConfig()
   updateParticleColors()
 }
 
-function updateColorScheme() {
-  var colorSelectors = document.getElementById("color-selectors")
-  if(!colorSelectors)
-    return
-  while(colorSelectors.children.length)
-    colorSelectors.removeChild(colorSelectors.children[0])
+// @noexcept
+function onchangeSizeScheme(radio) {
+  sizeScheme = radio.value
+  updateSizeConfig()
+  updateParticleSizes()
+}
+
+// @noexcept
+function updateConfig() {
+  updateColorConfig()
+  updateSizeConfig()
+}
+
+// @noexcept
+function updateColorConfig() {
+
+  var prefix
   var colors
   if(colorScheme == "class")
+  {
+    prefix = "PID"
     colors = PID.colors
+  }
   else if(colorScheme == "status")
+  {
+    prefix = "STATUS"
     colors = STATUS.colors
+  }
   else
-    return
+    throw new Error("Invalid color scheme: " + colorScheme)
+
+  var colorSelectors = document.getElementById("color-selectors")
+  while(colorSelectors.children.length)
+    colorSelectors.removeChild(colorSelectors.children[0])
   for(var func in colors)
   {
     var input = document.createElement("input")
@@ -837,7 +935,7 @@ function updateColorScheme() {
     input.value = "#" +
       new THREE.Color(colors[func]).getHexString()
     input.onchange = new Function(
-      "colors." + func +
+      prefix + ".colors." + func +
       " = new THREE.Color(this.value).getHex(); updateParticleColors()"
     )
     label.htmlFor = input.id = "color" + (label.innerHTML = func.slice(2))
@@ -847,14 +945,66 @@ function updateColorScheme() {
     div.appendChild(label)
     colorSelectors.appendChild(div)
   }
+
 }
 
+// @noexcept
+function updateSizeConfig() {
+
+  var prefix
+  var sizes
+  if(sizeScheme == "class")
+  {
+    prefix = "PID"
+    sizes = PID.sizes
+  }
+  else if(sizeScheme == "status")
+  {
+    prefix = "STATUS"
+    sizes = STATUS.sizes
+  }
+  else
+    throw new Error("Invalid size scheme: " + sizeScheme)
+
+  var sizeEditors = document.getElementById("size-editors")
+  while(sizeEditors.children.length)
+    sizeEditors.removeChild(sizeEditors.children[0])
+  for(var func in sizes)
+  {
+    var input = document.createElement("input")
+    var label = document.createElement("label")
+    var div = document.createElement("div")
+    input.type = "text"
+    input.value = sizes[func]
+    input.onchange = new Function(
+      prefix + ".sizes." + func + " = this.value; updateParticleSizes()"
+    )
+    label.htmlFor = input.id = "size" + (label.innerHTML = func.slice(2))
+    div.className = "size-editor"
+    div.appendChild(input)
+    div.appendChild(document.createElement("br"))
+    div.appendChild(label)
+    sizeEditors.appendChild(div)
+  }
+}
+
+// @noexcept
 function updateParticleColors() {
   scene.children.forEach(function (mesh) {
     if(!(mesh instanceof ParticleMesh))
       return
-    mesh.material.color = new THREE.Color(getParticleColor(mesh.data))
+    mesh.material = getParticleMaterial(mesh.data)
     mesh.updateLabelColor()
+  })
+  render()
+}
+
+// @noexcept
+function updateParticleSizes() {
+  scene.children.forEach(function (mesh) {
+    if(!(mesh instanceof ParticleMesh))
+      return
+    mesh.geometry = getParticleGeometry(mesh.data)
   })
   render()
 }
