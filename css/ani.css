@@ -198,6 +198,10 @@ aside .functions > .function:first-of-type {
   color: red;
 }
 
+#config #close a:active {
+  color: white;
+}
+
 #config > * {
   clear: left;
 }
