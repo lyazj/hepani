@@ -45,9 +45,6 @@
         <a href="javascript:stop();writePage('file.html')">
           <li class="function"><img class="icon" alt="" src="img/file.svg" /><span class="name">File</span></li>
         </a>
-        <a href="javascript:stop();writePage('file.html')">
-          <li class="function"><img class="icon" alt="" src="img/time.svg" /><span class="name">Time</span></li>
-        </a>
         <a href="javascript:startStop()">
           <li class="function"><img class="icon" alt="" src="img/start.svg" /><span class="name" id="start_stop">Start</span></li>
         </a>
@@ -56,6 +53,9 @@
         </a>
         <a href="javascript:downloadGIF()">
           <li class="function"><img class="icon" alt="" src="img/download_gif.svg" /><span class="name">Save GIF</span></li>
+        </a>
+        <a href="javascript:displayConfig()">
+          <li class="function"><img class="icon" alt="" src="img/config.svg" /><span class="name">Configurate</span></li>
         </a>
         <a href="coming.html" target="_black">
           <li class="function"><img class="icon" alt="" src="img/help.svg" /><span class="name">Help</span></li>
@@ -69,20 +69,20 @@
     <div id="labels"></div>
     <div id="statuses">
       <div class="status">time: <a href="javascript:promptChangeTime()"><span id="timeStatus">null</span></div></a>
-      <div class="status">phase: <span id="phaseStatus">null</span></div>
-      <div class="status">fps: <span id="fpsStatus">null</span></div>
-      <div class="status" style="float: right">
-        <input type="checkbox" id="checkDisplayArrows" onchange="onchangeCheckDisplayArrows()" />
-        <label for="checkDisplayArrows">display arrows</label>
-      </div>
-      <div class="status" style="float: right">
-        <input type="checkbox" id="checkUpdateLabelOverlaps" onchange="onchangeCheckUpdateLabelOverlaps()" />
-        <label for="checkUpdateLabelOverlaps">update label overlaps</label>
-      </div>
-      <div class="status" style="float: right">
-        <input type="checkbox" id="checkDisplayLabels" onchange="onchangeCheckDisplayLabels()" />
-        <label for="checkDisplayLabels">display labels</label>
-      </div>
+        <div class="status">phase: <span id="phaseStatus">null</span></div>
+        <div class="status">fps: <span id="fpsStatus">null</span></div>
+        <div class="status" style="float: right">
+          <input type="checkbox" id="checkDisplayArrows" onchange="onchangeCheckDisplayArrows()" />
+          <label for="checkDisplayArrows">display arrows</label>
+        </div>
+        <div class="status" style="float: right">
+          <input type="checkbox" id="checkUpdateLabelOverlaps" onchange="onchangeCheckUpdateLabelOverlaps()" />
+          <label for="checkUpdateLabelOverlaps">update label overlaps</label>
+        </div>
+        <div class="status" style="float: right">
+          <input type="checkbox" id="checkDisplayLabels" onchange="onchangeCheckDisplayLabels()" />
+          <label for="checkDisplayLabels">display labels</label>
+        </div>
     </div>
     <script>
       function onclickAbout() {
@@ -93,15 +93,34 @@
         }
       }
     </script>
+    <div id="config">
+      <div id="close"><a href="javascript:hideConfig()">×</a></div>
+      <h3>Color Configuration</h3>
+      <form class="choices" action="javascript:resetColor()">
+        Classify by:
+        <span class="choice">
+          <input id="color-scheme-class" name="color-scheme" type="radio" value="class" onchange="onchangeColorScheme(this)" />
+          <label for="color-scheme-class">class</label>
+        </span>
+        <span class="choice">
+          <input id="color-scheme-status" name="color-scheme" type="radio" value="status" onchange="onchangeColorScheme(this)" />
+          <label for="color-scheme-status">status</label>
+        </span>
+        <span class="choice"><button>reset current scheme</button></span>
+      </form>
+      <h4>Color Scheme</h4>
+      <form id="color-selectors"></form>
+    </div>
     <script src="js/load.js"></script>
     <script>
       loadJS("https://threejs.org/build/three.min.js", function () {
         loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
           loadJS("js/io.js", function () {
             loadJS("js/ani.js", function () {
-              loadJS("js/pid.js", function () {
+              loadJS("js/particle.js", function () {
                 requestJSON()
                 loadJS("js/gif.js")
+                updateColorScheme()
               })
             })
           })

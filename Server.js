@@ -59,13 +59,13 @@ cacheControl = Object.assign(cacheControl, {
   "js/gif.worker.js.map"  : cacheControl.static,
   "img/beian.png"         : cacheControl.static,
   "img/about.svg"         : cacheControl.static,
+  "img/config.svg"        : cacheControl.static,
   "img/download.svg"      : cacheControl.static,
   "img/download_gif.svg"  : cacheControl.static,
   "img/file.svg"          : cacheControl.static,
   "img/functions.svg"     : cacheControl.static,
   "img/help.svg"          : cacheControl.static,
   "img/start.svg"         : cacheControl.static,
-  "img/time.svg"          : cacheControl.static,
 })
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")

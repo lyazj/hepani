@@ -17,6 +17,9 @@ var intersect
 /* visibility: hidden, {DOM-id: DOM-span}, read-only */
 var labelOverlaps = { }
 
+/* read-write */
+var colorScheme = "class"
+
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera()
 const renderer = new THREE.WebGLRenderer({alpha: true})
@@ -106,6 +109,8 @@ function onmousemove(evt) {
 
 // @noexcept
 function onclick(evt) {
+  if(config.style.display == "block")
+    return
   if(intersect)
     onclickIntersect(intersect)
 }
@@ -268,6 +273,8 @@ function initialize(doubleCallingNeeded) {
   enableDisplayLabels()
   enableUpdateLabelOverlaps()
   disableDisplayArrows()
+  document.getElementById("color-scheme-" + colorScheme)
+    .checked = "checked"
 }
 
 // @noexcept
@@ -320,18 +327,21 @@ function startStop() {
 
 // @noexcept
 function getParticleColor(particleData) {
-  return PID.getColor(particleData.id)
-  // var color = 0
-  // var proportion = particleData.e / particles[0][0].e
-  // if(proportion >= 0 && proportion <= 1)
-  // {
-  //   proportion = Math.pow(proportion, 0.5)
-  //   color += proportion * 0xff0000 + (1 - proportion) * 0x0000ff
-  // }
-  // var ratio = particleData.m / particleData.e
-  // if(ratio >= 0 && ratio <= 1)
-  //   color += ratio * 0x00ff00
-  // return Math.round(color)
+  if(colorScheme == "pid")
+    return PID.getColor(particleData.id)
+  if(colorScheme == "status")
+    return STATUS.getColor(particleData.status)
+  var color = 0
+  var proportion = particleData.e / particles[0][0].e
+  if(proportion >= 0 && proportion <= 1)
+  {
+    proportion = Math.pow(proportion, 0.5)
+    color += proportion * 0xff0000 + (1 - proportion) * 0x0000ff
+  }
+  var ratio = particleData.m / particleData.e
+  if(ratio >= 0 && ratio <= 1)
+    color += ratio * 0x00ff00
+  return Math.round(color)
 }
 
 // @noexcept
@@ -382,7 +392,7 @@ class ParticleMesh extends THREE.Mesh {
     super(ParticleMesh.geometry, getParticleMaterial(data))
     this.data = data
     this.initialize()
-    createLabel(data, getObjectUV(this))
+    createLabel(this)
     if(_shouldDisplayArrows)
       this.createArrow()
     scene.add(this)
@@ -429,6 +439,16 @@ class ParticleMesh extends THREE.Mesh {
       else
         label.style.visibility = "visible"
     }
+  }
+
+  // @noexcept
+  updateLabelColor() {
+    if(!_shouldDisplayLabels)
+      return
+    var label = this.getLabel()
+    label.style.color = "#" + new THREE.Color(
+      0xffffff - this.material.color.getHex()
+    ).getHexString()
   }
 
   // @noexcept
@@ -519,17 +539,18 @@ function getObjectUV(object) {
 
 /* position required for repressing glitter */
 // @noexpect
-function createLabel(particleData, position) {
+function createLabel(particleMesh) {
   var label = document.createElement("span")
   label.className = "label"
-  label.id = particleData.no
-  label.innerHTML = particleData.name
+  label.id = particleMesh.data.no
+  label.innerHTML = particleMesh.data.name
   label.style.color = "#" + new THREE.Color(
-    0xffffff - getParticleColor(particleData)
+    0xffffff - particleMesh.material.color.getHex()
   ).getHexString()
   if(_shouldDisplayLabels)
   {
     label.style.display = "inline-block"
+    var position = getObjectUV(particleMesh)
     label.style.left = position[0] + "px"
     label.style.top = position[1] + "px"
     if(_labelIntervalID)
@@ -777,4 +798,63 @@ function downloadGIF() {
   gif.render()
   alert("Rendering started. " +
     "File downloading will be started after rendering finished.")
+}
+
+function hideConfig() {
+  config.style.display = "none"
+}
+
+function displayConfig() {
+  stop()
+  config.style.display = "block"
+}
+
+function onchangeColorScheme(radio) {
+  colorScheme = radio.value
+  updateColorScheme()
+  updateParticleColors()
+}
+
+function updateColorScheme() {
+  var colorSelectors = document.getElementById("color-selectors")
+  if(!colorSelectors)
+    return
+  while(colorSelectors.children.length)
+    colorSelectors.removeChild(colorSelectors.children[0])
+  var colors
+  if(colorScheme == "class")
+    colors = PID.colors
+  else if(colorScheme == "status")
+    colors = STATUS.colors
+  else
+    return
+  for(var func in colors)
+  {
+    var input = document.createElement("input")
+    var label = document.createElement("label")
+    var div = document.createElement("div")
+    input.type = "color"
+    input.value = "#" +
+      new THREE.Color(colors[func]).getHexString()
+    input.onchange = new Function(
+      "colors." + func +
+      " = new THREE.Color(this.value).getHex(); updateParticleColors()"
+    )
+    label.htmlFor = input.id = "color" + (label.innerHTML = func.slice(2))
+    div.className = "color-selector"
+    div.appendChild(input)
+    div.appendChild(document.createElement("br"))
+    div.appendChild(label)
+    colorSelectors.appendChild(div)
+  }
+}
+
+function updateParticleColors() {
+  scene.children.forEach(function (mesh) {
+    if(!(mesh instanceof ParticleMesh))
+      return
+    mesh.material.color = new THREE.Color(getParticleColor(mesh.data))
+    mesh.updateLabelColor()
+  })
+  render()
 }

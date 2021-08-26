@@ -165,3 +165,82 @@ aside .functions > .function:first-of-type {
 #statuses a {
   color: inherit;
 }
+
+#config {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 800px;
+  height: 400px;
+  margin-left: -400px;
+  margin-top: -200px;
+  z-index: 100;
+  background: rgba(80, 192, 255, 0.9);
+  border-radius: 20px;
+  padding: 0 30px;
+  box-sizing: border-box;
+  display: none;
+}
+
+#config #close {
+  float: right;
+  margin-top: 15px;
+  margin-right: -20px;
+}
+
+#config #close a {
+  text-decoration: none;
+  color: inherit;
+  padding: 10px;
+}
+
+#config #close a:hover {
+  color: red;
+}
+
+#config > * {
+  clear: both;
+}
+
+#config .choices .choice {
+  margin: 0 5px;
+}
+
+#config .choices button {
+  padding: 0 10px;
+  margin-left: 10px;
+  background: skyblue;
+  border: 1px solid blue;
+  border-radius: 5px;
+}
+
+#config .choices button:hover {
+  border: 1px solid red;
+}
+
+#config .choices button:active {
+  border: 1px solid yellow;
+}
+
+#config .color-selector {
+  float: left;
+  margin: 5px;
+  text-align: center;
+  width: 138px;
+}
+
+#config .color-selector input[type="color"] {
+  width: 40px;
+  height: 20px;
+  display: inline-block;
+  border: none;
+  padding: 0;
+}
+
+#config .color-selector input[type="color"]:hover {
+  outline: 1px solid red;
+}
+
+#config .color-selector input[type="color"]:active {
+  outline: 1px solid yellow;
+}
