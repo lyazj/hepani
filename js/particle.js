@@ -240,14 +240,35 @@ var PID = {
 }
 
 // @REF: pythia8305/include/Pythia8Plugins/Visualisation.h
+// @REF: https://pythia.org/manuals/pythia8306/ParticleProperties.html
 
 var STATUS = {
 
   abs: Math.abs,
 
+  isNull: (status) => {  // meaningless
+    status = STATUS.abs(status)
+    return status == 0
+  },
+
+  isFinal: (status) => {  // not decayed yet
+    status = STATUS.abs(status)
+    return status == 1
+  },
+
+  isDecayed: (status) => {  // SM-hadron, tau, mu
+    status = STATUS.abs(status)
+    return status == 2
+  },
+
+  // isDocEntry: (status) => {  // not used
+  //   status = STATUS.abs(status)
+  //   return status == 3
+  // },
+
   isBeam: (status) => {
     status = STATUS.abs(status)
-    return status > 10 && status < 20
+    return status == 4 || status > 10 && status < 20
   },
 
   isHard: (status) => {
@@ -291,6 +312,9 @@ var STATUS = {
   },
 
   colors: {
+    isNull       : "white",
+    isFinal      : "darkgrey",
+    isDecayed    : "lightgrey",
     isBeam       : "black",
     isHard       : "red",
     isMPI        : "lightsalmon",
@@ -303,6 +327,9 @@ var STATUS = {
   },
 
   sizes: {
+    isNull       : particleRadius * 2,
+    isFinal      : particleRadius,
+    isDecayed    : particleRadius,
     isBeam       : particleRadius,
     isHard       : particleRadius * 2,
     isMPI        : particleRadius,
