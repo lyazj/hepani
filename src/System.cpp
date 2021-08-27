@@ -57,9 +57,15 @@ bool System::load_py8log(istream &is)
     return false;
   }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses"
   for(uint32_t i = 0; i < pps.size(); ++i)
   {
-    for(uint32_t m : ((Particle8 *)pps[i].get())->mothers)
+    Particle8 *pp8((Particle8 *)pps[i].get());
+    uint32_t (&mothers)[2](pp8->mothers);
+    uint32_t (&daughters)[2](pp8->daughters);
+    uint32_t status(abs(pp8->status));
+    for(uint32_t m : mothers)
       if(m >= pps.size())
       {
         cerr << "Invalid mother index: " + to_string(m) + "." << endl;
@@ -70,12 +76,19 @@ bool System::load_py8log(istream &is)
         pps[i]->momset.insert(m);
         pps[m]->dauset.insert(i);
       }
+    if(status > 80 && status < 87 || status > 100 && status < 107)
+      if(mothers[0])
+        for(uint32_t m = mothers[0] + 1; m < mothers[1]; ++m)
+        {
+          pps[i]->momset.insert(m);
+          pps[m]->dauset.insert(i);
+        }
     if(pps[i]->momset.empty() && i)
     {
       pps[i]->momset.insert(0);
       pps[0]->dauset.insert(i);
     }
-    for(uint32_t d : ((Particle8 *)pps[i].get())->daughters)
+    for(uint32_t d : daughters)
       if(d >= pps.size())
       {
         cerr << "Invalid daughter index: " + to_string(d) + "." << endl;
@@ -86,7 +99,14 @@ bool System::load_py8log(istream &is)
         pps[i]->dauset.insert(d);
         pps[d]->momset.insert(i);
       }
+    if(daughters[0])
+      for(uint32_t d = daughters[0] + 1; d < daughters[1]; ++d)
+      {
+        pps[i]->dauset.insert(d);
+        pps[d]->momset.insert(i);
+      }
   }
+#pragma GCC diagnostic pop
 
   swap(particles, pps);
   return true;

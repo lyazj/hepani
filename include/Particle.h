@@ -70,8 +70,8 @@ struct Particle : ParticleBase {
 extern const Particle particle_zero;
 
 struct Particle8 : Particle {
-  double mothers[2];
-  double daughters[2];
+  uint32_t mothers[2];
+  uint32_t daughters[2];
 };
 
 std::istream &operator>>(std::istream &, Particle8 &);
