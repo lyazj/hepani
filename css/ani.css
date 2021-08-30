@@ -10,13 +10,14 @@ body {
 #logo {
   display: block;
   position: absolute;
+  z-index: 1;
   width: 85.2px;
   height: 24.0px;
   top: 20px;
   left: 25px;
 }
 
-header, footer, aside, #logo {
+header, footer, aside {
   z-index: 100;
 }
 
