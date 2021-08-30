@@ -57,6 +57,7 @@ cacheControl = Object.assign(cacheControl, {
   "js/gif.js.map"         : cacheControl.static,
   "js/gif.worker.js"      : cacheControl.static,
   "js/gif.worker.js.map"  : cacheControl.static,
+  "img/PKU.png"           : cacheControl.static,
   "img/beian.png"         : cacheControl.static,
   "img/about.svg"         : cacheControl.static,
   "img/config.svg"        : cacheControl.static,
