@@ -7,17 +7,7 @@ body {
   user-select: none;
 }
 
-#logo {
-  display: block;
-  position: absolute;
-  z-index: 1;
-  width: 85.2px;
-  height: 24.0px;
-  top: 20px;
-  left: 25px;
-}
-
-header, footer, aside {
+header, #logo, footer, aside {
   z-index: 100;
 }
 
@@ -26,6 +16,15 @@ header, footer {
   width: 100%;
   font-size: 14px;
   text-align: center;
+}
+
+#logo {
+  display: block;
+  position: absolute;
+  width: 147px;
+  height: 28.8px;
+  top: 18px;
+  left: 24px;
 }
 
 aside {
