@@ -327,18 +327,18 @@ var STATUS = {
   },
 
   sizes: {
-    isNull       : particleRadius * 2,
+    isNull       : particleRadius / 2,
     isFinal      : particleRadius,
-    isDecayed    : particleRadius,
-    isBeam       : particleRadius,
+    isDecayed    : particleRadius / 2,
+    isBeam       : particleRadius * 2,
     isHard       : particleRadius * 2,
-    isMPI        : particleRadius,
-    isISR        : particleRadius,
-    isFSR        : particleRadius,
-    isRemnant    : particleRadius,
-    isHadronPrep : particleRadius,
-    isHadron     : particleRadius,
-    isDecay      : particleRadius,
+    isMPI        : particleRadius / 2,
+    isISR        : particleRadius / 2,
+    isFSR        : particleRadius / 2,
+    isRemnant    : particleRadius / 2,
+    isHadronPrep : particleRadius / 2,
+    isHadron     : particleRadius / 2,
+    isDecay      : particleRadius / 2,
   },
 
   getStatusMatch: (particleData) => {
@@ -414,6 +414,85 @@ STATUS.resetSize = new Function(
   "STATUS.sizes = JSON.parse('" + JSON.stringify(STATUS.sizes) + "')"
 )
 
+PID.nextColorScheme = (() => {
+  var index = -1
+  var options = [
+    // ...
+    JSON.parse(JSON.stringify(PID.colors)),
+  ]
+  return () => {
+    if(++index >= options.length)
+      index = 0
+    PID.colors = options[index]
+  }
+})()
+
+PID.nextSizeScheme = (() => {
+  var index = -1
+  var options = [
+    // ...
+    JSON.parse(JSON.stringify(PID.sizes)),
+  ]
+  return () => {
+    if(++index >= options.length)
+      index = 0
+    PID.sizes = options[index]
+  }
+})()
+
+STATUS.nextColorScheme = (() => {
+  var index = -1
+  var options = [
+    // ...
+    JSON.parse(JSON.stringify(STATUS.colors)),
+  ]
+  return () => {
+    if(++index >= options.length)
+      index = 0
+    STATUS.colors = options[index]
+  }
+  })()
+
+STATUS.nextSizeScheme = (() => {
+  var index = -1
+  var options = [
+    {
+      isNull       : particleRadius,
+      isFinal      : particleRadius,
+      isDecayed    : particleRadius,
+      isBeam       : particleRadius,
+      isHard       : particleRadius,
+      isMPI        : particleRadius,
+      isISR        : particleRadius,
+      isFSR        : particleRadius,
+      isRemnant    : particleRadius,
+      isHadronPrep : particleRadius,
+      isHadron     : particleRadius,
+      isDecay      : particleRadius,
+    }, {
+      isNull       : particleRadius,
+      isFinal      : particleRadius * 2,
+      isDecayed    : particleRadius,
+      isBeam       : particleRadius,
+      isHard       : particleRadius * 2,
+      isMPI        : particleRadius,
+      isISR        : particleRadius,
+      isFSR        : particleRadius,
+      isRemnant    : particleRadius,
+      isHadronPrep : particleRadius,
+      isHadron     : particleRadius,
+      isDecay      : particleRadius,
+    },
+    // ...
+    JSON.parse(JSON.stringify(STATUS.sizes)),
+  ]
+  return () => {
+    if(++index >= options.length)
+      index = 0
+    STATUS.sizes = options[index]
+  }
+})()
+
 function resetColor() {
   if(colorScheme == "class")
     PID.resetColor()
@@ -428,6 +507,24 @@ function resetSize() {
     PID.resetSize()
   else if(sizeScheme == "status")
     STATUS.resetSize()
+  updateSizeConfig()
+  updateParticleSizes()
+}
+
+function nextColorScheme() {
+  if(colorScheme == "class")
+    PID.nextColorScheme()
+  else if(colorScheme == "status")
+    STATUS.nextColorScheme()
+  updateColorConfig()
+  updateParticleColors()
+}
+
+function nextSizeScheme() {
+  if(sizeScheme == "class")
+    PID.nextSizeScheme()
+  else if(sizeScheme == "status")
+    STATUS.nextSizeScheme()
   updateSizeConfig()
   updateParticleSizes()
 }

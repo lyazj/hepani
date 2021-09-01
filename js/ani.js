@@ -46,6 +46,7 @@ scene.add(point2)
 const intersectColorEnhancement = 0x7f
 
 const particleRadius = 0.4
+const minLabeledParticleRadius = particleRadius
 const minLabelDistance = 20
 const arrowLengthUnit = 4
 
@@ -487,9 +488,7 @@ class ParticleMesh extends THREE.Mesh {
 
   // @noexcept
   remove() {
-    var label = this.getLabel()
-    if(label)
-      label.parentElement.removeChild(label)
+    removeLabel(this)
     scene.remove(this)
   }
 
@@ -583,6 +582,8 @@ function getObjectUV(object) {
 /* position required for repressing glitter */
 // @noexpect
 function createLabel(particleMesh) {
+  if(getParticleSize(particleMesh.data) < minLabeledParticleRadius)
+    return
   var label = document.createElement("span")
   label.className = "label"
   label.id = particleMesh.data.no
@@ -606,6 +607,14 @@ function createLabel(particleMesh) {
     label.style.display = "none"
   labels.appendChild(label)
   return label
+}
+
+/* position required for repressing glitter */
+// @noexpect
+function removeLabel(particleMesh) {
+  var label = particleMesh.getLabel()
+  if(label)
+    label.parentElement.removeChild(label)
 }
 
 // @noexcept
@@ -1050,6 +1059,8 @@ function updateParticleSizes() {
     if(!(mesh instanceof ParticleMesh))
       return
     mesh.geometry = getParticleGeometry(mesh.data)
+    if(getParticleSize(mesh.data) < minLabeledParticleRadius)
+      removeLabel(mesh)
   })
   render()
 }
