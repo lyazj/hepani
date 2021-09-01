@@ -345,9 +345,23 @@ var STATUS = {
     if(particleData.statusMatch === undefined)
     {
       particleData.statusMatch = null
-      for(var func in STATUS.colors)
-        if(STATUS[func](particleData.status))
-          particleData.statusMatch = func
+      if(statusInherit)
+      {
+        var id = STATUS.abs(particleData.id)
+        for(var i = 0; i < particleData.momset.length; ++i)
+        {
+          var mom = particleDatas[particleData.momset[i]]
+          if(STATUS.abs(mom.id) == id)
+          {
+            particleData.statusMatch = STATUS.getStatusMatch(mom)
+            break
+          }
+        }
+      }
+      if(!particleData.statusMatch)
+        for(var func in STATUS.colors)
+          if(STATUS[func](particleData.status))
+            particleData.statusMatch = func
     }
     return particleData.statusMatch
   },
@@ -364,6 +378,22 @@ var STATUS = {
     if(!statusMatch)
       return particleRadius
     return STATUS.sizes[statusMatch]
+  },
+
+  enableInterit: () => {
+    statusInherit = true
+    STATUS.clearCache()
+  },
+
+  disableInterit: () => {
+    statusInherit = false
+    STATUS.clearCache()
+  },
+
+  clearCache: () => {
+    particleDatas.forEach((particleData) => {
+      delete particleData.statusMatch
+    })
   },
 
 }

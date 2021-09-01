@@ -3,6 +3,9 @@
 /* must be an 2D-Array containing particle Object(s) */
 var particles = []
 
+/* must be an 1D-Array containing particle Object(s) */
+var particleDatas = []
+
 /* must be an 1D-Array containing ending time(s) */
 var timeline = []
 
@@ -169,6 +172,10 @@ function receiveJSONContent(content) {
   try {
     var data = JSON.parse(content)
     particles = data.particles
+    particleDatas = []
+    for(var i = 0; i < particles.length; ++i)
+      for(var j = 0; j < particles[i].length; ++j)
+        particleDatas[particles[i][j].no] = particles[i][j]
     timeline = data.timeline
     timeline[-1] = 0
   } catch(err) {

@@ -18,16 +18,20 @@ var intersect
 var labelOverlaps = { }
 
 /* read-write */
-var colorScheme = "class"
+var colorScheme = "status"
 
 /* read-write */
-var sizeScheme = "class"
+var sizeScheme = "status"
+
+/* read-write */
+var statusInherit
 
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera()
 const renderer = new THREE.WebGLRenderer({alpha: true})
 const axesHelper = new THREE.AxesHelper(100)
-const point = new THREE.PointLight(0xffffff)
+const point1 = new THREE.PointLight(0xffffff)
+const point2 = new THREE.PointLight(0xffffff)
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 const particleGeometries = { }
@@ -35,12 +39,13 @@ const particleMaterials = { }
 const particleMeshes = { }
 
 scene.add(axesHelper)
-scene.add(point)
+scene.add(point1)
+scene.add(point2)
 
 // @require: 0x00 < ICI < 0x80
 const intersectColorEnhancement = 0x7f
 
-const particleRadius = 1
+const particleRadius = 0.4
 const minLabelDistance = 20
 const arrowLengthUnit = 4
 
@@ -233,10 +238,11 @@ function updateSize() {
   camera.aspect = innerWidth / innerHeight
   camera.near = 0.1
   camera.far = 1000
-  camera.position.set(20, 20, 20)
+  camera.position.set(-15, 5, 5)
   camera.lookAt(scene.position)
   camera.updateProjectionMatrix()
-  point.position.set(40, 40, 40)
+  point1.position.copy(camera.position).multiplyScalar(10)
+  point2.position.copy(point1.position).negate()
   renderer.setSize(innerWidth, innerHeight)
   render()
 }
@@ -284,6 +290,7 @@ function initialize(doubleCallingNeeded) {
   onresize = updateSize
   enableDisplayLabels()
   enableUpdateLabelOverlaps()
+  enableInherit()
   disableDisplayArrows()
   document.getElementById("color-scheme-" + colorScheme)
     .checked = "checked"
@@ -735,6 +742,36 @@ function disableDisplayArrows() {
 }
 
 // @noexcept
+function enableInherit() {
+  for(var i = 1; i <= 2; ++i)
+  {
+    var checkInherit = document.getElementById("check-inherit-" + i)
+    if(checkInherit)
+      checkInherit.checked = true
+  }
+  try {
+    STATUS.enableInherit()
+  } catch(err) {
+    statusInherit = true
+  }
+}
+
+// @noexcept
+function disableInherit() {
+  for(var i = 1; i <= 2; ++i)
+  {
+    var checkInherit = document.getElementById("check-inherit-" + i)
+    if(checkInherit)
+      checkInherit.checked = false
+  }
+  try {
+    STATUS.disableInherit()
+  } catch(err) {
+    statusInherit = false
+  }
+}
+
+// @noexcept
 function onchangeCheckDisplayLabels() {
   if(checkDisplayLabels.checked)
     enableDisplayLabels()
@@ -897,6 +934,14 @@ function onchangeSizeScheme(radio) {
   sizeScheme = radio.value
   updateSizeConfig()
   updateParticleSizes()
+}
+
+// @noexcept
+function onchangeInherit(checkbox) {
+  if(checkbox.checked)
+    enableInherit()
+  else
+    disableInherit()
 }
 
 // @noexcept
