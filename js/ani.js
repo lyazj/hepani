@@ -82,9 +82,10 @@ function onloseIntersect(particleMesh) {
 // @noexcept
 function onclickIntersect(particleMesh) {
   getDescription(particleMesh.data.id, function (description) {
-    var isDisplayingOriginal = isDisplaying()
-    if(isDisplayingOriginal)
-      stop()
+    // var isDisplayingOriginal = isDisplaying()
+    // if(isDisplayingOriginal)
+    //   stop()
+    stop()
     alert(
       "Particle No." + particleMesh.data.no +
       "\n----------------------------------------\n" +
@@ -106,8 +107,8 @@ function onclickIntersect(particleMesh) {
       onloseIntersect(intersect)
       intersect = undefined
     }
-    if(isDisplayingOriginal)
-      start()
+    // if(isDisplayingOriginal)
+    //   start()
   })
 }
 
