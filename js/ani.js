@@ -857,7 +857,7 @@ function downloadGIF() {
     quality: 10,  // pixel sample interval
     workers: 8,
     workerScript: "js/gif.worker.js",
-    debug: false,
+    debug: true,
   })
   stop()
   for(var t = 0; t < timeline[timeline.length - 1]; t += 0.1)
