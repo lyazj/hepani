@@ -18,10 +18,10 @@ var intersect
 var labelOverlaps = { }
 
 /* read-write */
-var colorScheme = "status"
+var colorClass = "status"
 
 /* read-write */
-var sizeScheme = "status"
+var sizeClass = "status"
 
 /* read-write */
 var statusInherit
@@ -63,7 +63,7 @@ var _configPage
 
 // @noexcept
 function render() {
-  for(var no in particleMeshes)
+  for(let no in particleMeshes)
     particleMeshes[no].updateLabel()
   renderer.render(scene, camera)
   updateStatus()
@@ -91,7 +91,10 @@ function onclickIntersect(particleMesh) {
       "\n----------------------------------------\n" +
       "Birth: " + particleMesh.data.birth + "        " +
       "Death: " + particleMesh.data.death + "\n" +
-      "Status: " + particleMesh.data.status + "        " +
+      "Status: " + particleMesh.data.status + " " +
+      "(" + STATUS.getStatusMatch(particleMesh.data).slice(2) + ")        " +
+      "PID: " + particleMesh.data.id + " " +
+      "(" + PID.getPIDMatch(particleMesh.data).slice(2) + ")\n" +
       "Colours: " + particleMesh.data.colours + "        " +
       "Energy: " + particleMesh.data.e + " MeV\n" +
       "Velocity: (c) " + particleMesh.data.v + "\n" +
@@ -151,7 +154,7 @@ function updateIntersect() {
   raycaster.setFromCamera(mouse, camera)
   var intersects = raycaster.intersectObjects(scene.children)
   var intersectNew
-  for(var i = 0; i < intersects.length; ++i)
+  for(let i = 0; i < intersects.length; ++i)
   {
     var object = intersects[i].object
     if(object instanceof ParticleMesh)
@@ -198,32 +201,32 @@ function updateParticles(timeSpan) {
       clearParticles()
       return stop()
     }
-    for(var no in particleMeshes)
+    for(let no in particleMeshes)
       if(!particleMeshes[no].check())
         removeParticleMesh(no)
     particles[phase].forEach(function (particle) {
       createParticleMesh(particle)
     })
   }
-  for(var no in particleMeshes)
+  for(let no in particleMeshes)
     particleMeshes[no].translate(timeSpan)
 }
 
 // @noexcept
 function clearParticles() {
-  for(var no in particleMeshes)
+  for(let no in particleMeshes)
     removeParticleMesh(no)
 }
 
 // @noexcept
 function clearParticleGeometries() {
-  for(var size in particleGeometries)
+  for(let size in particleGeometries)
     removeParticleGeometry(size)
 }
 
 // @noexcept
 function clearParticleMaterials() {
-  for(var color in particleMaterials)
+  for(let color in particleMaterials)
     removeParticleMaterial(color)
 }
 
@@ -261,7 +264,7 @@ function updateStatus() {
     var times = _timeRecord
     _timeRecord = []
     var timeSum = 0
-    for(var i = 0; i < times.length; ++i)
+    for(let i = 0; i < times.length; ++i)
       timeSum += times[i]
     var fps = times.length / timeSum
     fpsStatus.innerHTML = fps.toFixed(2)
@@ -294,9 +297,9 @@ function initialize(doubleCallingNeeded) {
   enableUpdateLabelOverlaps()
   enableInherit()
   disableDisplayArrows()
-  document.getElementById("color-scheme-" + colorScheme)
+  document.getElementById("color-class-" + colorClass)
     .checked = "checked"
-  document.getElementById("size-scheme-" + sizeScheme)
+  document.getElementById("size-class-" + sizeClass)
     .checked = "checked"
 }
 
@@ -350,17 +353,17 @@ function startStop() {
 
 // @noexcept
 function getParticleSize(particleData) {
-  if(sizeScheme == "class")
+  if(sizeClass == "class")
     return PID.getSize(particleData)
-  if(sizeScheme == "status")
+  if(sizeClass == "status")
     return STATUS.getSize(particleData)
 }
 
 // @noexcept
 function getParticleColor(particleData) {
-  if(colorScheme == "class")
+  if(colorClass == "class")
     return PID.getColor(particleData)
-  if(colorScheme == "status")
+  if(colorClass == "status")
     return STATUS.getColor(particleData)
   // var color = 0
   // var proportion = particleData.e / particles[0][0].e
@@ -628,7 +631,7 @@ function updateLabelOverlap(label) {
   var all = labels.children
   var overlaps = labelOverlaps
   var overlap
-  for(var i = 0; i < all.length; ++i)
+  for(let i = 0; i < all.length; ++i)
   {
     var l = all[i]
     if(!l)
@@ -650,12 +653,12 @@ function updateLabelOverlaps() {
     return
   var all = labels.children
   var overlaps = { }
-  for(var i = 0; i < all.length; ++i)
+  for(let i = 0; i < all.length; ++i)
   {
     var l1 = all[i]
     if(!l1)
       return
-    for(var j = 0; j < i; ++j)
+    for(let j = 0; j < i; ++j)
     {
       var l2 = all[j]
       if(!l2)
@@ -683,7 +686,7 @@ function enableDisplayLabels() {
   if(checkDisplayLabels)
     checkDisplayLabels.checked = true
   var all = labels.children
-  for(var i = 0; i < all.length; ++i)
+  for(let i = 0; i < all.length; ++i)
     all[i].style.display = "inline-block"
 }
 
@@ -694,7 +697,7 @@ function disableDisplayLabels() {
   if(checkDisplayLabels)
     checkDisplayLabels.checked = false
   var all = labels.children
-  for(var i = 0; i < all.length; ++i)
+  for(let i = 0; i < all.length; ++i)
     all[i].style.display = "none"
 }
 
@@ -718,7 +721,7 @@ function disableUpdateLabelOverlaps() {
   clearInterval(_labelIntervalID)
   _labelIntervalID = undefined
   var all = labels.children
-  for(var i = 0; i < all.length; ++i)
+  for(let i = 0; i < all.length; ++i)
   {
     label = all[i]
     if(!label)
@@ -753,7 +756,7 @@ function disableDisplayArrows() {
 
 // @noexcept
 function enableInherit() {
-  for(var i = 1; i <= 2; ++i)
+  for(let i = 1; i <= 2; ++i)
   {
     var checkInherit = document.getElementById("check-inherit-" + i)
     if(checkInherit)
@@ -768,7 +771,7 @@ function enableInherit() {
 
 // @noexcept
 function disableInherit() {
-  for(var i = 1; i <= 2; ++i)
+  for(let i = 1; i <= 2; ++i)
   {
     var checkInherit = document.getElementById("check-inherit-" + i)
     if(checkInherit)
@@ -820,8 +823,8 @@ function changeTime(timeNew) {
     phase = 0
     while(timeline[phase] <= time)
       ++phase
-    for(var p = 0; p <= phase; ++p)
-      for(var i = 0; i < particles[p].length; ++i)
+    for(let p = 0; p <= phase; ++p)
+      for(let i = 0; i < particles[p].length; ++i)
       {
         var particle = particles[p][i]
         if(particle.death == -1 || particle.death > phase)
@@ -860,7 +863,7 @@ function downloadGIF() {
     debug: true,
   })
   stop()
-  for(var t = 0; t < timeline[timeline.length - 1]; t += 0.1)
+  for(let t = 0; t < timeline[timeline.length - 1]; t += 0.1)
   {
     changeTime(t)
     gif.addFrame(renderer.domElement, {
@@ -909,8 +912,10 @@ function configNextPage() {
   page = document.getElementById("config-" + _configPage)
   if(!page)
   {
-    _configPage = 1
+    --_configPage
     page = document.getElementById("config-" + _configPage)
+    page.style.display = "block"
+    return alert("Already last page!")
   }
   page.style.display = "block"
 }
@@ -924,24 +929,24 @@ function configPreviousPage() {
   page = document.getElementById("config-" + _configPage)
   if(!page)
   {
-    _configPage = 1
-    while(document.getElementById("config-" + _configPage))
-      ++_configPage
-    page = document.getElementById("config-" + --_configPage)
+    ++_configPage
+    page = document.getElementById("config-" + _configPage)
+    page.style.display = "block"
+    return alert("Already first page!")
   }
   page.style.display = "block"
 }
 
 // @noexcept
-function onchangeColorScheme(radio) {
-  colorScheme = radio.value
+function onchangeColorClass(radio) {
+  colorClass = radio.value
   updateColorConfig()
   updateParticleColors()
 }
 
 // @noexcept
-function onchangeSizeScheme(radio) {
-  sizeScheme = radio.value
+function onchangeSizeClass(radio) {
+  sizeClass = radio.value
   updateSizeConfig()
   updateParticleSizes()
 }
@@ -964,24 +969,45 @@ function updateConfig() {
 function updateColorConfig() {
 
   var prefix
-  var colors
-  if(colorScheme == "class")
-  {
+  if(colorClass == "class")
     prefix = "PID"
-    colors = PID.colors
-  }
-  else if(colorScheme == "status")
-  {
+  else if(colorClass == "status")
     prefix = "STATUS"
-    colors = STATUS.colors
-  }
   else
-    throw new Error("Invalid color scheme: " + colorScheme)
+    throw new Error("Invalid color classfication: " + colorClass)
+  var colors = window[prefix].colors
+  var scheme = window[prefix].colorScheme
+  var schemes = window[prefix].colorSchemes
+
+  var colorSchemes = document.getElementById("color-schemes")
+  var colorSchemeChildren = document.getElementsByClassName("color-scheme-choice")
+  while(colorSchemeChildren.length)
+    colorSchemes.removeChild(colorSchemeChildren[0])
+  for(let scheme in schemes)
+  {
+    var input = document.createElement("input")
+    var label = document.createElement("label")
+    var span = document.createElement("span")
+    input.type = "radio"
+    input.name = "color-scheme"
+    input.onchange = new Function(
+      prefix + ".setColorScheme(this.value); updateColorConfig()"
+    )
+    label.htmlFor = input.id = "color-scheme-" +
+      (label.innerHTML = input.value = scheme)
+    span.className = "choice color-scheme-choice"
+    span.appendChild(input)
+    span.appendChild(label)
+    var children = colorSchemes.children
+    var lastChild = children[children.length - 1]
+    colorSchemes.insertBefore(span, lastChild)
+  }
+  document.getElementById("color-scheme-" + scheme).checked = true
 
   var colorSelectors = document.getElementById("color-selectors")
   while(colorSelectors.children.length)
     colorSelectors.removeChild(colorSelectors.children[0])
-  for(var func in colors)
+  for(let func in colors)
   {
     var input = document.createElement("input")
     var label = document.createElement("label")
@@ -1007,24 +1033,45 @@ function updateColorConfig() {
 function updateSizeConfig() {
 
   var prefix
-  var sizes
-  if(sizeScheme == "class")
-  {
+  if(sizeClass == "class")
     prefix = "PID"
-    sizes = PID.sizes
-  }
-  else if(sizeScheme == "status")
-  {
+  else if(sizeClass == "status")
     prefix = "STATUS"
-    sizes = STATUS.sizes
-  }
   else
-    throw new Error("Invalid size scheme: " + sizeScheme)
+    throw new Error("Invalid size classfication: " + sizeclass)
+  var sizes = window[prefix].sizes
+  var scheme = window[prefix].sizeScheme
+  var schemes = window[prefix].sizeSchemes
+
+  var sizeSchemes = document.getElementById("size-schemes")
+  var sizeSchemeChildren = document.getElementsByClassName("size-scheme-choice")
+  while(sizeSchemeChildren.length)
+    sizeSchemes.removeChild(sizeSchemeChildren[0])
+  for(let scheme in schemes)
+  {
+    var input = document.createElement("input")
+    var label = document.createElement("label")
+    var span = document.createElement("span")
+    input.type = "radio"
+    input.name = "size-scheme"
+    input.onchange = new Function(
+      prefix + ".setSizeScheme(this.value); updateSizeConfig()"
+    )
+    label.htmlFor = input.id = "size-scheme-" +
+      (label.innerHTML = input.value = scheme)
+    span.className = "choice size-scheme-choice"
+    span.appendChild(input)
+    span.appendChild(label)
+    var children = sizeSchemes.children
+    var lastChild = children[children.length - 1]
+    sizeSchemes.insertBefore(span, lastChild)
+  }
+  document.getElementById("size-scheme-" + scheme).checked = true
 
   var sizeEditors = document.getElementById("size-editors")
   while(sizeEditors.children.length)
     sizeEditors.removeChild(sizeEditors.children[0])
-  for(var func in sizes)
+  for(let func in sizes)
   {
     var input = document.createElement("input")
     var label = document.createElement("label")
@@ -1034,7 +1081,7 @@ function updateSizeConfig() {
     input.onchange = new Function(
       prefix + ".sizes." + func + " = this.value; updateParticleSizes()"
     )
-    label.htmlFor = input.id = "size" + (label.innerHTML = func.slice(2))
+    label.htmlFor = input.id = "size-" + (label.innerHTML = func.slice(2))
     div.className = "size-editor"
     div.appendChild(input)
     div.appendChild(document.createElement("br"))

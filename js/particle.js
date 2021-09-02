@@ -48,7 +48,7 @@ var PID = {
       1000015, 1000016, 2000001, 2000002, 2000003,
       2000004, 2000005, 2000006, 2000011, 2000013,
       2000015, 1000021, 1000022, 1000023, 1000024,
-      1000025, 1000035, 1000037, 1000039, 
+      1000025, 1000035, 1000037, 1000039,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -63,7 +63,7 @@ var PID = {
       115, 215, 10115, 10215, 9000115,
       9000215, 9010115, 9010215, 117, 217,
       9000117, 9000217, 9010117, 9010217,
-      119, 219, 
+      119, 219,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -77,7 +77,7 @@ var PID = {
       100333, 225, 9000225, 335, 9010225,
       9020225, 10225, 9030225, 10335, 9040225,
       9050225, 9060225, 9070225, 9080225, 9090225,
-      227, 337, 229, 9000229, 9010229, 
+      227, 337, 229, 9000229, 9010229,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -92,7 +92,7 @@ var PID = {
       10315, 10325, 20315, 20325, 9010315,
       9010325, 9020315, 9020325, 317, 327,
       9010317, 9010327, 319, 329, 9000319,
-      9000329, 
+      9000329,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -111,7 +111,7 @@ var PID = {
       523, 10513, 10523, 20513, 20523,
       515, 525, 531, 10531, 533,
       10533, 20533, 535, 541, 10541,
-      543, 10543, 20543, 545, 
+      543, 10543, 20543, 545,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -119,7 +119,7 @@ var PID = {
     return [
       441, 10441, 100441, 443, 10443,
       20443, 100443, 30443, 9000443, 9010443,
-      9020443, 445, 100445, 
+      9020443, 445, 100445,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -130,7 +130,7 @@ var PID = {
       100553, 110553, 120553, 130553, 200553,
       210553, 220553, 300553, 9000553, 9010553,
       555, 10555, 20555, 100555, 110555,
-      120555, 200555, 557, 100557, 
+      120555, 200555, 557, 100557,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -144,7 +144,7 @@ var PID = {
     return [
       3122, 3222, 3212, 3112, 3224,
       3214, 3114, 3322, 3312, 3324,
-      3314, 3334, 
+      3314, 3334,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -154,7 +154,7 @@ var PID = {
       4214, 4114, 4232, 4132, 4322,
       4312, 4324, 4314, 4332, 4334,
       4412, 4422, 4414, 4424, 4432,
-      4434, 4444, 
+      4434, 4444,
     ].indexOf(PID.abs(pid)) > -1
   },
 
@@ -166,50 +166,8 @@ var PID = {
       5142, 5242, 5412, 5422, 5414,
       5424, 5342, 5432, 5434, 5442,
       5444, 5512, 5522, 5514, 5524,
-      5532, 5534, 5542, 5544, 5554, 
+      5532, 5534, 5542, 5544, 5554,
     ].indexOf(PID.abs(pid)) > -1
-  },
-
-  colors: {
-    isQuark         : 0x0000ff,
-    isLepton        : 0x00ff00,
-    isGHB           : 0xff0000,
-    isSpecial       : 0x000000,
-    isMC            : 0x000000,
-    isDiquark       : 0x00ffff,
-    isSUSY          : 0x7f7f7f,
-    isLightI1Meson  : 0xff00ff,
-    isLightI0Meson  : 0xff00ff,
-    isStrangeMeson  : 0xff00ff,
-    isCharmedMeson  : 0xff00ff,
-    isBottomMeson   : 0xff00ff,
-    isCcbarMeson    : 0xff00ff,
-    isBbbarMeson    : 0xff00ff,
-    isLightBaryon   : 0xffff00,
-    isStrangeBaryon : 0xffff00,
-    isCharmedBaryon : 0xffff00,
-    isBottomBaryon  : 0xffff00,
-  },
-
-  sizes: {
-    isQuark         : particleRadius,
-    isLepton        : particleRadius,
-    isGHB           : particleRadius,
-    isSpecial       : particleRadius,
-    isMC            : particleRadius,
-    isDiquark       : particleRadius,
-    isSUSY          : particleRadius,
-    isLightI1Meson  : particleRadius,
-    isLightI0Meson  : particleRadius,
-    isStrangeMeson  : particleRadius,
-    isCharmedMeson  : particleRadius,
-    isBottomMeson   : particleRadius,
-    isCcbarMeson    : particleRadius,
-    isBbbarMeson    : particleRadius,
-    isLightBaryon   : particleRadius,
-    isStrangeBaryon : particleRadius,
-    isCharmedBaryon : particleRadius,
-    isBottomBaryon  : particleRadius,
   },
 
   getPIDMatch: (particleData) => {
@@ -235,6 +193,22 @@ var PID = {
     if(!pidMatch)
       return particleRadius
     return PID.sizes[pidMatch]
+  },
+
+  setColorScheme: (scheme) => {
+    PID.colors = JSON.parse(PID.colorSchemes[PID.colorScheme = scheme])
+  },
+
+  setSizeScheme: (scheme) => {
+    PID.sizes = JSON.parse(PID.sizeSchemes[PID.sizeScheme = scheme])
+  },
+
+  resetColor: () => {
+    PID.setColorScheme(PID.colorScheme)
+  },
+
+  resetSize: () => {
+    PID.setSizeScheme(PID.sizeScheme)
   },
 
 }
@@ -311,36 +285,6 @@ var STATUS = {
     return status > 90 && status < 100
   },
 
-  colors: {
-    isNull       : "white",
-    isFinal      : "darkgrey",
-    isDecayed    : "lightgrey",
-    isBeam       : "black",
-    isHard       : "red",
-    isMPI        : "lightsalmon",
-    isISR        : "lightseagreen",
-    isFSR        : "limegreen",
-    isRemnant    : "mediumpurple",
-    isHadronPrep : "blue",
-    isHadron     : "blue",
-    isDecay      : "lightskyblue",
-  },
-
-  sizes: {
-    isNull       : particleRadius / 2,
-    isFinal      : particleRadius,
-    isDecayed    : particleRadius / 2,
-    isBeam       : particleRadius * 2,
-    isHard       : particleRadius * 2,
-    isMPI        : particleRadius / 2,
-    isISR        : particleRadius / 2,
-    isFSR        : particleRadius / 2,
-    isRemnant    : particleRadius / 2,
-    isHadronPrep : particleRadius / 2,
-    isHadron     : particleRadius / 2,
-    isDecay      : particleRadius / 2,
-  },
-
   getStatusMatch: (particleData) => {
     if(particleData.statusMatch === undefined)
     {
@@ -396,135 +340,172 @@ var STATUS = {
     })
   },
 
+  setColorScheme: (scheme) => {
+    STATUS.colors = JSON.parse(STATUS.colorSchemes[STATUS.colorScheme = scheme])
+  },
+
+  setSizeScheme: (scheme) => {
+    STATUS.sizes = JSON.parse(STATUS.sizeSchemes[STATUS.sizeScheme = scheme])
+  },
+
+  resetColor: () => {
+    STATUS.setColorScheme(STATUS.colorScheme)
+  },
+
+  resetSize: () => {
+    STATUS.setSizeScheme(STATUS.sizeScheme)
+  },
+
 }
 
-for(var func in STATUS.colors)
-  STATUS.colors[func] = new THREE.Color(STATUS.colors[func]).getHex()
+PID.colorSchemes = {
 
-PID.resetColor = new Function(
-  "PID.colors = JSON.parse('" + JSON.stringify(PID.colors) + "')"
-)
-STATUS.resetColor = new Function(
-  "STATUS.colors = JSON.parse('" + JSON.stringify(STATUS.colors) + "')"
-)
-PID.resetSize = new Function(
-  "PID.sizes = JSON.parse('" + JSON.stringify(PID.sizes) + "')"
-)
-STATUS.resetSize = new Function(
-  "STATUS.sizes = JSON.parse('" + JSON.stringify(STATUS.sizes) + "')"
-)
+  default: JSON.stringify({
+    isQuark         : 0x0000ff,
+    isLepton        : 0x00ff00,
+    isGHB           : 0xff0000,
+    isSpecial       : 0x000000,
+    isMC            : 0x000000,
+    isDiquark       : 0x00ffff,
+    isSUSY          : 0x7f7f7f,
+    isLightI1Meson  : 0xff00ff,
+    isLightI0Meson  : 0xff00ff,
+    isStrangeMeson  : 0xff00ff,
+    isCharmedMeson  : 0xff00ff,
+    isBottomMeson   : 0xff00ff,
+    isCcbarMeson    : 0xff00ff,
+    isBbbarMeson    : 0xff00ff,
+    isLightBaryon   : 0xffff00,
+    isStrangeBaryon : 0xffff00,
+    isCharmedBaryon : 0xffff00,
+    isBottomBaryon  : 0xffff00,
+  }),
 
-PID.nextColorScheme = (() => {
-  var index = -1
-  var options = [
-    // ...
-    JSON.parse(JSON.stringify(PID.colors)),
-  ]
-  return () => {
-    if(++index >= options.length)
-      index = 0
-    PID.colors = options[index]
-  }
-})()
+  // ...
 
-PID.nextSizeScheme = (() => {
-  var index = -1
-  var options = [
-    // ...
-    JSON.parse(JSON.stringify(PID.sizes)),
-  ]
-  return () => {
-    if(++index >= options.length)
-      index = 0
-    PID.sizes = options[index]
-  }
-})()
+}
 
-STATUS.nextColorScheme = (() => {
-  var index = -1
-  var options = [
-    // ...
-    JSON.parse(JSON.stringify(STATUS.colors)),
-  ]
-  return () => {
-    if(++index >= options.length)
-      index = 0
-    STATUS.colors = options[index]
-  }
-  })()
+PID.setColorScheme("default")
 
-STATUS.nextSizeScheme = (() => {
-  var index = -1
-  var options = [
-    {
-      isNull       : particleRadius,
-      isFinal      : particleRadius,
-      isDecayed    : particleRadius,
-      isBeam       : particleRadius,
-      isHard       : particleRadius,
-      isMPI        : particleRadius,
-      isISR        : particleRadius,
-      isFSR        : particleRadius,
-      isRemnant    : particleRadius,
-      isHadronPrep : particleRadius,
-      isHadron     : particleRadius,
-      isDecay      : particleRadius,
-    }, {
-      isNull       : particleRadius,
-      isFinal      : particleRadius * 2,
-      isDecayed    : particleRadius,
-      isBeam       : particleRadius,
-      isHard       : particleRadius * 2,
-      isMPI        : particleRadius,
-      isISR        : particleRadius,
-      isFSR        : particleRadius,
-      isRemnant    : particleRadius,
-      isHadronPrep : particleRadius,
-      isHadron     : particleRadius,
-      isDecay      : particleRadius,
-    },
-    // ...
-    JSON.parse(JSON.stringify(STATUS.sizes)),
-  ]
-  return () => {
-    if(++index >= options.length)
-      index = 0
-    STATUS.sizes = options[index]
-  }
-})()
+PID.sizeSchemes = {
+
+  default: JSON.stringify({
+    isQuark         : particleRadius,
+    isLepton        : particleRadius,
+    isGHB           : particleRadius,
+    isSpecial       : particleRadius,
+    isMC            : particleRadius,
+    isDiquark       : particleRadius,
+    isSUSY          : particleRadius,
+    isLightI1Meson  : particleRadius,
+    isLightI0Meson  : particleRadius,
+    isStrangeMeson  : particleRadius,
+    isCharmedMeson  : particleRadius,
+    isBottomMeson   : particleRadius,
+    isCcbarMeson    : particleRadius,
+    isBbbarMeson    : particleRadius,
+    isLightBaryon   : particleRadius,
+    isStrangeBaryon : particleRadius,
+    isCharmedBaryon : particleRadius,
+    isBottomBaryon  : particleRadius,
+  }),
+
+  // ...
+
+}
+
+PID.setSizeScheme("default")
+
+STATUS.colorSchemes = {
+
+  default: JSON.stringify({
+    isNull       : new THREE.Color("white"        ).getHex(),
+    isFinal      : new THREE.Color("darkgrey"     ).getHex(),
+    isDecayed    : new THREE.Color("lightgrey"    ).getHex(),
+    isBeam       : new THREE.Color("black"        ).getHex(),
+    isHard       : new THREE.Color("red"          ).getHex(),
+    isMPI        : new THREE.Color("lightsalmon"  ).getHex(),
+    isISR        : new THREE.Color("lightseagreen").getHex(),
+    isFSR        : new THREE.Color("limegreen"    ).getHex(),
+    isRemnant    : new THREE.Color("mediumpurple" ).getHex(),
+    isHadronPrep : new THREE.Color("blue"         ).getHex(),
+    isHadron     : new THREE.Color("blue"         ).getHex(),
+    isDecay      : new THREE.Color("lightskyblue" ).getHex(),
+  }),
+
+  // ...
+
+}
+
+STATUS.setColorScheme("default")
+
+STATUS.sizeSchemes = {
+
+  default: JSON.stringify({
+    isNull       : particleRadius / 2,
+    isFinal      : particleRadius,
+    isDecayed    : particleRadius / 2,
+    isBeam       : particleRadius * 2,
+    isHard       : particleRadius * 2,
+    isMPI        : particleRadius / 2,
+    isISR        : particleRadius / 2,
+    isFSR        : particleRadius / 2,
+    isRemnant    : particleRadius / 2,
+    isHadronPrep : particleRadius / 2,
+    isHadron     : particleRadius / 2,
+    isDecay      : particleRadius / 2,
+  }),
+
+  balanced: JSON.stringify({
+    isNull       : particleRadius,
+    isFinal      : particleRadius,
+    isDecayed    : particleRadius,
+    isBeam       : particleRadius,
+    isHard       : particleRadius,
+    isMPI        : particleRadius,
+    isISR        : particleRadius,
+    isFSR        : particleRadius,
+    isRemnant    : particleRadius,
+    isHadronPrep : particleRadius,
+    isHadron     : particleRadius,
+    isDecay      : particleRadius,
+  }),
+
+  emphasized: JSON.stringify({
+    isNull       : particleRadius,
+    isFinal      : particleRadius * 2,
+    isDecayed    : particleRadius,
+    isBeam       : particleRadius,
+    isHard       : particleRadius * 2,
+    isMPI        : particleRadius,
+    isISR        : particleRadius,
+    isFSR        : particleRadius,
+    isRemnant    : particleRadius,
+    isHadronPrep : particleRadius,
+    isHadron     : particleRadius,
+    isDecay      : particleRadius,
+  }),
+
+  // ...
+
+}
+
+STATUS.setSizeScheme("default")
 
 function resetColor() {
-  if(colorScheme == "class")
+  if(colorClass == "class")
     PID.resetColor()
-  else if(colorScheme == "status")
+  else if(colorClass == "status")
     STATUS.resetColor()
   updateColorConfig()
   updateParticleColors()
 }
 
 function resetSize() {
-  if(sizeScheme == "class")
+  if(sizeClass == "class")
     PID.resetSize()
-  else if(sizeScheme == "status")
+  else if(sizeClass == "status")
     STATUS.resetSize()
-  updateSizeConfig()
-  updateParticleSizes()
-}
-
-function nextColorScheme() {
-  if(colorScheme == "class")
-    PID.nextColorScheme()
-  else if(colorScheme == "status")
-    STATUS.nextColorScheme()
-  updateColorConfig()
-  updateParticleColors()
-}
-
-function nextSizeScheme() {
-  if(sizeScheme == "class")
-    PID.nextSizeScheme()
-  else if(sizeScheme == "status")
-    STATUS.nextSizeScheme()
   updateSizeConfig()
   updateParticleSizes()
 }
