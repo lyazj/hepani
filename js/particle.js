@@ -292,14 +292,11 @@ var STATUS = {
       if(statusInherit)
       {
         var id = STATUS.abs(particleData.id)
-        for(var i = 0; i < particleData.momset.length; ++i)
+        if(particleData.momset.length == 1)
         {
-          var mom = particleDatas[particleData.momset[i]]
+          var mom = particleDatas[particleData.momset[0]]
           if(STATUS.abs(mom.id) == id)
-          {
             particleData.statusMatch = STATUS.getStatusMatch(mom)
-            break
-          }
         }
       }
       if(!particleData.statusMatch)
