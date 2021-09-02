@@ -844,7 +844,8 @@ function changeTime(timeNew) {
 
 // @noexcept
 function changeSpeed(speedNew) {
-  speedNew = Number.parseFloat(speedNew)
+  if(Number.isNaN(speedNew = Number.parseFloat(speedNew)))
+    return false
   if(Math.abs(speedNew) > 1e2)
     speedNew = speedNew > 0 ? 1e2 : -1e2
   if(Math.abs(speedNew) < 1e-2)
@@ -852,6 +853,7 @@ function changeSpeed(speedNew) {
   speedRate = speedNew
   _timeRecord = []
   render()
+  return true
 }
 
 // @noexcept
