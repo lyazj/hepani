@@ -1166,6 +1166,10 @@ function onkeydownBody(evt) {
     document.getElementById("link-start").click()
     break
 
+  case "r":
+    changeTime(0)
+    break
+
   case "Control":
     _ctrlPressing = true
     break
