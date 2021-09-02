@@ -26,6 +26,9 @@ var sizeClass = "status"
 /* read-write */
 var statusInherit
 
+/* read-write */
+var speedRate = 1.0
+
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera()
 const renderer = new THREE.WebGLRenderer({alpha: true})
@@ -60,6 +63,7 @@ var _timeRecord = []
 var _gifRendering
 var _gifBlobURL
 var _configPage
+var _ctrlPressing
 
 // @noexcept
 function render() {
@@ -257,6 +261,8 @@ function updateStatus() {
   if(timeStatus && timeline && timeline[-1] == 0)
     timeStatus.innerHTML = time.toFixed(3)
       + " / " + timeline[timeline.length - 1].toFixed(3) + " s"
+  if(speedStatus)
+    speedStatus.innerHTML = speedRate.toFixed(2) + " x"
   if(phaseStatus)
     phaseStatus.innerHTML = phase + " / " + (timeline.length - 1)
   if(_timeRecord.length >= 20)
@@ -266,7 +272,7 @@ function updateStatus() {
     var timeSum = 0
     for(let i = 0; i < times.length; ++i)
       timeSum += times[i]
-    var fps = times.length / timeSum
+    var fps = times.length / timeSum * speedRate
     fpsStatus.innerHTML = fps.toFixed(2)
     if(fps < 24)
     {
@@ -315,7 +321,7 @@ function animate() {
   if(!_animationTimeStamp)
     return
   var now = performance.now()
-  var timeSpan = (now - _animationTimeStamp) / 1000
+  var timeSpan = (now - _animationTimeStamp) / 1000 * speedRate
   _animationTimeStamp = now
   _timeRecord.push(timeSpan)
   procedure(timeSpan)
@@ -837,6 +843,18 @@ function changeTime(timeNew) {
 }
 
 // @noexcept
+function changeSpeed(speedNew) {
+  speedNew = Number.parseFloat(speedNew)
+  if(Math.abs(speedNew) > 1e2)
+    speedNew = speedNew > 0 ? 1e2 : -1e2
+  if(Math.abs(speedNew) < 1e-2)
+    speedNew = speedNew > 0 ? 1e-2 : -1e-2
+  speedRate = speedNew
+  _timeRecord = []
+  render()
+}
+
+// @noexcept
 function promptChangeTime() {
   stop()
   var timeMax = timeline[timeline.length - 1]
@@ -846,6 +864,16 @@ function promptChangeTime() {
     return
   if(!changeTime(Number.parseFloat(timeInput)))
     alert("Not changed: Invalid time!")
+}
+
+// @noexcept
+function promptChangeSpeed() {
+  stop()
+  var speedInput = prompt("Change speed:")
+  if(speedInput == null)
+    return
+  if(!changeSpeed(speedInput))
+    return alert("Not changed: Invalid speed!")
 }
 
 // @noexcept
@@ -863,7 +891,7 @@ function downloadGIF() {
     debug: true,
   })
   stop()
-  for(let t = 0; t < timeline[timeline.length - 1]; t += 0.1)
+  for(let t = 0; t < timeline[timeline.length - 1]; t += 0.1 * speedRate)
   {
     changeTime(t)
     gif.addFrame(renderer.domElement, {
@@ -1111,4 +1139,111 @@ function updateParticleSizes() {
       removeLabel(mesh)
   })
   render()
+}
+
+// @noexcept
+function onkeydownBody(evt) {
+
+  switch(evt.key) {
+
+  case "ArrowLeft":
+    var timeNew = time - (_ctrlPressing ? 1 : 0.1)
+    if(timeNew < 0)
+      timeNew = 0
+    changeTime(timeNew)
+    break
+
+  case "ArrowRight":
+    var timeNew = time + (_ctrlPressing ? 1 : 0.1)
+    if(timeNew > timeline[timeline.length - 1])
+      timeNew = timeline[timeline.length - 1]
+    changeTime(timeNew)
+    break
+
+  case " ":
+    document.getElementById("link-start").click()
+    break
+
+  case "Control":
+    _ctrlPressing = true
+    break
+
+  case "[":
+    changeSpeed(speedRate / 1.2)
+    break
+
+  case "]":
+    changeSpeed(speedRate * 1.2)
+    break
+
+  case "s":  // case "S":
+    if(_ctrlPressing)
+    {
+      document.getElementById("link-download").click()
+      return false
+    }
+    break
+
+  case "f":  // case "F":
+    if(_ctrlPressing)
+    {
+      document.getElementById("link-file").click()
+      return false
+    }
+    break
+
+  case "c":  // case "C":
+    if(_ctrlPressing)
+    {
+      document.getElementById("link-config").click()
+      return false
+    }
+    break
+
+  case "h":  // case "H":
+    if(_ctrlPressing)
+    {
+      document.getElementById("link-help").click()
+      return false
+    }
+    break
+
+  case "a":  // case "A":
+    if(_ctrlPressing)
+    {
+      document.getElementById("link-about").click()
+      return false
+    }
+    break
+
+  case "Escape":
+    hideConfig()
+    break
+
+  default:
+    // console.log(evt.key)
+    break
+
+  }
+
+  return true
+
+}
+
+// @noexcept
+function onkeyupBody(evt) {
+
+  switch(evt.key) {
+
+  case "Control":
+    _ctrlPressing = false
+    break
+
+  default:
+    break
+
+  }
+
+  return true
+
 }

@@ -5,7 +5,8 @@
     <title>Hepani</title>
     <link rel="stylesheet" href="css/ani.css" />
   </head>
-  <body onload="initialize(true);updateControls();updateLoading(false)">
+  <body onload="initialize(true);updateControls();updateLoading(false)"
+    onkeydown="return onkeydownBody(arguments[0])" onkeyup="return onkeyupBody(arguments[0])">
     <script>
       var loadingCount = loadingCount + 1 || 1
       try { updateLoading() } catch(err) { }
@@ -53,25 +54,25 @@
     <aside>
       <ul class="functions">
         <li class="function"><img class="icon" alt="" src="img/functions.svg" /><span class="name">Functions</span></li>
-        <a href="javascript:stop();writePage('file.html')">
+        <a href="javascript:stop();writePage('file.html')" id="link-file">
           <li class="function"><img class="icon" alt="" src="img/file.svg" /><span class="name">File</span></li>
         </a>
-        <a href="javascript:startStop()">
+        <a href="javascript:startStop()" id="link-start">
           <li class="function"><img class="icon" alt="" src="img/start.svg" /><span class="name" id="start_stop">Start</span></li>
         </a>
-        <a href="javascript:downloadJSON()">
+        <a href="javascript:downloadJSON()" id="link-download">
           <li class="function"><img class="icon" alt="" src="img/download.svg" /><span class="name">Save</span></li>
         </a>
         <a href="javascript:downloadGIF()">
           <li class="function"><img class="icon" alt="" src="img/download_gif.svg" /><span class="name">Save GIF</span></li>
         </a>
-        <a href="javascript:displayConfig()">
+        <a href="javascript:displayConfig()" id="link-config">
           <li class="function"><img class="icon" alt="" src="img/config.svg" /><span class="name">Configurate</span></li>
         </a>
-        <a href="coming.html" target="_black">
+        <a href="coming.html" target="_black" id="link-help">
           <li class="function"><img class="icon" alt="" src="img/help.svg" /><span class="name">Help</span></li>
         </a>
-        <a id="about" href="#footer" onclick="onclickAbout()">
+        <a href="#footer" onclick="onclickAbout(this)" id="link-about">
           <li class="function"><img class="icon" alt="" src="img/about.svg" /><span class="name" id="aboutText">About</span></li>
         </a>
         <p class="notes">注：请点击About查看备案信息。</p>
@@ -79,24 +80,25 @@
     </aside>
     <div id="labels"></div>
     <div id="statuses">
-      <div class="status">time: <a href="javascript:promptChangeTime()"><span id="timeStatus">null</span></div></a>
-        <div class="status">phase: <span id="phaseStatus">null</span></div>
-        <div class="status">fps: <span id="fpsStatus">null</span></div>
-        <div class="status" style="float: right">
-          <input type="checkbox" id="checkDisplayArrows" onchange="onchangeCheckDisplayArrows()" />
-          <label for="checkDisplayArrows">display arrows</label>
-        </div>
-        <div class="status" style="float: right">
-          <input type="checkbox" id="checkUpdateLabelOverlaps" onchange="onchangeCheckUpdateLabelOverlaps()" />
-          <label for="checkUpdateLabelOverlaps">update label overlaps</label>
-        </div>
-        <div class="status" style="float: right">
-          <input type="checkbox" id="checkDisplayLabels" onchange="onchangeCheckDisplayLabels()" />
-          <label for="checkDisplayLabels">display labels</label>
-        </div>
+      <div class="status">time: <a href="javascript:promptChangeTime()"><span id="timeStatus">null</span></a></div>
+      <div class="status">speed:<a href="javascript:promptChangeSpeed()"><span id="speedStatus">null</span></a></div>
+      <div class="status">phase: <span id="phaseStatus">null</span></div>
+      <div class="status">fps: <span id="fpsStatus">null</span></div>
+      <div class="status" style="float: right">
+        <input type="checkbox" id="checkDisplayArrows" onchange="onchangeCheckDisplayArrows()" />
+        <label for="checkDisplayArrows">display arrows</label>
+      </div>
+      <div class="status" style="float: right">
+        <input type="checkbox" id="checkUpdateLabelOverlaps" onchange="onchangeCheckUpdateLabelOverlaps()" />
+        <label for="checkUpdateLabelOverlaps">update label overlaps</label>
+      </div>
+      <div class="status" style="float: right">
+        <input type="checkbox" id="checkDisplayLabels" onchange="onchangeCheckDisplayLabels()" />
+        <label for="checkDisplayLabels">display labels</label>
+      </div>
     </div>
     <script>
-      function onclickAbout() {
+      function onclickAbout(about) {
         if(aboutText.innerHTML == "About") {
           about.href = "#footer"; aboutText.innerHTML = "Back to Top";
         } else {
