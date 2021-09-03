@@ -304,10 +304,18 @@ function procedure(request, response) {
 
 }
 
-http.createServer(procedure).listen(5861)
-console.log("Server running at http://39.98.116.227/")
-
 https.createServer({
   key: httpsKey, cert: httpsCert
 }, procedure).listen(5414)
-console.log("Server running at https://39.98.116.227/")
+console.log("Server running at https://www.hepani.xyz/")
+
+http.createServer(function (request, response) {
+  var host = request.headers.host
+  if(host == "hepani.xyz" || host == "www.hepani.xyz")
+  {
+    response.writeHead(301, {Location: "https://" + host + request.url})
+    return response.end()
+  }
+  procedure(request, response)
+}).listen(5861)
+console.log("Server running at http://localhost:5861/")
