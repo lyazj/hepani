@@ -189,7 +189,7 @@ function updatePhase() {
     return false
   while(time >= timeline[phase])
     ++phase
-  while(time < timeline[phase - 1])
+  while(phase > -1 && time < timeline[phase - 1])
     --phase
   return true
 }
@@ -198,7 +198,7 @@ function updatePhase() {
 function updateParticles(timeSpan) {
   if(updatePhase())
   {
-    if(phase >= particles.length)
+    if(phase == -1 || phase >= particles.length)
     {
       phase = -1
       time = 0.0
