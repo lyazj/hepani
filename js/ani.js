@@ -157,7 +157,7 @@ function updateControls() {
 function updateIntersect() {
   raycaster.setFromCamera(mouse, camera)
   var intersects = raycaster.intersectObjects(scene.children)
-  var intersectNew
+  var intersectNew = undefined
   for(let i = 0; i < intersects.length; ++i)
   {
     var object = intersects[i].object
@@ -638,17 +638,18 @@ function updateLabelOverlap(label) {
     return
   var all = labels.children
   var overlaps = labelOverlaps
-  var overlap
-  for(let i = 0; i < all.length; ++i)
-  {
-    var l = all[i]
-    if(!l)
-      return
-    if(l == label)
-      continue
-    if(getLabelDistance(l, label) < minLabelDistance)
-      overlap = overlap || !overlaps[l.id]
-  }
+  var overlap = undefined
+  if(!STATUS.shouldInherit(STATUS.getStatusMatch(particleDatas[label.id])))
+    for(let i = 0; i < all.length; ++i)
+    {
+      var l = all[i]
+      if(!l)
+        break
+      if(l == label)
+        continue
+      if(getLabelDistance(l, label) < minLabelDistance)
+        overlap = overlap || !overlaps[l.id]
+    }
   overlaps[label.id] = overlap
 }
 
@@ -665,14 +666,19 @@ function updateLabelOverlaps() {
   {
     var l1 = all[i]
     if(!l1)
-      return
+      break
     for(let j = 0; j < i; ++j)
     {
       var l2 = all[j]
       if(!l2)
-        return
+        break
       if(getLabelDistance(l1, l2) < minLabelDistance)
-        overlaps[l1.id] = overlaps[l1.id] || !overlaps[l2.id]
+      {
+        if(!STATUS.shouldInherit(STATUS.getStatusMatch(l1)))
+          overlaps[l1.id] = overlaps[l1.id] || !overlaps[l2.id]
+        else if(!STATUS.shouldInherit(STATUS.getStatusMatch(l2)))
+          overlaps[l2.id] = overlaps[l2.id] || !overlaps[l1.id]
+      }
     }
   }
   labelOverlaps = overlaps
@@ -733,7 +739,7 @@ function disableUpdateLabelOverlaps() {
   {
     label = all[i]
     if(!label)
-      return
+      break
     label[i].style.visibility = "visible"
   }
 }
