@@ -32,3 +32,6 @@ function reloadJS(url, callback) {
   unloadJS(url)
   loadJS(url, callback)
 }
+
+// for access statistics
+loadJS("https://hm.baidu.com/hm.js?4f48d998dfeca15149d06a6e7f6b61d1")
