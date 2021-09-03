@@ -29,10 +29,10 @@ bin/Hepani: $(obj)
 	strip $@
 
 example/py8log.json: example/input.txt bin/Hepani
-	./bin/Hepani --type py8log --d0 0.001 --d1 5 < $< > $@
+	bin/Hepani --type py8log --d0 0.001 --d1 5 < $< > $@
 
 example/hepmc2.json: example/input.hepmc bin/Hepani
-	./bin/Hepani --type hepmc2 --d0 0.001 --d1 5 --event 0 < $< > $@
+	bin/Hepani --type hepmc2 --d0 0.001 --d1 5 --event 0 < $< > $@
 
 example/output.json: example/py8log.json
 	ln -f $< $@
