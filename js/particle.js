@@ -285,6 +285,10 @@ var STATUS = {
     return status > 90 && status < 100
   },
 
+  shouldInherit: (statusMatch) => {
+    return ["isHard"].indexOf(statusMatch) > -1
+  },
+
   getStatusMatch: (particleData) => {
     if(particleData.statusMatch === undefined)
     {
@@ -292,11 +296,18 @@ var STATUS = {
       if(statusInherit)
       {
         var id = STATUS.abs(particleData.id)
-        if(particleData.momset.length == 1)
+        for(let i = 0; i < particleData.momset.length; ++i)
         {
-          var mom = particleDatas[particleData.momset[0]]
+          var mom = particleDatas[particleData.momset[i]]
           if(STATUS.abs(mom.id) == id)
-            particleData.statusMatch = STATUS.getStatusMatch(mom)
+          {
+            var statusMatch = STATUS.getStatusMatch(mom)
+            if(STATUS.shouldInherit(statusMatch))
+            {
+              particleData.statusMatch = statusMatch
+              break
+            }
+          }
         }
       }
       if(!particleData.statusMatch)

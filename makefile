@@ -28,11 +28,11 @@ bin/Hepani: $(obj)
 	$(CXX) $(filter %.o,$^) -o $@ $(LDFLAGS)
 	strip $@
 
-example/py8log.json: bin/Hepani
-	./$< --type py8log --d0 0.001 --d1 5 < example/input.txt >$@
+example/py8log.json: example/input.txt bin/Hepani
+	./bin/Hepani --type py8log --d0 0.001 --d1 5 < $< > $@
 
-example/hepmc2.json: bin/Hepani
-	./$< --type hepmc2 --d0 0.001 --d1 5 < example/input.hepmc >$@
+example/hepmc2.json: example/input.hepmc bin/Hepani
+	./bin/Hepani --type hepmc2 --d0 0.001 --d1 5 --event 0 < $< > $@
 
 example/output.json: example/py8log.json
 	ln -f $< $@

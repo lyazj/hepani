@@ -24,7 +24,9 @@ function loadJS(url, callback) {
 function unloadJS(url) {
   if(!loadedJS[url])
     return
-  document.body.removeChild(loadedJS[url])
+  try {
+    document.body.removeChild(loadedJS[url])
+  } catch(err) { }
   delete loadedJS[url]
 }
 
