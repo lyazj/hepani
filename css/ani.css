@@ -280,3 +280,17 @@ aside .functions > .function:first-of-type {
 #config .config-page {
   display: none;
 }
+
+#audio-background {
+  position: absolute;
+  z-index: 10000;
+  top: 0;
+  left: 100%;
+  margin-top: 10px;
+  margin-left: -216px;
+  opacity: 0.2;
+}
+
+#audio-background:hover {
+  opacity: 0.9;
+}
