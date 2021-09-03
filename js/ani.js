@@ -198,7 +198,7 @@ function updatePhase() {
 function updateParticles(timeSpan) {
   if(updatePhase())
   {
-    if(phase == -1 || phase >= particles.length)
+    if(phase <= -1 || phase >= particles.length)
     {
       phase = -1
       time = 0.0
