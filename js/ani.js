@@ -191,6 +191,8 @@ function updatePhase() {
     ++phase
   while(phase > -1 && time < timeline[phase - 1])
     --phase
+  if(phase == centralPhase)
+    playAudioId("audio-collide")
   return true
 }
 
@@ -1252,4 +1254,18 @@ function onkeyupBody(evt) {
 
   return true
 
+}
+
+// @noexcept
+function playAudio(audio) {
+  var audioNew = document.createElement("audio")
+  audioNew.src = audio.src
+  audioNew.autoplay = true
+}
+
+// @noexcept
+function playAudioId(audioId) {
+  var audio = document.getElementById(audioId)
+  if(audio)
+    playAudio(audio)
 }

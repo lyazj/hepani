@@ -24,6 +24,7 @@ var fileType = {
   js:   "text/javascript;charset=utf-8",
   css:  "text/css;charset=utf-8",
   json: "application/json;charset=utf-8",
+  mp3:  "audio/mpeg",
   // ...
 }
 
@@ -36,6 +37,7 @@ var noGzip = [
   /.*\.png$/,
   /.*\.jpg$/,
   /.*\.jpeg$/,
+  /.*\.mp3$/,
 ]
 
 var cacheControl = {
@@ -68,6 +70,7 @@ cacheControl = Object.assign(cacheControl, {
   "img/functions.svg"     : cacheControl.static,
   "img/help.svg"          : cacheControl.static,
   "img/start.svg"         : cacheControl.static,
+  "audio/collide.mp3"     : cacheControl.static,
 })
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")

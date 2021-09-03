@@ -9,6 +9,9 @@ var particleDatas = []
 /* must be an 1D-Array containing ending time(s) */
 var timeline = []
 
+/* must be an unsigned integer */
+var centralPhase
+
 /* set it as false to disable JSON auto-requesting once */
 var shouldRequestJSON = true
 
@@ -178,6 +181,7 @@ function receiveJSONContent(content) {
         particleDatas[particles[i][j].no] = particles[i][j]
     timeline = data.timeline
     timeline[-1] = 0
+    centralPhase = data.central_phase
   } catch(err) {
     particles = []
     timeline = []
