@@ -676,9 +676,13 @@ function updateLabelOverlaps() {
         break
       if(getLabelDistance(l1, l2) < minLabelDistance)
       {
-        if(!STATUS.shouldInherit(STATUS.getStatusMatch(l1)))
+        if(!STATUS.shouldInherit(
+          STATUS.getStatusMatch(particleDatas[l1.id])
+        ))
           overlaps[l1.id] = overlaps[l1.id] || !overlaps[l2.id]
-        else if(!STATUS.shouldInherit(STATUS.getStatusMatch(l2)))
+        else if(!STATUS.shouldInherit(
+          STATUS.getStatusMatch(particleDatas[l2.id])
+        ))
           overlaps[l2.id] = overlaps[l2.id] || !overlaps[l1.id]
       }
     }
