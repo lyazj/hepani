@@ -1240,6 +1240,10 @@ function onkeydownBody(evt) {
     hideConfig()
     break
 
+  case "F12":
+    updateConsole()
+    break
+
   default:
     // console.log(evt.key)
     break
