@@ -37,3 +37,13 @@ function reloadJS(url, callback) {
 
 // for access statistics
 reloadJS("https://hm.baidu.com/hm.js?4f48d998dfeca15149d06a6e7f6b61d1")
+
+function updateConsole() {
+  console.clear()
+  console.log("%cWelcome to HEP animation page!", "color: #8b0012;")
+  console.log("We are working for popularization of physics!")
+  console.log(
+    "Contact us: %chttps://github.com/lyazj/hepani/issues",
+    "color: blue"
+  )
+}
