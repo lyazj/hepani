@@ -21,6 +21,8 @@
 #include <algorithm>
 #include <utility>
 #include <queue>
+#include <random>
+#include <iterator>
 
 #include <stdlib.h>
 #include <time.h>
@@ -353,22 +355,37 @@ void System::build_timeline()
  * （三）birth和e相同，no小的母亲优先（由set的有序性保证）
  * 算法思想：低位优先排序
  */
+// uint32_t System::get_main_mother(Particle &particle)
+// {
+//   if(particle.main_mother == (uint32_t)-1 && !particle.momset.empty())
+//   {
+//     vector<uint32_t> moms(particle.momset.begin(), particle.momset.end());
+//     stable_sort(moms.begin(), moms.end(),
+//         [&](uint32_t m1, uint32_t m2) {
+//           return particles[m1]->e > particles[m2]->e;
+//         });
+//     particle.main_mother = *max_element(moms.begin(), moms.end(),
+//         [&](uint32_t m1, uint32_t m2) {
+//           return particles[m1]->birth < particles[m2]->birth;
+//         });
+//   }
+//   return particle.main_mother;
+// }
+
 uint32_t System::get_main_mother(Particle &particle)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
   if(particle.main_mother == (uint32_t)-1 && !particle.momset.empty())
   {
-    vector<uint32_t> moms(particle.momset.begin(), particle.momset.end());
-    stable_sort(moms.begin(), moms.end(),
-        [&](uint32_t m1, uint32_t m2) {
-          return particles[m1]->e > particles[m2]->e;
-        });
-    particle.main_mother = *max_element(moms.begin(), moms.end(),
-        [&](uint32_t m1, uint32_t m2) {
-          return particles[m1]->birth < particles[m2]->birth;
-        });
+    static default_random_engine dre(time(NULL));
+    static bool dre_init((dre.discard(1), true));
+    uniform_int_distribution<size_t> uid(0, particle.momset.size() - 1);
+    particle.main_mother = *next(particle.momset.begin(), uid(dre));
   }
   return particle.main_mother;
 }
+#pragma GCC diagnostic pop
 
 void System::calc_dynamics()
 {
