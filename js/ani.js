@@ -1035,7 +1035,8 @@ function updateColorConfig() {
     input.type = "radio"
     input.name = "color-scheme"
     input.onchange = new Function(
-      prefix + ".setColorScheme(this.value); updateColorConfig()"
+      prefix + ".setColorScheme(this.value); updateColorConfig();" +
+      "updateParticleColors()"
     )
     label.htmlFor = input.id = "color-scheme-" +
       (label.innerHTML = input.value = scheme)
@@ -1099,7 +1100,8 @@ function updateSizeConfig() {
     input.type = "radio"
     input.name = "size-scheme"
     input.onchange = new Function(
-      prefix + ".setSizeScheme(this.value); updateSizeConfig()"
+      prefix + ".setSizeScheme(this.value); updateSizeConfig();" +
+      "updateParticleSizes()"
     )
     label.htmlFor = input.id = "size-scheme-" +
       (label.innerHTML = input.value = scheme)
