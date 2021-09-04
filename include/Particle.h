@@ -47,6 +47,7 @@ struct ParticleBase {
   std::set<uint32_t>  dauset;
   uint32_t            dj_parent;
   uint32_t            dj_rank;
+  uint32_t            main_mother;
 };
 
 struct Particle : ParticleBase {
@@ -66,6 +67,12 @@ struct Particle : ParticleBase {
   void set_position(const Array &, uint32_t, const Timeline &);
   CTjson::ojsonstream &print(CTjson::ojsonstream &) const;
 };
+
+bool operator<(const Particle &, const Particle &);
+bool operator>(const Particle &, const Particle &);
+bool operator==(const Particle &, const Particle &);
+bool operator<=(const Particle &, const Particle &);
+bool operator>=(const Particle &, const Particle &);
 
 extern const Particle particle_zero;
 

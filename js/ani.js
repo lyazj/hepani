@@ -104,7 +104,8 @@ function onclickIntersect(particleMesh) {
       "Velocity: (c) " + particleMesh.data.v + "\n" +
       "Position at birth: (cΔt) " + particleMesh.data.r + "\n" +
       "Mothers: " + particleMesh.data.momset + "\n" +
-      "Daughters: " + particleMesh.data.dauset + "\n\n" +
+      "Daughters: " + particleMesh.data.dauset + "\n" +
+      "Main Mother: " + particleMesh.data.mainMother + "\n\n" +
       "General Description" +
       "\n----------------------------------------\n" +
       description
@@ -855,9 +856,9 @@ function changeSpeed(speedNew) {
   if(Number.isNaN(speedNew = Number.parseFloat(speedNew)))
     return false
   if(Math.abs(speedNew) > 1e2)
-    speedNew = speedNew > 0 ? 1e2 : -1e2
+    speedNew = speedNew >= 0 ? 1e2 : -1e2
   if(Math.abs(speedNew) < 1e-2)
-    speedNew = speedNew > 0 ? 1e-2 : -1e-2
+    speedNew = speedNew >= 0 ? 1e-2 : -1e-2
   speedRate = speedNew
   _timeRecord = []
   render()

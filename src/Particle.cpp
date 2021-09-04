@@ -28,7 +28,7 @@ const Particle particle_zero(ParticleBase {
   .name = "(system)",
   .status = 11,
   .colours = {0},
-  .r = {NAN, NAN, NAN},
+  .r = array_nan,
   .v = {0.0},
   .p = {0.0},
   .e = 0.0,
@@ -39,6 +39,7 @@ const Particle particle_zero(ParticleBase {
   .dauset = { },
   .dj_parent = 0,
   .dj_rank = 0,
+  .main_mother = (uint32_t)-1,
 });
 
 ojsonstream &Particle::print(ojsonstream &ojs) const
@@ -57,7 +58,8 @@ ojsonstream &Particle::print(ojsonstream &ojs) const
       KVP(birth),
       KVP(death),
       KVP(momset),
-      KVP(dauset)
+      KVP(dauset),
+      "mainMother", main_mother
   );
 }
 
@@ -66,11 +68,33 @@ void Particle::initialize()
   string *pname(name_cache.find(id));
   if(pname)
     name = *pname;
-  r = {NAN, NAN, NAN};
+  r = array_nan,
   v = e ? p / e : Array{0.0};
   birth = death = phase_undef;
   dj_parent = no;
   dj_rank = 0;
+  main_mother = (uint32_t)-1;
+}
+
+bool operator<(const Particle &p1, const Particle &p2)
+{
+  return p1.no < p2.no;
+}
+bool operator>(const Particle &p1, const Particle &p2)
+{
+  return p1.no > p2.no;
+}
+bool operator==(const Particle &p1, const Particle &p2)
+{
+  return p1.no == p2.no;
+}
+bool operator<=(const Particle &p1, const Particle &p2)
+{
+  return p1.no <= p2.no;
+}
+bool operator>=(const Particle &p1, const Particle &p2)
+{
+  return p1.no >= p2.no;
 }
 
 void Particle::dj_union(Particle &other, vector<ParticlePtr> &pps)

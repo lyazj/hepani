@@ -33,6 +33,7 @@ struct Array {
   Array &operator*=(double);
   Array &operator/=(double);
 
+  bool isnan() const;
   CTjson::ojsonstream &print(CTjson::ojsonstream &) const;
 };
 
@@ -41,5 +42,9 @@ Array operator-(const Array &, const Array &);
 Array operator*(const Array &, double);
 Array operator*(double, const Array &);
 Array operator/(const Array &, double);
+
+bool operator==(const Array &, const Array &);
+
+constexpr Array array_nan = {NAN, NAN, NAN};
 
 }  // namespace Hepani

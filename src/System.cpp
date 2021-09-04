@@ -20,6 +20,7 @@
 #include <fstream>
 #include <algorithm>
 #include <utility>
+#include <queue>
 
 #include <stdlib.h>
 #include <time.h>
@@ -323,26 +324,84 @@ void System::build_timeline()
   timeline.build(particle_index.size());
 }
 
+// void System::calc_dynamics()
+// {
+//   particle_index[0][0]->r = {0.0};
+//   if(particle_index.size() > 1)
+//     for(const ParticlePtr &pp : particle_index[1])
+//       pp->set_position({0.0}, central_phase, timeline);
+//   for(uint32_t phase = 2; phase < particle_index.size(); ++phase)
+//     for(const ParticlePtr &pp : particle_index[phase])
+//     {
+//       double e_sum(0.0);
+//       pp->r = {0.0};
+//       for(uint32_t m : pp->momset)
+//       {
+//         e_sum +=
+//           particles[m]->e;
+//         pp->r +=
+//           particles[m]->e * particles[m]->get_position(phase, timeline);
+//       }
+//       // NAN(C++) -> null(JSON) -> NaN(js) -> 0(three.js)
+//       pp->r /= e_sum;
+//     }
+// }
+
+/* 粒子母亲优先级规则：
+ * （一）birth大的母亲优先（调用max_element实现）
+ * （二）birth相同，e大的母亲优先（调用stable_sort实现）
+ * （三）birth和e相同，no小的母亲优先（由set的有序性保证）
+ * 算法思想：低位优先排序
+ */
+uint32_t System::get_main_mother(Particle &particle)
+{
+  if(particle.main_mother == (uint32_t)-1 && !particle.momset.empty())
+  {
+    vector<uint32_t> moms(particle.momset.begin(), particle.momset.end());
+    stable_sort(moms.begin(), moms.end(),
+        [&](uint32_t m1, uint32_t m2) {
+          return particles[m1]->e > particles[m2]->e;
+        });
+    particle.main_mother = *max_element(moms.begin(), moms.end(),
+        [&](uint32_t m1, uint32_t m2) {
+          return particles[m1]->birth < particles[m2]->birth;
+        });
+  }
+  return particle.main_mother;
+}
+
 void System::calc_dynamics()
 {
+  map<ParticlePtr, ParticlePtr> initial;
+  for(const ParticlePtr &pp : central_particles)
+  {
+    pp->set_position({0.0}, central_phase, timeline);
+    for(uint32_t m : pp->momset)
+      initial[particles[m]] = pp;
+  }
+
+  queue<pair<ParticlePtr, ParticlePtr>> waiting;
+  for(const pair<ParticlePtr, ParticlePtr> &p : initial)
+    waiting.push(p);
+  while(!waiting.empty())
+  {
+    ParticlePtr pm(waiting.front().first), pd(waiting.front().second);
+    waiting.pop();
+    pm->set_position(pd->r, pd->birth, timeline);
+    uint32_t mm(get_main_mother(*pm));
+    if(mm != (uint32_t)-1)
+      waiting.emplace(particles[mm], pm);
+  }
+
   particle_index[0][0]->r = {0.0};
   if(particle_index.size() > 1)
     for(const ParticlePtr &pp : particle_index[1])
-      pp->set_position({0.0}, central_phase, timeline);
+      if(pp->r.isnan())
+        pp->r = {0.0};
   for(uint32_t phase = 2; phase < particle_index.size(); ++phase)
-    for(const ParticlePtr &pp : particle_index[phase])
-    {
-      double e_sum(0.0);
-      pp->r = {0.0};
-      for(uint32_t m : pp->momset)
-      {
-        e_sum +=
-          particles[m]->e;
-        pp->r +=
-          particles[m]->e * particles[m]->get_position(phase, timeline);
-      }
-      pp->r /= e_sum;  // NAN(C++) -> null(JSON) -> NaN(js) -> 0(three.js)
-    }
+    for(ParticlePtr &pp : particle_index[phase])
+      pp->r =
+        particles[get_main_mother(*pp)]->get_position(phase, timeline);
 }
 
 void System::write_time_stamp()

@@ -64,6 +64,14 @@ Array &Array::operator/=(double d)
   return *this;
 }
 
+bool Array::isnan() const
+{
+  for(size_t i = 0; i < 3; ++i)
+    if(!::isnan(operator[](i)))
+      return false;
+  return true;
+}
+
 Array operator+(const Array &A, const Array &B)
 {
   return Array(A) += B;
@@ -83,6 +91,14 @@ Array operator*(double d, const Array &A)
 Array operator/(const Array &A, double d)
 {
   return Array(A) /= d;
+}
+
+bool operator==(const Array &A, const Array &B)
+{
+  for(size_t i = 0; i < 3; ++i)
+    if(A[i] != B[i])
+      return false;
+  return true;
 }
 
 ojsonstream &Array::print(ojsonstream &ojs) const

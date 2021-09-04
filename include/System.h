@@ -54,6 +54,7 @@ private:
   void write_time_stamp();
 
   uint32_t get_birth(Particles &) noexcept(false);
+  uint32_t get_main_mother(Particle &);
 };
 
 }  // namespace Hepani
