@@ -372,10 +372,10 @@ void System::build_timeline()
 //   return particle.main_mother;
 // }
 
-uint32_t System::get_main_mother(Particle &particle)
-{
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
+uint32_t System::get_main_mother(Particle &particle)
+{
   if(particle.main_mother == (uint32_t)-1 && !particle.momset.empty())
   {
     static default_random_engine dre(time(NULL));
