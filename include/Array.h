@@ -34,6 +34,7 @@ struct Array {
   Array &operator/=(double);
 
   bool isnan() const;
+  double abs() const;
   CTjson::ojsonstream &print(CTjson::ojsonstream &) const;
 };
 

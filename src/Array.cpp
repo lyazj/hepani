@@ -15,6 +15,7 @@
  */
 
 #include "Array.h"
+#include <math.h>
 
 using namespace CTjson;
 using namespace std;
@@ -70,6 +71,17 @@ bool Array::isnan() const
     if(!::isnan(operator[](i)))
       return false;
   return true;
+}
+
+double Array::abs() const
+{
+  double r(0.0);
+  for(size_t i = 0; i < 3; ++i)
+  {
+    double x(operator[](i));
+    r += x * x;
+  }
+  return pow(r, 0.5);
 }
 
 Array operator+(const Array &A, const Array &B)

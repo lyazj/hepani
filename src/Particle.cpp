@@ -69,7 +69,7 @@ void Particle::initialize()
   if(pname)
     name = *pname;
   r = array_nan,
-  v = e ? p / e : Array{0.0};
+  v = e ? p / e : Array{0.0, 0.0, 1.0};
   birth = death = phase_undef;
   dj_parent = no;
   dj_rank = 0;
