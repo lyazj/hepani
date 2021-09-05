@@ -443,8 +443,8 @@ STATUS.colorSchemes = {
 
   pythia: JSON.stringify({
     isNull       : new THREE.Color("white"        ).getHex(),
-    isFinal      : new THREE.Color("darkgrey"     ).getHex(),
-    isDecayed    : new THREE.Color("lightgrey"    ).getHex(),
+    isFinal      : new THREE.Color("lightgrey"    ).getHex(),
+    isDecayed    : new THREE.Color("darkgrey"     ).getHex(),
     isBeam       : new THREE.Color("black"        ).getHex(),
     isHard       : new THREE.Color("red"          ).getHex(),
     isMPI        : new THREE.Color("lightsalmon"  ).getHex(),
