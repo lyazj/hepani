@@ -436,6 +436,21 @@ STATUS.colorSchemes = {
     isISR        : new THREE.Color("lightseagreen").getHex(),
     isFSR        : new THREE.Color("limegreen"    ).getHex(),
     isRemnant    : new THREE.Color("mediumpurple" ).getHex(),
+    isHadronPrep : new THREE.Color("navy"         ).getHex(),
+    isHadron     : new THREE.Color("blue"         ).getHex(),
+    isDecay      : new THREE.Color("lightskyblue" ).getHex(),
+  }),
+
+  pythia: JSON.stringify({
+    isNull       : new THREE.Color("white"        ).getHex(),
+    isFinal      : new THREE.Color("darkgrey"     ).getHex(),
+    isDecayed    : new THREE.Color("lightgrey"    ).getHex(),
+    isBeam       : new THREE.Color("black"        ).getHex(),
+    isHard       : new THREE.Color("red"          ).getHex(),
+    isMPI        : new THREE.Color("lightsalmon"  ).getHex(),
+    isISR        : new THREE.Color("lightseagreen").getHex(),
+    isFSR        : new THREE.Color("limegreen"    ).getHex(),
+    isRemnant    : new THREE.Color("mediumpurple" ).getHex(),
     isHadronPrep : new THREE.Color("blue"         ).getHex(),
     isHadron     : new THREE.Color("blue"         ).getHex(),
     isDecay      : new THREE.Color("lightskyblue" ).getHex(),
@@ -451,13 +466,13 @@ STATUS.sizeSchemes = {
 
   default: JSON.stringify({
     isNull       : particleRadius / 2,
-    isFinal      : particleRadius,
+    isFinal      : particleRadius / 2,
     isDecayed    : particleRadius / 2,
     isBeam       : particleRadius * 2,
     isHard       : particleRadius * 2,
     isMPI        : particleRadius / 2,
-    isISR        : particleRadius / 2,
-    isFSR        : particleRadius / 2,
+    isISR        : particleRadius,
+    isFSR        : particleRadius,
     isRemnant    : particleRadius / 2,
     isHadronPrep : particleRadius / 2,
     isHadron     : particleRadius / 2,
@@ -479,11 +494,11 @@ STATUS.sizeSchemes = {
     isDecay      : particleRadius,
   }),
 
-  emphasized: JSON.stringify({
+  hard: JSON.stringify({
     isNull       : particleRadius,
-    isFinal      : particleRadius * 2,
+    isFinal      : particleRadius,
     isDecayed    : particleRadius,
-    isBeam       : particleRadius,
+    isBeam       : particleRadius * 2,
     isHard       : particleRadius * 2,
     isMPI        : particleRadius,
     isISR        : particleRadius,
@@ -492,6 +507,21 @@ STATUS.sizeSchemes = {
     isHadronPrep : particleRadius,
     isHadron     : particleRadius,
     isDecay      : particleRadius,
+  }),
+
+  shower: JSON.stringify({
+    isNull       : particleRadius / 2,
+    isFinal      : particleRadius / 2,
+    isDecayed    : particleRadius / 2,
+    isBeam       : particleRadius * 2,
+    isHard       : particleRadius / 2,
+    isMPI        : particleRadius / 2,
+    isISR        : particleRadius,
+    isFSR        : particleRadius,
+    isRemnant    : particleRadius / 2,
+    isHadronPrep : particleRadius / 2,
+    isHadron     : particleRadius / 2,
+    isDecay      : particleRadius / 2,
   }),
 
   // ...
