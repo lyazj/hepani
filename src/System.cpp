@@ -387,14 +387,15 @@ uint32_t System::get_main_mother(Particle &particle)
 }
 #pragma GCC diagnostic pop
 
-void System::calc_dynamics()
+bool System::calc_dynamics()
 {
   map<ParticlePtr, ParticlePtr> initial;
   for(const ParticlePtr &pp : central_particles)
   {
     pp->set_position({0.0}, central_phase, timeline);
     for(uint32_t m : pp->momset)
-      initial[particles[m]] = pp;
+      if(m)
+        initial[particles[m]] = pp;
   }
 
   queue<pair<ParticlePtr, ParticlePtr>> waiting;
@@ -404,9 +405,14 @@ void System::calc_dynamics()
   {
     ParticlePtr pm(waiting.front().first), pd(waiting.front().second);
     waiting.pop();
+    if(!pm->r.isnan())
+    {
+      cerr << "Conflicted main mother detacted." << endl;
+      return false;
+    }
     pm->set_position(pd->r, pd->birth, timeline);
     uint32_t mm(get_main_mother(*pm));
-    if(mm != (uint32_t)-1)
+    if(mm != (uint32_t)-1 && mm)
       waiting.emplace(particles[mm], pm);
   }
 
@@ -419,6 +425,8 @@ void System::calc_dynamics()
     for(ParticlePtr &pp : particle_index[phase])
       pp->r =
         particles[get_main_mother(*pp)]->get_position(phase, timeline);
+
+  return true;
 }
 
 void System::write_time_stamp()
@@ -435,7 +443,8 @@ bool System::process_all()
   if(!build_index() || !find_centrals())
     return false;
   build_timeline();
-  calc_dynamics();
+  if(!calc_dynamics())  // not atomic
+    return false;
   write_time_stamp();
   return true;
 }

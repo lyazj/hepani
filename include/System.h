@@ -50,7 +50,7 @@ private:
   bool build_index();
   bool find_centrals();
   void build_timeline();
-  void calc_dynamics();
+  bool calc_dynamics();
   void write_time_stamp();
 
   uint32_t get_birth(Particles &) noexcept(false);
