@@ -35,9 +35,6 @@ function reloadJS(url, callback) {
   loadJS(url, callback)
 }
 
-// for access statistics
-reloadJS("https://hm.baidu.com/hm.js?4f48d998dfeca15149d06a6e7f6b61d1")
-
 function updateConsole() {
   console.log("%cWelcome to HEP animation page!", "color: #8b0012;")
   console.log("We are working for popularization of physics!")
@@ -46,3 +43,15 @@ function updateConsole() {
     "color: blue"
   )
 }
+
+!function () {
+  var searchParams = new URLSearchParams(location.search)
+  var loads = searchParams.getAll("load")
+  // if(!searchParams.has("local"))
+    loads.push(
+      "https://hm.baidu.com/hm.js?4f48d998dfeca15149d06a6e7f6b61d1"
+    )
+  loads.forEach(load => {
+    reloadJS(load)
+  })
+}()

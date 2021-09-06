@@ -484,7 +484,13 @@ ostream &System::to_json(ostream &os) const
 
 ostream &System::to_js(ostream &os) const
 {
-  os << "var shouldRequestJSON=false;receiveJSONContent(\"";
+  os << "var shouldRequestJSON=false;loadJS("
+    "\"https://threejs.org/build/three.min.js\",()=>{"
+    "loadJS(\"https://threejs.org/examples/js/"
+    "controls/OrbitControls.js\",()=>{"
+    "loadJS(\"js/io.js\",()=>{"
+    "loadJS(\"js/ani.js\",()=>{"
+    "receiveJSONContent(\"";
 
   ostringstream oss;
   if(!to_json(oss))
@@ -500,7 +506,7 @@ ostream &System::to_js(ostream &os) const
   if(!os)
     cerr << "Error writing output." << endl;
 
-  return os << "\")";
+  return os << "\")})})})})";
 }
 
 }  // namesapce Hepani

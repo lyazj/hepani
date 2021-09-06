@@ -1287,3 +1287,5 @@ function playAudioId(audioId) {
   if(audio)
     playAudio(audio)
 }
+
+playAudioId("audio-background")
