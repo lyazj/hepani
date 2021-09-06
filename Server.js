@@ -18,6 +18,7 @@ var fileBlock = [
 // whitelist
 var fileType = {
   ico:  "image/x-icon",
+  jpg:  "image/jpeg",
   png:  "image/png",
   svg:  "image/svg+xml;charset=utf-8",
   html: "text/html;charset=utf-8",
@@ -72,6 +73,18 @@ cacheControl = Object.assign(cacheControl, {
   "img/start.svg"         : cacheControl.static,
   "audio/collide.mp3"     : cacheControl.static,
 })
+
+var redirect = {
+  "audio/background.mp3":
+    "https://music.163.com/song/media/outer/url?id=29809102.mp3",
+  "image/background.jpg":
+    "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/" +
+    "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpgA",
+  "js/three.min.js":
+    "https://threejs.org/build/three.min.js",
+  "js/OrbitControls.js":
+    "https://threejs.org/examples/js/controls/OrbitControls.js",
+}
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
 var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
@@ -172,6 +185,13 @@ function procedure(request, response) {
 
   console.log(new Date().toLocaleString() + "  "
     + request.method + ": " + request.url + " -> " + pathname)
+
+  var link = redirect[pathname]
+  if(link)
+  {
+    response.writeHead(302, {Location: link})
+    return response.end()
+  }
 
   if(request.method == "POST" && pathname == "upload")
   {
