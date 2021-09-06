@@ -1184,10 +1184,14 @@ function onkeydownBody(evt) {
     break
 
   case " ":
+    if(_ctrlPressing)
+      break
     document.getElementById("link-start").click()
     break
 
   case "r":
+    if(_ctrlPressing)
+      break
     changeTime(0)
     break
 
@@ -1196,10 +1200,14 @@ function onkeydownBody(evt) {
     break
 
   case "[":
+    if(_ctrlPressing)
+      break
     changeSpeed(speedRate / 1.2)
     break
 
   case "]":
+    if(_ctrlPressing)
+      break
     changeSpeed(speedRate * 1.2)
     break
 
@@ -1244,11 +1252,27 @@ function onkeydownBody(evt) {
     break
 
   case "Escape":
+    if(_ctrlPressing)
+      break
     hideConfig()
     break
 
   case "F12":
+    if(_ctrlPressing)
+      break
     updateConsole()
+    break
+
+  case "=":
+    if(_ctrlPressing)
+      break
+    increaseVolume()
+    break
+
+  case "-":
+    if(_ctrlPressing)
+      break
+    decreaseVolume()
     break
 
   default:
@@ -1293,4 +1317,18 @@ function pauseAudio(id) {
   if(!audio || audio.paused)
     return
   audio.pause()
+}
+
+// @noexcept
+function increaseVolume() {
+  var audios = document.getElementsByTagName("audio")
+  for(let i = 0; i < audios.length; ++i)
+    audios[i].volume = Math.min(audios[i].volume + 0.1, 1)
+}
+
+// @noexcept
+function decreaseVolume() {
+  var audios = document.getElementsByTagName("audio")
+  for(let i = 0; i < audios.length; ++i)
+    audios[i].volume = Math.max(audios[i].volume - 0.1, 0)
 }
