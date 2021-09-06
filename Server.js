@@ -19,6 +19,7 @@ var fileBlock = [
 var fileType = {
   ico:  "image/x-icon",
   jpg:  "image/jpeg",
+  jpeg: "image/jpeg",
   png:  "image/png",
   svg:  "image/svg+xml;charset=utf-8",
   html: "text/html;charset=utf-8",
