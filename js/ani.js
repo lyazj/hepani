@@ -198,7 +198,7 @@ function updatePhase() {
   while(phase > -1 && time < timeline[phase - 1])
     --phase
   if(phase == centralPhase)
-    playAudioId("audio-collide")
+    playAudio("audio-collide")
   return true
 }
 
@@ -315,7 +315,6 @@ function initialize(doubleCallingNeeded) {
     .checked = "checked"
   document.getElementById("size-class-" + sizeClass)
     .checked = "checked"
-  start()
 }
 
 // @noexcept
@@ -344,6 +343,7 @@ function start() {
   _animationTimeStamp = performance.now()
   start_stop.innerHTML = "Stop"
   animate()
+  playAudio("audio-background")
 }
 
 // @noexcept
@@ -1280,17 +1280,17 @@ function onkeyupBody(evt) {
 }
 
 // @noexcept
-function playAudio(audio) {
-  var audioNew = document.createElement("audio")
-  audioNew.src = audio.src
-  audioNew.autoplay = true
+function playAudio(id) {
+  var audio = document.getElementById(id)
+  if(!audio || !audio.paused)
+    return
+  audio.play()
 }
 
 // @noexcept
-function playAudioId(audioId) {
-  var audio = document.getElementById(audioId)
-  if(audio)
-    playAudio(audio)
+function pauseAudio(id) {
+  var audio = document.getElementById(id)
+  if(!audio || audio.paused)
+    return
+  audio.pause()
 }
-
-playAudioId("audio-background")
