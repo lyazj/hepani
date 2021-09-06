@@ -13,12 +13,13 @@ var timeline = []
 var centralPhase
 
 /* set it as false to disable JSON auto-requesting once */
-var shouldRequestJSON
-if(shouldRequestJSON === undefined)
-  shouldRequestJSON = true
+var shouldRequestJSON = true
 
 /* nonnegtive required */
 var loadingCount = loadingCount || 0
+
+/* function overriding requestJSON */
+var requestJSONLocal
 
 const jsonName = "animation.json"
 
@@ -222,6 +223,12 @@ function onloadJSON(xhr) {
 // @effective: async
 // @noexcept
 function requestJSON() {
+
+  if(requestJSONLocal)
+  {
+    requestJSONLocal()
+    return requestJSONLocal = undefined
+  }
 
   if(shouldRequestJSON == false)
   {
