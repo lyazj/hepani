@@ -17,13 +17,29 @@ if input_file[-4:] == ".log" or input_file[-4:] == ".txt":
     input_type = "py8log"
 elif input_file[-6:] == ".hepmc":
     input_type = "hepmc2"
+elif input_file[-5:] == ".json":
+    input_type = "hepani"
 else:
     sys.stderr.write("Unrecognized filetype.\n")
     sys.exit(1)
 
 output_file = os.path.join("/tmp", "run_" + str(os.getpid()) + ".js")
-r = os.system("bin/Hepani -l --d0 0.001 --d1 5"
-        f" --type {input_type} < {input_file} > {output_file}")
+
+if input_type == "hepani":
+    try:
+        with open(input_file, "r") as f:
+            content = f.read().replace(r'"', r'\"')
+        with open(output_file, "w") as f:
+            f.write('function requestJSONLocal(){receiveJSONContent("')
+            f.write(content)
+            f.write('")}')
+        r = 0
+    except:
+        sys.stderr.write("Error processing JSON file.\n")
+        r = 1
+else:
+    r = os.system("bin/Hepani -l --d0 0.001 --d1 5"
+            f" --type {input_type} < {input_file} > {output_file}")
 if r:
     sys.exit(1)
 
