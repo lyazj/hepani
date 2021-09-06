@@ -59,7 +59,7 @@
     <aside>
       <ul class="functions">
         <li class="function"><img class="icon" alt="" src="img/functions.svg" /><span class="name">Functions</span></li>
-        <a href="javascript:stop();writePage('file.html')" id="link-file">
+        <a href="javascript:stop();if(isLocal)alert('Not available in local mode.');else writePage('file.html')" id="link-file">
           <li class="function"><img class="icon" alt="" src="img/file.svg" /><span class="name">File</span></li>
         </a>
         <a href="javascript:startStop()" id="link-start">
