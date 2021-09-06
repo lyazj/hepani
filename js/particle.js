@@ -302,8 +302,9 @@ var STATUS = {
           if(STATUS.abs(mom.id) == id)
           {
             var statusMatch = STATUS.getStatusMatch(mom)
-            if(STATUS.shouldInherit(statusMatch))
+            if(STATUS.shouldInherit(statusMatch) && !mom.inherited)
             {
+              mom.inherited = true
               particleData.statusMatch = statusMatch
               break
             }

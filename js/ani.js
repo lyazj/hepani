@@ -1275,6 +1275,12 @@ function onkeydownBody(evt) {
     decreaseVolume()
     break
 
+  case "m":
+    if(_ctrlPressing)
+      break
+    playPauseAudio("audio-background")
+    break
+
   default:
     // console.log(evt.key)
     break
@@ -1317,6 +1323,25 @@ function pauseAudio(id) {
   if(!audio || audio.paused)
     return
   audio.pause()
+}
+
+// @noexcept
+function audioPaused(id) {
+  var audio = document.getElementById(id)
+  if(!audio)
+    return undefined
+  return audio.paused
+}
+
+// @noexcept
+function playPauseAudio(id) {
+  var audio = document.getElementById(id)
+  if(!audio)
+    return
+  if(audioPaused(id))
+    playAudio(id)
+  else
+    pauseAudio(id)
 }
 
 // @noexcept
