@@ -85,6 +85,11 @@ function onloseIntersect(particleMesh) {
 
 // @noexcept
 function onclickIntersect(particleMesh) {
+  if(isLocal)
+  {
+    stop()
+    return alert("Not available in local mode.")
+  }
   getDescription(particleMesh.data.id, function (description) {
     // var isDisplayingOriginal = isDisplaying()
     // if(isDisplayingOriginal)
