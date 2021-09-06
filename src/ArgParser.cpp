@@ -32,20 +32,37 @@ bool ArgParser::parse(int argc, char *argv[])
   for(int i = 1; i < argc; ++i)
   {
     string key(argv[i]);
-    // if(key.substr(0, 1) == "-")
-    // {
-    //
-    // }
-    if(key.substr(0, 2) != "--")
+    if(key.substr(0, 1) != "-")
     {
-      cerr << "Invalid option key: " + key << "." << endl;
+      cerr << "Invalid argument: " << key << "." << endl;
       return _ready = !(_error = true);
+    }
+    if(key.substr(1, 1) != "-")
+    {
+      key = key.substr(1);
+      if(key.empty())
+      {
+        cerr << "Invalid argument: -." << endl;
+        return _ready = !(_error = true);
+      }
+      for(char c : key)
+        switch(c)
+        {
+        case 'l':
+          args["local"] = "true";
+          break;
+
+        default:
+          cerr << "Invalid option key: " << c << "." << endl;
+          return _ready = !(_error = true);
+        }
+      continue;
     }
     key = key.substr(2);
     // ...
     if(i == argc)
     {
-      cerr << "Missing value of option: " + key << "." << endl;
+      cerr << "Missing value of option: " << key << "." << endl;
       return _ready = !(_error = true);
     }
     string val(argv[++i]);
@@ -106,16 +123,29 @@ bool ArgParser::run(istream &is, ostream &os) noexcept(false)
   _ready = false;
 #pragma GCC diagnostic pop
 
+  bool (System::*input)(std::istream &);
+  std::ostream &(System::*output)(std::ostream &) const;
+
   if(args["type"] == "py8log")
-    return system.from_py8log(is) && system.to_json(os);
-  if(args["type"] == "hepmc2")
-    return system.from_hepmc2(is) && system.to_json(os);
-  // if(...)
+    input = &System::from_py8log;
+  else if(args["type"] == "hepmc2")
+    input = &System::from_hepmc2;
+  // else if(...)
   // {
 
   // }
-  cerr << "Unsupported file type." << endl;
-  return false;
+  else
+  {
+    cerr << "Unsupported file type." << endl;
+    return false;
+  }
+
+  if(args["local"].empty())
+    output = &System::to_json;
+  else
+    output = &System::to_js;
+
+  return (system.*input)(is) && (system.*output)(os);
 }
 
 }  // namespace Hepani

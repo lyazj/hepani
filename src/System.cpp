@@ -71,7 +71,7 @@ bool System::load_py8log(istream &is)
     for(uint32_t m : mothers)
       if(m >= pps.size())
       {
-        cerr << "Invalid mother index: " + to_string(m) + "." << endl;
+        cerr << "Invalid mother index: " << m << "." << endl;
         return false;
       }
       else if(m)
@@ -94,7 +94,7 @@ bool System::load_py8log(istream &is)
     for(uint32_t d : daughters)
       if(d >= pps.size())
       {
-        cerr << "Invalid daughter index: " + to_string(d) + "." << endl;
+        cerr << "Invalid daughter index: " << d << "." << endl;
         return false;
       }
       else if(d)
@@ -140,7 +140,7 @@ bool System::load_hepmc2(istream &is)
     uint32_t no(pgp->id());
     if(!no || no >= pps.size())
     {
-      cerr << "Invalid particle index: " + to_string(no) + "." << endl;
+      cerr << "Invalid particle index: " << no << "." << endl;
       return false;
     }
 
@@ -168,7 +168,7 @@ bool System::load_hepmc2(istream &is)
       uint32_t m(pmom->id());
       if(!m || m >= pps.size())
       {
-        cerr << "Invalid mother index: " + to_string(m) + "." << endl;
+        cerr << "Invalid mother index: " << m << "." << endl;
         return false;
       }
       pp->momset.insert(m);
@@ -178,7 +178,7 @@ bool System::load_hepmc2(istream &is)
       uint32_t d(pdau->id());
       if(!d || d >= pps.size())
       {
-        cerr << "Invalid daughter index: " + to_string(d) + "." << endl;
+        cerr << "Invalid daughter index: " << d << "." << endl;
         return false;
       }
       pp->dauset.insert(d);
@@ -479,7 +479,28 @@ ostream &System::to_json(ostream &os) const
   );
   if(!os)
     cerr << "Error writing output." << endl;
-  return os << endl;
+  return os;
+}
+
+ostream &System::to_js(ostream &os) const
+{
+  os << "var shouldRequestJSON=false;receiveJSONContent(\"";
+
+  ostringstream oss;
+  if(!to_json(oss))
+  {
+    os.setstate(oss.rdstate());
+    return os;
+  }
+  for(char c : oss.str())
+    if(c == '\"')
+      os << "\\\"";
+    else
+      os << c;
+  if(!os)
+    cerr << "Error writing output." << endl;
+
+  return os << "\")";
 }
 
 }  // namesapce Hepani

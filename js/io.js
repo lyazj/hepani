@@ -13,7 +13,9 @@ var timeline = []
 var centralPhase
 
 /* set it as false to disable JSON auto-requesting once */
-var shouldRequestJSON = true
+var shouldRequestJSON
+if(shouldRequestJSON === undefined)
+  shouldRequestJSON = true
 
 /* nonnegtive required */
 var loadingCount = loadingCount || 0

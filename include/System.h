@@ -32,6 +32,7 @@ public:
   bool from_py8log(std::istream &);
   bool from_hepmc2(std::istream &);
   std::ostream &to_json(std::ostream &) const;
+  std::ostream &to_js(std::ostream &) const;
 
 private:
   std::string      input_type;

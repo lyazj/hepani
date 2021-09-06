@@ -11,6 +11,7 @@ all = cache \
       example/output.json.gz \
       example/py8log.json \
       example/hepmc2.json \
+      example/output.js \
 
 CXX = g++
 CXXFLAGS = -O2 -Wall -Wshadow -Wextra -Iinclude
@@ -39,6 +40,9 @@ example/output.json: example/py8log.json
 
 example/output.json.gz: example/output.json
 	gzip -c $< > $@
+
+example/output.js: example/input.txt bin/Hepani
+	bin/Hepani -l --type py8log --d0 0.001 --d1 5 < $< > $@
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(filter %.cpp,$^) -o $@ -c
