@@ -47,7 +47,7 @@ function updateConsole() {
 !function () {
   var searchParams = new URLSearchParams(location.search)
   var loads = searchParams.getAll("load")
-  // if(!searchParams.has("local"))
+  if(!searchParams.has("local"))
     loads.push(
       "https://hm.baidu.com/hm.js?4f48d998dfeca15149d06a6e7f6b61d1"
     )
