@@ -54,6 +54,7 @@ cacheControl = Object.assign(cacheControl, {
   "error/406.html"        : cacheControl.static,
   "error/500.html"        : cacheControl.static,
   "coming.html"           : cacheControl.static,
+  "help.html"             : cacheControl.mutable,
   "ani.html"              : cacheControl.mutable,
   "css/ani.css"           : cacheControl.mutable,
   "js/ani.js"             : cacheControl.mutable,
