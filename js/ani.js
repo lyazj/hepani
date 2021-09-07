@@ -1189,7 +1189,7 @@ function onkeydownBody(evt) {
     document.getElementById("link-start").click()
     break
 
-  case "r":  // case "R":
+  case "r": case "R":
     if(_ctrlPressing)
       break
     changeTime(0)
@@ -1211,7 +1211,7 @@ function onkeydownBody(evt) {
     changeSpeed(speedRate * 1.2)
     break
 
-  case "s":  // case "S":
+  case "s": case "S":
     if(_ctrlPressing)
     {
       document.getElementById("link-download").click()
@@ -1219,7 +1219,7 @@ function onkeydownBody(evt) {
     }
     break
 
-  case "f":  // case "F":
+  case "f": case "F":
     if(_ctrlPressing)
     {
       document.getElementById("link-file").click()
@@ -1227,7 +1227,7 @@ function onkeydownBody(evt) {
     }
     break
 
-  case "c":  // case "C":
+  case "c": case "C":
     if(_ctrlPressing)
     {
       document.getElementById("link-config").click()
@@ -1235,7 +1235,7 @@ function onkeydownBody(evt) {
     }
     break
 
-  case "h":  // case "H":
+  case "h": case "H":
     if(_ctrlPressing)
     {
       document.getElementById("link-help").click()
@@ -1243,7 +1243,7 @@ function onkeydownBody(evt) {
     }
     break
 
-  case "a":  // case "A":
+  case "a": case "A":
     if(_ctrlPressing)
     {
       document.getElementById("link-about").click()
@@ -1275,7 +1275,7 @@ function onkeydownBody(evt) {
     decreaseVolume()
     break
 
-  case "m":
+  case "m": case "M":
     if(_ctrlPressing)
       break
     playPauseAudio("audio-background")
