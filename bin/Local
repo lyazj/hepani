@@ -9,10 +9,15 @@ if sys.argv[0].find("Local") == -1:
 cwd = os.getcwd()
 os.chdir(os.path.join(os.path.dirname(sys.argv[0]), ".."))
 
-if len(sys.argv) < 2:
-    sys.stderr.write("Missing input filename.\n")
+if len(sys.argv) == 0:
+    sys.stderr.write("Unknown error.\n")
     sys.exit(1)
-input_file = os.path.join(cwd, sys.argv[1])
+if len(sys.argv) == 1:
+    sys.argv.append(os.path.join(os.getcwd(), "example", "input.txt"))
+input_file = sys.argv[1]
+
+if not os.path.isabs(input_file):
+    input_file = os.path.join(cwd, sys.argv[1])
 if input_file[-4:] == ".log" or input_file[-4:] == ".txt":
     input_type = "py8log"
 elif input_file[-6:] == ".hepmc":

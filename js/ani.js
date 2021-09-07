@@ -1189,7 +1189,7 @@ function onkeydownBody(evt) {
     document.getElementById("link-start").click()
     break
 
-  case "r":
+  case "r":  // case "R":
     if(_ctrlPressing)
       break
     changeTime(0)
