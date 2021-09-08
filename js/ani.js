@@ -96,29 +96,30 @@ function onclickIntersect(particleMesh) {
     // if(isDisplayingOriginal)
     //   stop()
     stop()
-    alert(
+   alert(
       "Particle No." + data.no +
       "\n----------------------------------------\n" +
       "Birth: " + data.birth + "        " +
       "Death: " + data.death + "\n" +
       "Status: " + data.status + " " +
-      "(" + STATUS.getStatusMatch(data).slice(2) +
-      data.inheritFrom === undefined ? "" : (
-        ", inherit from " + data.inheritFrom
-      ) + ")        " +
-      "PID: " + data.id + " " +
-      "(" + PID.getPIDMatch(data).slice(2) + ")\n" +
-      "Colours: " + data.colours + "        " +
-      "Energy: " + data.e + " MeV\n" +
-      "Velocity: (c) " + data.v + "\n" +
-      "Position at birth: (cΔt) " + data.r + "\n" +
-      "Mothers: " + data.momset + "\n" +
-      "Daughters: " + data.dauset + "\n" +
-      "Main Mother: " + data.mainMother + "\n\n" +
-      "General Description" +
-      "\n----------------------------------------\n" +
-      description
-    )
+     "(" + STATUS.getStatusMatch(data).slice(2) + (
+       data.inheritFrom === undefined ? "" : (
+         ", inherit from " + data.inheritFrom
+       )
+     ) + ")        " +
+     "PID: " + data.id + " " +
+     "(" + PID.getPIDMatch(data).slice(2) + ")\n" +
+     "Colours: " + data.colours + "        " +
+     "Energy: " + data.e + " MeV\n" +
+     "Velocity: (c) " + data.v + "\n" +
+     "Position at birth: (cΔt) " + data.r + "\n" +
+     "Mothers: " + data.momset + "\n" +
+     "Daughters: " + data.dauset + "\n" +
+     "Main Mother: " + data.mainMother + "\n\n" +
+     "General Description" +
+     "\n----------------------------------------\n" +
+     description
+   )
     if(intersect)
     {
       onloseIntersect(intersect)
