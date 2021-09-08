@@ -101,7 +101,12 @@ function onclickIntersect(particleMesh) {
       "Birth: " + particleMesh.data.birth + "        " +
       "Death: " + particleMesh.data.death + "\n" +
       "Status: " + particleMesh.data.status + " " +
-      "(" + STATUS.getStatusMatch(particleMesh.data).slice(2) + ")        " +
+      "(" + STATUS.getStatusMatch(particleMesh.data).slice(2) +
+      (
+        (particleMesh.data.inheritFrom === undefined) ? "" : (
+          ", inherit from " + particleMesh.data.inheritFrom
+        )
+      ) + ")        " +
       "PID: " + particleMesh.data.id + " " +
       "(" + PID.getPIDMatch(particleMesh.data).slice(2) + ")\n" +
       "Colours: " + particleMesh.data.colours + "        " +
