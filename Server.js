@@ -63,6 +63,7 @@ cacheControl = Object.assign(cacheControl, {
   "js/gif.mod.js.map"     : cacheControl.static,
   "js/gif.worker.js"      : cacheControl.static,
   "js/gif.worker.js.map"  : cacheControl.static,
+  "js/pako.min.js"        : cacheControl.static,
   "img/PKU.png"           : cacheControl.static,
   "img/beian.png"         : cacheControl.static,
   "img/about.svg"         : cacheControl.static,
@@ -86,6 +87,8 @@ var redirect = {
     "https://threejs.org/build/three.min.js",
   "js/OrbitControls.js":
     "https://threejs.org/examples/js/controls/OrbitControls.js",
+  "js/pako.min.js":
+    "https://cdn.bootcdn.net/ajax/libs/pako/2.0.4/pako.min.js",
 }
 
 var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")

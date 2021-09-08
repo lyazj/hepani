@@ -82,11 +82,11 @@
 
     <script src="js/load.js"></script>
     <script>
-      loadJS("https://cdn.bootcdn.net/ajax/libs/pako/2.0.4/pako.min.js")
+      loadJS("js/pako.min.js")
       loadJS("js/io.js")
       loadJS("js/file.js")
-      loadJS("https://threejs.org/build/three.min.js", function () {
-        loadJS("https://threejs.org/examples/js/controls/OrbitControls.js", function () {
+      loadJS("js/three.min.js", function () {
+        loadJS("js/OrbitControls.js", function () {
           loadJS("js/ani.js")
         })
       })
