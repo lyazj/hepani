@@ -59,7 +59,7 @@ cacheControl = Object.assign(cacheControl, {
   "css/ani.css"           : cacheControl.mutable,
   "js/ani.js"             : cacheControl.mutable,
   "js/particle.js"        : cacheControl.mutable,
-  "js/gif.js"             : cacheControl.static,
+  "js/gif.js"             : cacheControl.stable,
   "js/gif.js.map"         : cacheControl.static,
   "js/gif.worker.js"      : cacheControl.static,
   "js/gif.worker.js.map"  : cacheControl.static,
