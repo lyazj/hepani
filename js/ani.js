@@ -64,6 +64,7 @@ var _gifRendering
 var _gifBlobURL
 var _configPage
 var _ctrlPressing
+var _processBarTimeoutId
 
 // @noexcept
 function render() {
@@ -862,6 +863,7 @@ function changeTime(timeNew) {
             .translate(time - timeline[particle.birth - 1])
       }
   }
+  createProcessBar(time / timeMax)
   render()
   return true
 }
@@ -1354,6 +1356,7 @@ function increaseVolume() {
   var audios = document.getElementsByTagName("audio")
   for(let i = 0; i < audios.length; ++i)
     audios[i].volume = Math.min(audios[i].volume + 0.1, 1)
+  createProcessBar(audios[audios.length - 1].volume)
 }
 
 // @noexcept
@@ -1361,4 +1364,27 @@ function decreaseVolume() {
   var audios = document.getElementsByTagName("audio")
   for(let i = 0; i < audios.length; ++i)
     audios[i].volume = Math.max(audios[i].volume - 0.1, 0)
+  createProcessBar(audios[audios.length - 1].volume)
+}
+
+// @noexcept
+function clearProcessBars() {
+  var bars = document.getElementsByClassName("bar")
+  while(bars.length)
+    document.body.removeChild(bars[0])
+}
+
+// @noexcept
+function createProcessBar(fraction) {
+  clearProcessBars()
+  var bar = document.createElement("div")
+  bar.className = "bar"
+  var barFiller = document.createElement("div")
+  barFiller.className = "bar-filler"
+  barFiller.style.width = (fraction * 100).toFixed(0) + "%"
+  bar.appendChild(barFiller)
+  document.body.appendChild(bar)
+  if(_processBarTimeoutId !== undefined)
+    clearTimeout(_processBarTimeoutId)
+  _processBarTimeoutId = setTimeout(clearProcessBars, 1000)
 }

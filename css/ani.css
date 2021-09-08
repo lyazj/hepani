@@ -280,3 +280,23 @@ aside .functions > .function:first-of-type {
 #config .config-page {
   display: none;
 }
+
+.bar {
+  position: absolute;
+  z-index: 10000;
+  top: 100%;
+  left: 50%;
+  margin-top: -80px;
+  margin-left: -45%;
+  width: 90%;
+  height: 24px;
+  border: 2px solid white;
+  padding: 2px;
+}
+
+.bar .bar-filler {
+  margin: 0;
+  padding: 0;
+  height: 24px;
+  background: white;
+}
