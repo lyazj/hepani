@@ -90,32 +90,31 @@ function onclickIntersect(particleMesh) {
     stop()
     return alert("Not available in local mode.")
   }
-  getDescription(particleMesh.data.id, function (description) {
+  var data = particleMesh.data
+  getDescription(data.id, function (description) {
     // var isDisplayingOriginal = isDisplaying()
     // if(isDisplayingOriginal)
     //   stop()
     stop()
     alert(
-      "Particle No." + particleMesh.data.no +
+      "Particle No." + data.no +
       "\n----------------------------------------\n" +
-      "Birth: " + particleMesh.data.birth + "        " +
-      "Death: " + particleMesh.data.death + "\n" +
-      "Status: " + particleMesh.data.status + " " +
-      "(" + STATUS.getStatusMatch(particleMesh.data).slice(2) +
-      (
-        (particleMesh.data.inheritFrom === undefined) ? "" : (
-          ", inherit from " + particleMesh.data.inheritFrom
-        )
+      "Birth: " + data.birth + "        " +
+      "Death: " + data.death + "\n" +
+      "Status: " + data.status + " " +
+      "(" + STATUS.getStatusMatch(data).slice(2) +
+      data.inheritFrom === undefined ? "" : (
+        ", inherit from " + data.inheritFrom
       ) + ")        " +
-      "PID: " + particleMesh.data.id + " " +
-      "(" + PID.getPIDMatch(particleMesh.data).slice(2) + ")\n" +
-      "Colours: " + particleMesh.data.colours + "        " +
-      "Energy: " + particleMesh.data.e + " MeV\n" +
-      "Velocity: (c) " + particleMesh.data.v + "\n" +
-      "Position at birth: (cΔt) " + particleMesh.data.r + "\n" +
-      "Mothers: " + particleMesh.data.momset + "\n" +
-      "Daughters: " + particleMesh.data.dauset + "\n" +
-      "Main Mother: " + particleMesh.data.mainMother + "\n\n" +
+      "PID: " + data.id + " " +
+      "(" + PID.getPIDMatch(data).slice(2) + ")\n" +
+      "Colours: " + data.colours + "        " +
+      "Energy: " + data.e + " MeV\n" +
+      "Velocity: (c) " + data.v + "\n" +
+      "Position at birth: (cΔt) " + data.r + "\n" +
+      "Mothers: " + data.momset + "\n" +
+      "Daughters: " + data.dauset + "\n" +
+      "Main Mother: " + data.mainMother + "\n\n" +
       "General Description" +
       "\n----------------------------------------\n" +
       description
