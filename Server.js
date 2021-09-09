@@ -95,8 +95,8 @@ var redirect = {
     "https://cdn.bootcdn.net/ajax/libs/pako/2.0.4/pako.min.js",
 }
 
-var httpsKey = fs.readFileSync("../https/5972158_hepani.xyz.key")
-var httpsCert = fs.readFileSync("../https/5972158_hepani.xyz.pem")
+var httpsKey = fs.readFileSync("../https/cert.key")
+var httpsCert = fs.readFileSync("../https/cert.pem")
 var description = JSON.parse(fs.readFileSync("cache/description.json"))
 var descriptionMstring =
   fs.statSync("cache/description.json").mtime.toUTCString()
@@ -356,11 +356,13 @@ function procedure(request, response) {
 https.createServer({
   key: httpsKey, cert: httpsCert
 }, procedure).listen(5414)
-console.log("Server running at https://www.hepani.xyz/")
+console.log("Server running at https://localhost:5414/")
 
 http.createServer(function (request, response) {
   var host = request.headers.host
-  if(host == "hepani.xyz" || host == "www.hepani.xyz")
+  if(host == "hepani.xyz"
+    || host == "www.hepani.xyz"
+    || host == "develop.hepani.xyz")
   {
     response.writeHead(301, {Location: "https://" + host + request.url})
     return response.end()
