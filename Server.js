@@ -103,7 +103,7 @@ try {
   redirect = { }
 } catch(err) {
   if(err.code != "ENOENT")
-    throw
+    throw err
 }
 
 function writeFile(response, file, code, ims) {
