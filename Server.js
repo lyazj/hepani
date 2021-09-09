@@ -98,17 +98,15 @@ var descriptionMstring =
   fs.statSync("cache/description.json").mtime.toUTCString()
 var descriptionMtime = new Date(descriptionMstring)
 
-function writeFile(response, file, type, code, ims) {
-
-  if(type === undefined)
-    type = "text/html"
-  if(code === undefined)
-    code = 200
+function writeFile(response, file, code, ims) {
 
   if(fileBlock.some(function (name) {
     return name.exec(file)
   }))
     return writeError(response, 404)
+
+  if(code === undefined)
+    code = 200
 
   fs.stat(file, function (err, stats) {
 
@@ -133,6 +131,19 @@ function writeFile(response, file, type, code, ims) {
 
       return writeError(response, 404)
     }
+
+    if(stats.isDirectory())
+    {
+      response.writeHead(302, {Location: file + '/'})
+      return response.end()
+    }
+
+    var type = undefined
+    for(let t in fileType)
+      if(RegExp("\\." + t + "$").exec(file))
+        type = fileType[t]
+    if(type === undefined)
+      return writeError(response, 404)
 
     var thisCacheControl = cacheControl[file]
     if(!thisCacheControl)
@@ -172,11 +183,11 @@ function writeFile(response, file, type, code, ims) {
 }
 
 function writeError(response, code) {
-  writeFile(response, "error/" + code + ".html", "text/html", code)
+  writeFile(response, "error/" + code + ".html", code)
 }
 
 function writeExample(response, type) {
-  writeFile(response, "example/" + type + ".json", fileType.json)
+  writeFile(response, "example/" + type + ".json")
 }
 
 function procedure(request, response) {
@@ -187,6 +198,8 @@ function procedure(request, response) {
     pathname = pathname.slice(1)
   if(!pathname)
     pathname = "ani.html"
+  if(pathname.slice(-1) == '/')
+    pathname += "index.html"
 
   console.log(new Date().toLocaleString() + "  "
     + request.method + ": " + request.url + " -> " + pathname)
@@ -233,7 +246,7 @@ function procedure(request, response) {
     })
 
     var argArray = []
-    for(var item in query)
+    for(let item in query)
     {
       argArray.push("--" + item)
       argArray.push(query[item])
@@ -322,13 +335,9 @@ function procedure(request, response) {
     return
   }
 
-  for(var type in fileType)
-    if(RegExp("\\." + type + "$").exec(pathname))
-      return writeFile(
-        response, pathname, fileType[type], 200,
-        request.headers["if-modified-since"]
-      )
-  return writeError(response, 404)
+  return writeFile(
+    response, pathname, 200, request.headers["if-modified-since"]
+  )
 
 }
 
