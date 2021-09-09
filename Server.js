@@ -98,6 +98,14 @@ var descriptionMstring =
   fs.statSync("cache/description.json").mtime.toUTCString()
 var descriptionMtime = new Date(descriptionMstring)
 
+try {
+  fs.statSync(".noredirect")
+  redirect = { }
+} catch(err) {
+  if(err.code != "ENOENT")
+    throw
+}
+
 function writeFile(response, file, code, ims) {
 
   if(fileBlock.some(function (name) {
