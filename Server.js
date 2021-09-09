@@ -66,7 +66,7 @@ cacheControl = Object.assign(cacheControl, {
   "js/three.min.js"       : cacheControl.static,
   "js/OrbitControls.js"   : cacheControl.static,
   "js/pako.min.js"        : cacheControl.static,
-  "img/PKU.png"           : cacheControl.static,
+  "img/logo.png"          : cacheControl.static,
   "img/beian.png"         : cacheControl.static,
   "img/about.svg"         : cacheControl.static,
   "img/config.svg"        : cacheControl.static,
