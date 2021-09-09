@@ -60,9 +60,11 @@ cacheControl = Object.assign(cacheControl, {
   "js/ani.js"             : cacheControl.mutable,
   "js/particle.js"        : cacheControl.mutable,
   "js/gif.mod.js"         : cacheControl.stable,
-  "js/gif.mod.js.map"     : cacheControl.static,
+  "js/gif.js.map"         : cacheControl.static,
   "js/gif.worker.js"      : cacheControl.static,
   "js/gif.worker.js.map"  : cacheControl.static,
+  "js/three.min.js"       : cacheControl.static,
+  "js/OrbitControls.js"   : cacheControl.static,
   "js/pako.min.js"        : cacheControl.static,
   "img/PKU.png"           : cacheControl.static,
   "img/beian.png"         : cacheControl.static,
@@ -74,13 +76,15 @@ cacheControl = Object.assign(cacheControl, {
   "img/functions.svg"     : cacheControl.static,
   "img/help.svg"          : cacheControl.static,
   "img/start.svg"         : cacheControl.static,
+  "img/background.jpg"    : cacheControl.static,
   "audio/collide.mp3"     : cacheControl.static,
+  "audio/background.mp3"  : cacheControl.static,
 })
 
 var redirect = {
   "audio/background.mp3":
     "https://music.163.com/song/media/outer/url?id=29809102.mp3",
-  "image/background.jpg":
+  "img/background.jpg":
     "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/" +
     "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpgA",
   "js/three.min.js":
