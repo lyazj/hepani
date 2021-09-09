@@ -86,7 +86,7 @@ var redirect = {
     "https://music.163.com/song/media/outer/url?id=29809102.mp3",
   "img/background.jpg":
     "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/" +
-    "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpgA",
+    "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg",
   "js/three.min.js":
     "https://threejs.org/build/three.min.js",
   "js/OrbitControls.js":
