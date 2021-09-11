@@ -1388,3 +1388,24 @@ function createProcessBar(fraction) {
     clearTimeout(_processBarTimeoutId)
   _processBarTimeoutId = setTimeout(clearProcessBars, 1000)
 }
+
+// @noexcept
+function promptComment() {
+  var content = prompt(
+    "The comment is visible only to developers:" +
+    " (256 characters most)"
+  )
+  if(content === null)
+    return
+  if(content.length > 256)
+    alert("Not sent: To many characters!")
+  var xhr = new XMLHttpRequest()
+  xhr.open("put", "comment?content=" + encodeURIComponent(content), true)
+  xhr.send()
+  xhr.onload = function () {
+    if(this.status == 200)
+      alert(this.responseText + " character(s) sent successfully!")
+    else
+      alert("HTTP Error " + this.status + ": " + this.responseText)
+  }
+}
