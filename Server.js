@@ -59,6 +59,7 @@ cacheControl = Object.assign(cacheControl, {
   "css/ani.css"           : cacheControl.mutable,
   "js/ani.js"             : cacheControl.mutable,
   "js/particle.js"        : cacheControl.mutable,
+  "js/help.js"            : cacheControl.mutable,
   "js/gif.mod.js"         : cacheControl.stable,
   "js/gif.js.map"         : cacheControl.static,
   "js/gif.worker.js"      : cacheControl.static,
@@ -66,6 +67,7 @@ cacheControl = Object.assign(cacheControl, {
   "js/three.min.js"       : cacheControl.static,
   "js/OrbitControls.js"   : cacheControl.static,
   "js/pako.min.js"        : cacheControl.static,
+  "js/jquery.slim.min.js" : cacheControl.static,
   "img/logo.png"          : cacheControl.static,
   "img/beian.png"         : cacheControl.static,
   "img/about.svg"         : cacheControl.static,
@@ -93,6 +95,8 @@ var redirect = {
     "https://threejs.org/examples/js/controls/OrbitControls.js",
   "js/pako.min.js":
     "https://cdn.bootcdn.net/ajax/libs/pako/2.0.4/pako.min.js",
+  "js/jquery.slim.min.js":
+    "https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.slim.min.js",
 }
 
 var httpsKey = fs.readFileSync("../https/cert.key")

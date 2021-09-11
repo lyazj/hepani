@@ -1,0 +1,54 @@
+html, body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+aside {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 20%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 1px solid lightskyblue;
+  font-family: verdana, sans-serif;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+aside h2 {
+  text-align: center;
+  margin: 0;
+  padding: 10px;
+  background-color: lightskyblue;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+aside div {
+  padding: 0 20px;
+}
+
+aside ul {
+  padding: 0.5em;
+}
+
+main {
+  position: absolute;
+  width: 80%;
+  left: 20%;
+  top: 0;
+  padding: 0 40px;
+  box-sizing: border-box;
+  background: ivory;
+}
+
+main h1 {
+  text-align: center;
+  color: navy;
+}
+
+main tr td {
+  padding: 2px 20px;
+}
