@@ -353,13 +353,14 @@ function procedure(request, response) {
 
   if(pathname == "comment")
   {
+    var ip = request.connection.remoteAddress || "0.0.0.0"
     var query = querystring.parse(URL.query)
     var content = (query.content || "").slice(0, 256)
     response.writeHead(200, {
       "Content-Type": "text/plain;charset=utf-8",
       "Cache-Control": "no-cache",
     })
-    saveComment(content)
+    saveComment(ip, content)
     return response.end(content.length.toString())
   }
 
@@ -369,10 +370,11 @@ function procedure(request, response) {
 
 }
 
-function saveComment(content) {
+function saveComment(ip, content) {
+  ip = (ip.match(/\d+\.\d+\.\d+\.\d+/) || ["0.0.0.0"])[0]
   fs.writeFile(
     "comment.txt",
-    Date() + "  " + content + "\n",
+    Date() + " (" + ip + "): " + content + "\n",
     { flag: "a" },
     err => { if(err) console.error(err) }
   )
