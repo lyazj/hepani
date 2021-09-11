@@ -372,7 +372,7 @@ function procedure(request, response) {
 function saveComment(content) {
   fs.writeFile(
     "comment.txt",
-    Date() + "  " + content,
+    Date() + "  " + content + "\n",
     { flag: "a" },
     err => { if(err) console.error(err) }
   )
