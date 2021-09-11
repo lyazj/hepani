@@ -51,6 +51,7 @@ main {
   padding: 0 40px;
   box-sizing: border-box;
   background: ivory;
+  text-align: justify;
 }
 
 main h1 {

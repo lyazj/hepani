@@ -351,10 +351,31 @@ function procedure(request, response) {
     return
   }
 
+  if(pathname == "comment")
+  {
+    var query = querystring.parse(URL.query)
+    var content = (query.content || "").slice(0, 256)
+    response.writeHead(200, {
+      "Content-Type": "text/plain;charset=utf-8",
+      "Cache-Control": "no-cache",
+    })
+    saveComment(content)
+    return response.end(content.length.toString())
+  }
+
   return writeFile(
     response, pathname, 200, request.headers["if-modified-since"]
   )
 
+}
+
+function saveComment(content) {
+  fs.writeFile(
+    "comment.txt",
+    Date() + "  " + content,
+    { flag: "a" },
+    err => { if(err) console.error(err) }
+  )
 }
 
 https.createServer({
