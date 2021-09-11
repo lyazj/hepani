@@ -15,9 +15,14 @@ aside {
   font-family: verdana, sans-serif;
   font-size: 12px;
   line-height: 20px;
+  overflow: scroll;
 }
 
 aside h2 {
+  position: sticky;
+  left: 0;
+  top: 0;
+  width: 75%;
   text-align: center;
   margin: 0;
   padding: 10px;
@@ -30,8 +35,12 @@ aside div {
   padding: 0 20px;
 }
 
+aside #toc {
+  overflow: hidden;
+}
+
 aside ul {
-  padding: 0.5em;
+  padding: 0.25em;
 }
 
 main {
