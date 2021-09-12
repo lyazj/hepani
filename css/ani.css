@@ -1,7 +1,7 @@
 body {
   margin: 0;
   overflow: hidden;
-  background: lightblue url(
+  background: #3399ff url(
     ../img/background.jpg
   ) no-repeat fixed center / cover;
   user-select: none;

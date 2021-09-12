@@ -65,6 +65,7 @@ var _gifBlobURL
 var _configPage
 var _ctrlPressing
 var _processBarTimeoutId
+var _backgroundBlobURL
 
 // @noexcept
 function render() {
@@ -1408,4 +1409,27 @@ function promptComment() {
     else
       alert("HTTP Error " + this.status + ": " + this.responseText)
   }
+}
+
+// @noexcept
+function promptChangeBackground() {
+  var input = document.createElement("input")
+  input.type = "file"
+  input.accept = "image/*"
+  input.click()
+  input.onchange = function() {
+    var file = this.files[0]
+    if(file.type.slice(0, 6) != "image/")
+      return alert("Not changed: Invalid file type!")
+    if(_backgroundBlobURL)
+      URL.revokeObjectURL(_backgroundBlobURL)
+    document.body.style.backgroundImage = "url(" + (
+      _backgroundBlobURL = URL.createObjectURL(file)
+    ) + ")"
+  }
+}
+
+// @noexcept
+function clearBackground() {
+  document.body.style.backgroundImage = "none"
 }
