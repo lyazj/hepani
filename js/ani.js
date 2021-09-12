@@ -1445,6 +1445,7 @@ function promptChangeBackgroundColor() {
   input.type = "color"
   input.click()
   console.log(input.value)
+  document.body.style.backgroundColor = input.value
   input.onchange = function () {
     document.body.style.backgroundColor = this.value
   }
