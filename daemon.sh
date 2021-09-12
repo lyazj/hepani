@@ -5,7 +5,7 @@ cd `dirname $0`
 function procedure () {
     while true; do
         tail -f /dev/null --pid=`cat pid`
-        ./start.sh
+        ./restart.sh
     done
 }
 
