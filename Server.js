@@ -192,7 +192,9 @@ function writeFile(response, file, code, ims) {
       stream = stream.pipe(zlib.createGzip())
     }
     response.writeHead(code, headObject)
-    stream.pipe(response)
+    try {
+      stream.pipe(response)
+    } catch(err) { }
 
   })
 
@@ -296,17 +298,15 @@ function procedure(request, response) {
         "Cache-Control": cacheControl.mutable,
         "X-Content-Type-Options": "nosniff",
       })
-      gzip.pipe(response)
-      gzip.end(sout)
-      // console.log(sout)
-      // response.end(sout)
+      try {
+        gzip.pipe(response)
+        gzip.end(sout)
+      } catch(err) { }
     })
 
-    request.pipe(gunzip).pipe(process.stdin)
-
-    /* debug */
-    // process.stdout.pipe(require("process").stdout)
-    // process.stderr.pipe(require("process").stderr)
+    try {
+      request.pipe(gunzip).pipe(process.stdin)
+    } catch(err) { }
 
     return
   }
@@ -343,10 +343,6 @@ function procedure(request, response) {
     response.write(result)
     response.write("\n\nSource: https://github.com/scikit-hep/particle")
     response.end("\nUpdate: " + descriptionMstring)
-
-    // var gzip = zlib.createGzip()
-    // gzip.pipe(response)
-    // gzip.end(description[id])
 
     return
   }
