@@ -1417,7 +1417,7 @@ function promptChangeBackground() {
   input.type = "file"
   input.accept = "image/*"
   input.click()
-  input.onchange = function() {
+  input.onchange = function () {
     var file = this.files[0]
     if(file.type.slice(0, 6) != "image/")
       return alert("Not changed: Invalid file type!")
@@ -1432,4 +1432,25 @@ function promptChangeBackground() {
 // @noexcept
 function clearBackground() {
   document.body.style.backgroundImage = "none"
+}
+
+// @noexcept
+function resetBackground() {
+  document.body.style.backgroundImage = ""
+}
+
+// @noexcept
+function promptChangeBackgroundColor() {
+  var input = document.createElement("input")
+  input.type = "color"
+  input.click()
+  console.log(input.value)
+  input.onchange = function () {
+    document.body.style.backgroundColor = this.value
+  }
+}
+
+// @noexcept
+function resetBackgroundColor() {
+  document.body.style.backgroundColor = ""
 }
