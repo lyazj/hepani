@@ -39,18 +39,30 @@ bool System::load_py8log(istream &is)
   while(getline(is, buf) && buf.find("complete event") == buf.npos);
   while(getline(is, buf) && buf.find("no") == buf.npos);
 
+  size_t lines(1);
+  while(getline(is, buf) && buf.find("(system)") == buf.npos)
+    ++lines;
+
+  istringstream iss(buf);
+  Particle8 *pp(new Particle8);
+  iss >> *pp;
+  for(size_t i = 1; i < lines; ++i)
+    if(!getline(is, buf))
+      break;
+
   Particles pps;
   while(true)
   {
-    Particle8 *pp(new Particle8);
-    if(is >> *pp && pp->no == pps.size())
-      pps.emplace_back(pp);
-    else
-    {
-      delete pp;
+    if(pp->no != pps.size())
       break;
-    }
+    pps.emplace_back(pp);
+    if(!(is >> *(pp = new Particle8)))
+      break;
+    for(size_t i = 0; i < lines; ++i)
+      if(!getline(is, buf))
+        break;
   }
+  delete pp;
 
   is.clear();
   getline(is, buf);
