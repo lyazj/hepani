@@ -94,6 +94,10 @@ function submitUpload() {
     xhr.open("post", url, true)
     xhr.setRequestHeader("Content-Type", "application/octet-stream")
     xhr.setRequestHeader("Content-Encoding", "gzip")
+    xhr.upload.onprogress = evt => {
+      if(evt.total)
+        createProcessBar(evt.loaded / evt.total)
+    }
     xhr.send(buf)
     xhr.onload = function () {
       onloadJSON(this)
