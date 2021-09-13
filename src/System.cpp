@@ -497,7 +497,7 @@ ostream &System::to_json(ostream &os) const
 
 ostream &System::to_js(ostream &os) const
 {
-  os << "function requestJSONLocal(){receiveJSONContent(\"";
+  os << "function requestJSONLocal(){receiveJSONContent(\'";
 
   ostringstream oss;
   if(!to_json(oss))
@@ -506,14 +506,14 @@ ostream &System::to_js(ostream &os) const
     return os;
   }
   for(char c : oss.str())
-    if(c == '\"')
-      os << "\\\"";
+    if(c == '\'')
+      os << "\\\'";
     else
       os << c;
   if(!os)
     cerr << "Error writing output." << endl;
 
-  return os << "\")}";
+  return os << "\')}";
 }
 
 }  // namesapce Hepani

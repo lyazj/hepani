@@ -3,6 +3,8 @@
 src = $(shell ls src/*.cpp)
 obj = $(shell ls src/*.cpp | sed -e 's/\.cpp$$/\.o/')
 dep = $(shell ls src/*.cpp | sed -e 's/\.cpp$$/\.d/')
+log = $(shell ls example/*.log)
+js = $(shell ls example/*.log | sed -e 's/\.log$$/\.js/')
 all = cache \
       cache/name.txt \
       cache/description.json \
@@ -11,7 +13,7 @@ all = cache \
       example/output.json.gz \
       example/py8log.json \
       example/hepmc2.json \
-      example/output.js \
+      $(js)
 
 CXX = g++
 CXXFLAGS = -O2 -Wall -Wshadow -Wextra -Iinclude
@@ -29,8 +31,14 @@ bin/Hepani: $(obj)
 	$(CXX) $(filter %.o,$^) -o $@ $(LDFLAGS)
 	strip $@
 
-example/py8log.json: example/input.txt bin/Hepani
+example/%.json: example/%.log bin/Hepani
 	bin/Hepani --type py8log --d0 0.001 --d1 5 < $< > $@
+
+example/%.js: example/%.log bin/Hepani
+	bin/Hepani --local --type py8log --d0 0.001 --d1 5 < $< > $@
+
+example/py8log.json: example/input.txt bin/Hepani
+	bin/Hepani --type py8log --d0 0.001 --d1 5 --event 0 < $< > $@
 
 example/hepmc2.json: example/input.hepmc bin/Hepani
 	bin/Hepani --type hepmc2 --d0 0.001 --d1 5 --event 0 < $< > $@
@@ -40,9 +48,6 @@ example/output.json: example/py8log.json
 
 example/output.json.gz: example/output.json
 	gzip -c $< > $@
-
-example/output.js: example/input.txt bin/Hepani
-	bin/Hepani -l --type py8log --d0 0.001 --d1 5 < $< > $@
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(filter %.cpp,$^) -o $@ -c

@@ -59,7 +59,12 @@ bool ArgParser::parse(int argc, char *argv[])
       continue;
     }
     key = key.substr(2);
-    // ...
+    static const set<string> noarg{"local", /*...*/};
+    if(noarg.count(key))
+    {
+      args[key] = "true";
+      continue;
+    }
     if(i == argc)
     {
       cerr << "Missing value of option: " << key << "." << endl;

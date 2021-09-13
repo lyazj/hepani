@@ -37,3 +37,32 @@
   toc.appendChild(stack[0])
 
 }()
+
+!function updateTable() {
+  [
+    "hj800",
+    "main300",
+    "mmvbszz",
+    "ppww",
+    "ppzh",
+    "vbszz4mu",
+    "wwa",
+  ].forEach(item => {
+    var tr = document.createElement("tr")
+    var td = document.createElement("td")
+    var a = document.createElement("a")
+    a.target = "_black"
+    a.href = ".?load=example/" + item + ".js"
+    a.innerHTML = item
+    td.appendChild(a)
+    tr.appendChild(td)
+    var td = document.createElement("td")
+    var a = document.createElement("a")
+    a.href = "example/" + item + ".log"
+    a.download = item + ".log"
+    a.innerHTML = "log"
+    td.appendChild(a)
+    tr.appendChild(td)
+    $("#example-table")[0].appendChild(tr)
+  })
+}()

@@ -11,7 +11,8 @@ var querystring = require("querystring")
 // blacklist
 var fileBlock = [
   /Server\.js$/,
-  /description\.json$/,
+  /[1-2]\.log$/,
+  /cache\//,
   // ...
 ]
 
@@ -27,6 +28,8 @@ var fileType = {
   css:  "text/css;charset=utf-8",
   json: "application/json;charset=utf-8",
   mp3:  "audio/mpeg",
+  txt: "text/plain;charset=utf-8",
+  log: "text/plain;charset=utf-8",
   // ...
 }
 
