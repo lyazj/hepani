@@ -184,17 +184,21 @@ function writeFile(response, file, code, ims) {
     }
 
     var stream = fs.createReadStream(file)
+    stream.on("error", err => {
+      console.error(err)
+    })
     if(noGzip.every(function (name) {
       return !name.exec(file)
     }))
     {
       headObject["Content-Encoding"] = "gzip"
       stream = stream.pipe(zlib.createGzip())
+      stream.on("error", err => {
+        console.error(err)
+      })
     }
     response.writeHead(code, headObject)
-    try {
-      stream.pipe(response)
-    } catch(err) { }
+    stream.pipe(response)
 
   })
 
@@ -209,6 +213,13 @@ function writeExample(response, type) {
 }
 
 function procedure(request, response) {
+
+  request.on("error", err => {
+    console.error(err)
+  })
+  response.on("error", err => {
+    console.error(err)
+  })
 
   var URL = url.parse(request.url)
   var pathname = URL.pathname
@@ -277,8 +288,28 @@ function procedure(request, response) {
     process.stdout.on("data", function (chunk) {
       sout += chunk
     })
+    process.stdout.on("error", function (err) {
+      hasError = true
+      console.error(err)
+      response.writeHead(500, {
+        "Content-Type": fileType.json,
+        "Cache-Control": cacheControl.mutable,
+        "X-Content-Type-Options": "nosniff",
+      })
+      response.end(JSON.stringify(err))
+    })
     process.stderr.on("data", function (chunk) {
       serr += chunk
+    })
+    process.stderr.on("error", function (err) {
+      hasError = true
+      console.error(err)
+      response.writeHead(500, {
+        "Content-Type": fileType.json,
+        "Cache-Control": cacheControl.mutable,
+        "X-Content-Type-Options": "nosniff",
+      })
+      response.end(JSON.stringify(err))
     })
     process.on("close", function (code) {
       if(hasError)
@@ -298,15 +329,11 @@ function procedure(request, response) {
         "Cache-Control": cacheControl.mutable,
         "X-Content-Type-Options": "nosniff",
       })
-      try {
-        gzip.pipe(response)
-        gzip.end(sout)
-      } catch(err) { }
+      gzip.pipe(response)
+      gzip.end(sout)
     })
 
-    try {
-      request.pipe(gunzip).pipe(process.stdin)
-    } catch(err) { }
+    request.pipe(gunzip).pipe(process.stdin)
 
     return
   }
