@@ -42,25 +42,26 @@ bool System::load_py8log(istream &is)
   size_t lines(1);
   while(getline(is, buf) && buf.find("(system)") == buf.npos)
     ++lines;
-
   istringstream iss(buf);
-  Particle8 *pp(new Particle8);
-  iss >> *pp;
-  for(size_t i = 1; i < lines; ++i)
-    if(!getline(is, buf))
-      break;
 
   Particles pps;
-  while(true)
+  Particle8 *pp(new Particle8);
+  if(iss >> *pp)
   {
-    if(pp->no != pps.size())
-      break;
-    pps.emplace_back(pp);
-    if(!(is >> *(pp = new Particle8)))
-      break;
-    for(size_t i = 0; i < lines; ++i)
+    for(size_t i = 1; i < lines; ++i)
       if(!getline(is, buf))
         break;
+    while(true)
+    {
+      if(pp->no != pps.size())
+        break;
+      pps.emplace_back(pp);
+      if(!(is >> *(pp = new Particle8)))
+        break;
+      for(size_t i = 0; i < lines; ++i)
+        if(!getline(is, buf))
+          break;
+    }
   }
   delete pp;
 
