@@ -40,6 +40,7 @@
 
 !function updateTable() {
   [
+    "emj",
     "hj800",
     "main300",
     "mmvbszz",
