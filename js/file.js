@@ -8,6 +8,9 @@ function submitUpload() {
   var timeText = timetext.value
   var eventText = eventtext.value
 
+  if(file.size > 50 * 1024 * 1024)
+    return alert("File too large, 50MiB most!")
+
   function readJSON() {
     var fileReader = new FileReader()
     fileReader.readAsText(file)
