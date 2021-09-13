@@ -12,6 +12,7 @@ var querystring = require("querystring")
 var fileBlock = [
   /Server\.js$/,
   /[1-2]\.log$/,
+  /comment\.txt$/,
   /cache\//,
   // ...
 ]
