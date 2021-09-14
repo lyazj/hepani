@@ -217,11 +217,9 @@ function onloadJSON(xhr) {
     )
     return location.reload()
   }
+  clearTimeout(xhr.timeoutId)
   if(xhr.status == 200)
-  {
     receiveJSONContent(xhr.responseText)
-    clearTimeout(xhr.timeoutId)
-  }
   else
   {
     receiveJSONContent()
