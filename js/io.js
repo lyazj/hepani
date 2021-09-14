@@ -209,8 +209,18 @@ function onrequestJSON(xhr) {
 // @noexcept
 function onloadJSON(xhr) {
   updateLoading(false)
+  if(xhr.status == 0)
+  {
+    xhr.onload = null
+    return alert(
+      "Request timeout, invalid gzip format or network issue probably."
+    )
+  }
   if(xhr.status == 200)
+  {
     receiveJSONContent(xhr.responseText)
+    clearTimeout(xhr.timeoutId)
+  }
   else
   {
     receiveJSONContent()

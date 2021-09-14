@@ -97,14 +97,15 @@ function submitUpload() {
     xhr.open("post", url, true)
     xhr.setRequestHeader("Content-Type", "application/octet-stream")
     xhr.setRequestHeader("Content-Encoding", "gzip")
-    xhr.upload.onprogress = evt => {
+    xhr.upload.onprogress = (function (evt) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(this.onload.bind(this), 5000)
       if(evt.total)
         createProcessBar(evt.loaded / evt.total)
-    }
+    }).bind(xhr)
     xhr.send(buf)
-    xhr.onload = function () {
-      onloadJSON(this)
-    }
+    xhr.onload = onloadJSON.bind(undefined, xhr)
+    xhr.timeoutId = setTimeout(xhr.onload.bind(xhr), 5000)
   }
 
   onrequestJSON()
