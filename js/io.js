@@ -211,10 +211,11 @@ function onloadJSON(xhr) {
   updateLoading(false)
   if(xhr.status == 0)
   {
-    xhr.onload = null
-    return alert(
+    alert(
       "Request timeout, invalid gzip format or network issue probably."
+      + " Page will be refreshed after OK clicked."
     )
+    return location.reload()
   }
   if(xhr.status == 200)
   {
