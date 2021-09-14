@@ -9,18 +9,18 @@ var child_process = require("child_process")
 var querystring = require("querystring")
 
 // blacklist
-var fileBlock = [
-  /Server\.js$/,
-  /[1-2]\.log$/,
-  /comment\.txt$/,
-  /cache\//,
+var pathBlock = [
+  /\.+\//,
+  /^Server\.js$/,
+  /^[1-2]\.log$/,
+  /^comment\.txt$/,
+  /^cache\//,
   // ...
 ]
 
 // whitelist
 var fileType = {
   ico:  "image/x-icon",
-  jpg:  "image/jpeg",
   jpeg: "image/jpeg",
   png:  "image/png",
   svg:  "image/svg+xml;charset=utf-8",
@@ -29,13 +29,14 @@ var fileType = {
   css:  "text/css;charset=utf-8",
   json: "application/json;charset=utf-8",
   mp3:  "audio/mpeg",
-  txt: "text/plain;charset=utf-8",
-  log: "text/plain;charset=utf-8",
+  txt:  "text/plain;charset=utf-8",
   // ...
 }
 
 fileType = Object.assign(fileType, {
-  map: fileType.json,
+  "js.map": fileType.json,
+  log: fileType.txt,
+  jpg: fileType.jpeg,
   // ...
 })
 
@@ -53,46 +54,41 @@ var cacheControl = {
 }
 
 cacheControl = Object.assign(cacheControl, {
-  "favicon.ico"           : cacheControl.static,
-  "error/404.html"        : cacheControl.static,
-  "error/406.html"        : cacheControl.static,
-  "error/500.html"        : cacheControl.static,
-  "coming.html"           : cacheControl.static,
-  "help.html"             : cacheControl.mutable,
-  "ani.html"              : cacheControl.mutable,
-  "css/ani.css"           : cacheControl.mutable,
-  "js/ani.js"             : cacheControl.mutable,
-  "js/particle.js"        : cacheControl.mutable,
-  "js/help.js"            : cacheControl.mutable,
-  "js/gif.mod.js"         : cacheControl.stable,
-  "js/gif.js.map"         : cacheControl.static,
-  "js/gif.worker.js"      : cacheControl.static,
-  "js/gif.worker.js.map"  : cacheControl.static,
-  "js/three.min.js"       : cacheControl.static,
-  "js/OrbitControls.js"   : cacheControl.static,
-  "js/pako.min.js"        : cacheControl.static,
-  "js/jquery.slim.min.js" : cacheControl.static,
-  "img/logo.png"          : cacheControl.static,
-  "img/beian.png"         : cacheControl.static,
-  "img/about.svg"         : cacheControl.static,
-  "img/config.svg"        : cacheControl.static,
-  "img/download.svg"      : cacheControl.static,
-  "img/download_gif.svg"  : cacheControl.static,
-  "img/file.svg"          : cacheControl.static,
-  "img/functions.svg"     : cacheControl.static,
-  "img/help.svg"          : cacheControl.static,
-  "img/start.svg"         : cacheControl.static,
-  "img/background.jpg"    : cacheControl.static,
-  "audio/collide.mp3"     : cacheControl.static,
-  "audio/background.mp3"  : cacheControl.static,
+  default                : cacheControl.stable,
+  "favicon.ico"          : cacheControl.static,
+  "coming.html"          : cacheControl.static,
+  "ani.html"             : cacheControl.mutable,
+  "css/ani.css"          : cacheControl.mutable,
+  "js/ani.js"            : cacheControl.mutable,
+  "js/gif.mod.js"        : cacheControl.stable,
+  "js/gif.js.map"        : cacheControl.static,
+  "js/gif.worker.js"     : cacheControl.static,
+  "js/gif.worker.js.map" : cacheControl.static,
+  "js/three.min.js"      : cacheControl.static,
+  "js/OrbitControls.js"  : cacheControl.static,
+  "js/pako.min.js"       : cacheControl.static,
+  "js/jquery.slim.min.js": cacheControl.static,
+  "img/logo.png"         : cacheControl.static,
+  "img/beian.png"        : cacheControl.static,
+  "img/about.svg"        : cacheControl.static,
+  "img/config.svg"       : cacheControl.static,
+  "img/download.svg"     : cacheControl.static,
+  "img/download_gif.svg" : cacheControl.static,
+  "img/file.svg"         : cacheControl.static,
+  "img/functions.svg"    : cacheControl.static,
+  "img/help.svg"         : cacheControl.static,
+  "img/start.svg"        : cacheControl.static,
+  "img/background.jpg"   : cacheControl.static,
+  "audio/collide.mp3"    : cacheControl.static,
+  "audio/background.mp3" : cacheControl.static,
 })
 
 var redirect = {
   "audio/background.mp3":
     "https://music.163.com/song/media/outer/url?id=29809102.mp3",
   "img/background.jpg":
-    "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/" +
-    "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg",
+    "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/"
+    + "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg",
   "js/three.min.js":
     "https://threejs.org/build/three.min.js",
   "js/OrbitControls.js":
@@ -118,293 +114,413 @@ try {
     throw err
 }
 
-function writeFile(response, file, code, ims) {
+// @args: {
+//   description, path(*)
+// }
+function log(evt, args) {
+  console.log(
+    new Date().toLocaleString() + "  [" + evt + "] "
+    + (args.description || args.path)
+  )
+}
 
-  if(fileBlock.some(function (name) {
-    return name.exec(file)
-  }))
-    return writeError(response, 404)
-
-  if(code === undefined)
-    code = 200
-
-  fs.stat(file, function (err, stats) {
-
-    if(err)
+// @args: {
+//   path(*), stats(#), description
+// }
+function statSync(request, response, args) {
+  try {
+    args.stats = fs.statSync(args.path)
+    return true
+  } catch(err) {
+    if(err.code == "ENOENT")
     {
-      if(err.code != "ENOENT")
-      {
-        console.error(err)
-        return writeError(response, 500)
-      }
-
-      if(code != 200)
-      {
-        console.error(err)
-        response.writeHead(code, {
-          "Content-Type": "text/plain;charset=utf-8",
-          "Cache-Control": cacheControl.mutable,
-          "X-Content-Type-Options": "nosniff",
-        })
-        return response.end("[" + code + "] (Cannot Load Error Page)")
-      }
-
-      return writeError(response, 404)
+      writeError(request, response, { code: 404 })
+      log("NOT FOUND", args)
+      return false
     }
-
-    if(stats.isDirectory())
-    {
-      response.writeHead(302, {Location: file + '/'})
-      return response.end()
-    }
-
-    var type = undefined
-    for(let t in fileType)
-      if(RegExp("\\." + t + "$").exec(file))
-        type = fileType[t]
-    if(type === undefined)
-      return writeError(response, 404)
-
-    var thisCacheControl = cacheControl[file]
-    if(!thisCacheControl)
-      thisCacheControl = cacheControl.stable
-
-    var lastModified = stats.mtime.toUTCString()
-    if(code == 200 && ims && new Date(lastModified) <= new Date(ims))
-    {
-      response.writeHead(304, {
-        "Cache-Control": thisCacheControl,
-        "X-Content-Type-Options": "nosniff",
-      })
-      return response.end()
-    }
-
-    var headObject = {
-      "Content-Type": type,
-      "Cache-Control": code == 200 ?
-        thisCacheControl : cacheControl.mutable,
-      "Last-Modified": lastModified,
-      "X-Content-Type-Options": "nosniff",
-    }
-
-    var stream = fs.createReadStream(file)
-    stream.on("error", err => {
-      console.error(err)
+    console.error(err)
+    writeError(request, response, {
+      code: 500, type: fileType.json, body: JSON.stringify(err),
     })
-    if(noGzip.every(function (name) {
-      return !name.exec(file)
-    }))
+    log("ERROR", args)
+    return false
+  }
+}
+
+// @args: {
+//   stats(*), path(*), description
+// }
+// @FTD: file to directory
+function checkFTDRedirect(request, response, args) {
+  if(args.stats.isDirectory() && args.path.slice(-1) != "/")
+  {
+    response.writeHead(302, {Location: args.path + "/"})
+    response.end()
+    log("REDIRECT", args)
+    return false
+  }
+  return true
+}
+
+// @args: {
+//   path(*), type(#), description
+// }
+function checkFileType(request, response, args) {
+  for(let t in fileType)
+    if(RegExp("\\." + t + "$").exec(args.path))
     {
-      headObject["Content-Encoding"] = "gzip"
-      stream = stream.pipe(zlib.createGzip())
-      stream.on("error", err => {
-        console.error(err)
-      })
+      args.type = fileType[t]
+      break
     }
-    response.writeHead(code, headObject)
-    stream.pipe(response)
-
-  })
-
+  if(!args.type)
+  {
+    writeError(request, response, { code: 404 })
+    log("REJECTED", args)
+    return false
+  }
+  return true
 }
 
-function writeError(response, code) {
-  writeFile(response, "error/" + code + ".html", code)
+// @args {
+//   path(*), stats(*), ifModifiedSince(*),
+//   cacheControl(#), lastModified(#), description
+// }
+function checkCache(request, response, args) {
+  args.cacheControl = cacheControl[args.path] || cacheControl.default
+  args.lastModified = args.stats.mtime.toUTCString()
+  if(args.ifModifiedSince &&
+    new Date(args.lastModified) <= new Date(args.ifModifiedSince))
+  {
+    response.writeHead(304, {
+      "Cache-Control": args.cacheControl,
+      "X-Content-Type-Options": "nosniff",
+    })
+    response.end()
+    log("NOT MODIFIED", args)
+    return false
+  }
+  return true
 }
 
-function writeExample(response, type) {
-  writeFile(response, "example/" + type + ".json")
+// @args {
+//   type(*), path(*), cacheControl(*), lastModified(*), description
+// }
+function writeFile(request, response, args) {
+  var headObject = {
+    "Content-Type": args.type,
+    "Cache-Control": args.cacheControl,
+    "Last-Modified": args.lastModified,
+    "X-Content-Type-Options": "nosniff",
+  }
+  var stream = fs.createReadStream(args.path)
+  stream.on("error", err => { console.error(err) })
+  if(noGzip.every(name => { return !name.exec(args.path) }))
+  {
+    headObject["Content-Encoding"] = "gzip"
+    stream = stream.pipe(zlib.createGzip())
+    stream.on("error", err => { console.error(err) })
+  }
+  response.writeHead(200, headObject)
+  stream.pipe(response)
+  log("SENT", args)
+  return true
 }
 
-function procedure(request, response) {
+// @args {
+//   path(*), ifModifiedSince(*),
+//   stats(#), type(#), cacheControl(#), lastModified(#),
+//   description
+// }
+function writePath(request, response, args) {
+  return statSync(request, response, args)
+    && checkFTDRedirect(request, response, args)
+    && checkFileType(request, response, args)
+    && checkCache(request, response, args)
+    && writeFile(request, response, args)
+}
 
-  request.on("error", err => {
-    console.error(err)
+// @args {
+//   code(*), type(txt), cacheControl(mutable), body(HTTP Error {code})
+// }
+function writeError(request, response, args) {
+  response.writeHead(args.code, {
+    "Content-Type": args.type || fileType.txt,
+    "Cache-Control": args.cacheControl || cacheControl.mutable,
+    "X-Content-Type-Options": "nosniff",
   })
-  response.on("error", err => {
-    console.error(err)
-  })
+  response.end(args.body || "HTTP Error " + args.code)
+  return true
+}
 
-  var URL = url.parse(request.url)
-  var pathname = URL.pathname
-  while(pathname[0] == '/')
-    pathname = pathname.slice(1)
-  if(!pathname)
-    pathname = "ani.html"
-  if(pathname.slice(-1) == '/')
-    pathname += "index.html"
+// @args {
+//   url(#), path(#), ip(#), ipv4(#), ipv6(#),
+//   description(#), query(#), ifModifiedSince(#)
+// }
+function parseRequestURL(request, response, args) {
+  args.url = url.parse(request.url)
+  args.path = args.url.pathname
+    .replace(/^\/+/, "").replace(/\/$/, "/index.html") || "ani.html"
+  args.ip = request.connection.remoteAddress
+  if(args.ip)
+  {
+    args.ipv6 = args.ip.match(/^.*:/)[0]
+    args.ipv4 = args.ip.replace(args.ipv6, "")
+    args.ipv6 = args.ipv6.slice(0, -1)
+  }
+  args.description = "(" + args.ip + ") "
+    + request.method + ": " + request.url + " -> " + args.path
+  args.query = querystring.parse(args.url.query)
+  args.ifModifiedSince = request.headers["if-modified-since"]
+  log("RECEIVED", args)
+  return true
+}
 
-  console.log(new Date().toLocaleString() + "  "
-    + request.method + ": " + request.url + " -> " + pathname)
+// @args: {
+//   path(*), description
+// }
+function checkPathBlock(request, response, args) {
+  if(pathBlock.some(block => { return block.exec(args.path) }))
+  {
+    writeError(request, response, { code: 404 })
+    log("BLOCKED", args)
+    return false
+  }
+  return true
+}
 
-  var link = redirect[pathname]
+// @args: {
+//   path(*), description
+// }
+function checkPathRedirect(request, response, args) {
+  var link = redirect[args.path]
   if(link)
   {
     response.writeHead(302, {Location: link})
-    return response.end()
+    response.end()
+    log("REDIRECT", args)
+    return false
   }
-
-  if(request.method == "POST" && pathname == "upload")
-  {
-    var query = querystring.parse(URL.query)
-
-    if(query.empty == "true")
-      return writeExample(response, query.type)
-
-    if(request.headers["content-type"] != "application/octet-stream"
-      || request.headers["content-encoding"] != "gzip")
-      return writeError(response, 406)
-
-    var gunzip = zlib.createGunzip()
-    var gzip = zlib.createGzip()
-    var hasError = false
-    gunzip.on("error", function (err) {
-      hasError = true
-      response.writeHead(406, {
-        "Content-Type": fileType.json,
-        "Cache-Control": cacheControl.mutable,
-        "X-Content-Type-Options": "nosniff",
-      })
-      response.end(JSON.stringify(err))
-    })
-    gzip.on("error", function (err) {
-      hasError = true
-      console.error(err)
-      response.writeHead(500, {
-        "Content-Type": fileType.json,
-        "Cache-Control": cacheControl.mutable,
-        "X-Content-Type-Options": "nosniff",
-      })
-      response.end(JSON.stringify(err))
-    })
-
-    var argArray = []
-    for(let item in query)
-    {
-      argArray.push("--" + item)
-      argArray.push(query[item])
-    }
-
-    var process = child_process.spawn("bin/Hepani", argArray)
-
-    var sout = ""
-    var serr = ""
-    process.stdout.on("data", function (chunk) {
-      sout += chunk
-    })
-    process.stdout.on("error", function (err) {
-      hasError = true
-      console.error(err)
-      response.writeHead(500, {
-        "Content-Type": fileType.json,
-        "Cache-Control": cacheControl.mutable,
-        "X-Content-Type-Options": "nosniff",
-      })
-      response.end(JSON.stringify(err))
-    })
-    process.stderr.on("data", function (chunk) {
-      serr += chunk
-    })
-    process.stderr.on("error", function (err) {
-      hasError = true
-      console.error(err)
-      response.writeHead(500, {
-        "Content-Type": fileType.json,
-        "Cache-Control": cacheControl.mutable,
-        "X-Content-Type-Options": "nosniff",
-      })
-      response.end(JSON.stringify(err))
-    })
-    process.on("close", function (code) {
-      if(hasError)
-        return
-      if(code)
-      {
-        response.writeHead(406, {
-          "Content-Type": "text/plain;charset=utf-8",
-          "Cache-Control": cacheControl.mutable,
-          "X-Content-Type-Options": "nosniff",
-        })
-        return response.end(serr)
-      }
-      response.writeHead(200, {
-        "Content-Type": fileType.json,
-        "Content-Encoding": "gzip",
-        "Cache-Control": cacheControl.mutable,
-        "X-Content-Type-Options": "nosniff",
-      })
-      gzip.pipe(response)
-      gzip.end(sout)
-    })
-
-    request.pipe(gunzip).pipe(process.stdin)
-
-    return
-  }
-
-  if(pathname == "description")
-  {
-    var query = querystring.parse(URL.query)
-    var id = query.id
-    if(typeof(id) == "undefined")
-      return writeError(response, 406)
-
-    var ims = request.headers["if-modified-since"]
-    if(ims && descriptionMtime <= new Date(ims))
-    {
-      response.writeHead(304, {
-        "Cache-Control": cacheControl.stable,
-        "X-Content-Type-Options": "nosniff",
-      })
-      return response.end()
-    }
-
-    response.writeHead(200, {
-      "Content-Type": "text/plain;charset=utf-8",
-      // "Content-Encoding": "gzip",
-      "Cache-Control": cacheControl.stable,
-      "Last-Modified": descriptionMstring,
-      "X-Content-Type-Options": "nosniff",
-    })
-
-    var result = description[id]
-    if(!result)
-      return response.end("No description available.")
-
-    response.write(result)
-    response.write("\n\nSource: https://github.com/scikit-hep/particle")
-    response.end("\nUpdate: " + descriptionMstring)
-
-    return
-  }
-
-  if(pathname == "comment")
-  {
-    var ip = request.connection.remoteAddress || "0.0.0.0"
-    var query = querystring.parse(URL.query)
-    var content = (query.content || "").slice(0, 256)
-    response.writeHead(200, {
-      "Content-Type": "text/plain;charset=utf-8",
-      "Cache-Control": "no-cache",
-    })
-    saveComment(ip, content)
-    return response.end(content.length.toString())
-  }
-
-  return writeFile(
-    response, pathname, 200, request.headers["if-modified-since"]
-  )
-
+  return true
 }
 
-function saveComment(ip, content) {
-  ip = (ip.match(/\d+\.\d+\.\d+\.\d+/) || ["0.0.0.0"])[0]
+// @args: {
+//   query(*)
+// }
+function checkEmptyUpload(request, response, args) {
+  if(args.query.empty == "true")
+  {
+    writePath(request, response, Object.assign(args, {
+      path: "example/" + args.query.type + ".json"
+    }))
+    return false
+  }
+  return true
+}
+
+// @args: { }
+function checkUploadHeaders(request, response, args) {
+  if(request.headers["content-type"] != "application/octet-stream"
+    || request.headers["content-encoding"] != "gzip")
+  {
+    log("FORBIDDEN", args)
+    writeError(request, response, {
+      code: 403, body: "Gzip compressing required.",
+    })
+    return false
+  }
+  return true
+}
+
+// @args: {
+//   query(*), argArray(#)
+// }
+function getChildArguments(request, response, args) {
+  args.argArray = []
+  for(let item in args.query)
+  {
+    args.argArray.push("--" + item)
+    args.argArray.push(args.query[item])
+  }
+  return true
+}
+
+// @args: {
+//   process(#), sout(#), serr(#), err(#), gin(#), gout(#), argArray(*)
+// }
+function createChildProcess(request, response, args) {
+  args.process = child_process.spawn("bin/Hepani", args.argArray)
+  function kill() {
+    try {
+      this.process.kill()
+    } catch(err) { }
+  }
+  function errorHandler(code, err) {
+    if(code >= 500)
+      console.error(err)
+    if(!this.err)
+    {
+      this.err = [code, err]
+      kill.bind(this)()
+    }
+  }
+  request.on("error", kill.bind(args))
+  response.on("error", kill.bind(args))
+  args.gin = zlib.createGunzip()
+  args.gin.on("error", errorHandler.bind(args, 400))
+  args.sout = ""
+  args.process.stdout.on("data", chunk => { args.sout += chunk })
+  args.process.stdout.on("error", errorHandler.bind(args, 500))
+  args.serr = ""
+  args.process.stderr.on("data", chunk => { args.serr += chunk })
+  args.process.stderr.on("error", errorHandler.bind(args, 500))
+  args.process.on("close", code => {
+    if(args.err)
+    {
+      log("ERROR", args)
+      return writeError(request, response, {
+        code: args.err[0], type: fileType.json,
+        body: JSON.stringify(args.err[1]),
+      })
+    }
+    if(code)
+    {
+      log("ERROR", args)
+      return writeError(request, response, {
+        code: 400, body: args.serr,
+      })
+    }
+    response.writeHead(200, {
+      "Content-Type": fileType.json,
+      "Content-Encoding": "gzip",
+      "Cache-Control": cacheControl.mutable,
+      "X-Content-Type-Options": "nosniff",
+    })
+    args.gout = zlib.createGzip()
+    args.gout.on("error", errorHandler.bind(args, 500))
+    args.gout.pipe(response)
+    args.gout.end(args.sout)
+    log("SENT", args)
+  })
+  request.pipe(args.gin).pipe(args.process.stdin)
+  return false
+}
+
+// @args: {
+//   query(*), ...(#)
+// }
+function receiveUpload(request, response, args) {
+  return checkEmptyUpload(request, response, args)
+    && checkUploadHeaders(request, response, args)
+    && getChildArguments(request, response, args)
+    && createChildProcess(request, response, args)
+}
+
+// @args: {
+//   query(*), ifModifiedSince(*), description
+// }
+function sendDescription(request, response, args) {
+  var id = args.query.id
+  if(typeof(id) == "undefined")
+  {
+    writeError(request, response, {
+      code: 403, body: "Missing argument \"id\".",
+    })
+    log("FORBIDDEN", args)
+    return false
+  }
+  if(args.ifModifiedSince
+    && descriptionMtime <= new Date(args.ifModifiedSince))
+  {
+    response.writeHead(304, {
+      "Cache-Control": cacheControl.stable,
+      "X-Content-Type-Options": "nosniff",
+    })
+    response.end()
+    log("NOT MODIFIED", args)
+    return true
+  }
+  response.writeHead(200, {
+    "Content-Type": "text/plain;charset=utf-8",
+    "Cache-Control": cacheControl.stable,
+    "Last-Modified": descriptionMstring,
+    "X-Content-Type-Options": "nosniff",
+  })
+  var result = description[id]
+  if(!result)
+    response.write("No description available.")
+  else
+  {
+    response.write(result)
+    response.write("\n\nSource: https://github.com/scikit-hep/particle")
+    response.write("\nUpdate: " + descriptionMstring)
+  }
+  response.end()
+  log("SENT", args)
+  return true
+}
+
+// @args {
+//   ipv4(*), query(*), description
+// }
+function receiveComment(request, response, args)
+{
+  var content = args.query.content
+  if(content === undefined)
+  {
+    writeError(request, response, {
+      code: 403, body: "Missing argument \"content\".",
+    })
+    log("FORBIDDEN", args)
+    return false
+  }
+  content = content.slice(0, 256)
   fs.writeFile(
     "comment.txt",
-    Date() + " (" + ip + "): " + content + "\n",
-    { flag: "a" },
-    err => { if(err) console.error(err) }
+    Date() + " (" + args.ipv4 + "): " + content + "\n",
+    { flag: "a" }, err => {
+      if(err)
+      {
+        console.error(err)
+        log("ERROR", args)
+        return writeError(request, response, {
+          code: 500, type: fileType.json, body: JSON.stringify(err)
+        })
+      }
+      response.writeHead(200, {
+        "Content-Type": "text/plain;charset=utf-8",
+        "Cache-Control": "no-cache",
+      })
+      response.end(content.length.toString())
+      log("SENT", args)
+    }
   )
+  return true
+}
+
+// @args: {
+//   path(*), ...
+// }
+function routeRequest(request, response, args) {
+  if(request.method == "POST" && args.path == "upload")
+    return receiveUpload(request, response, args)
+  if(request.method == "GET" && args.path == "description")
+    return sendDescription(request, response, args)
+  if(request.method == "PUT" && args.path == "comment")
+    return receiveComment(request, response, args)
+  if(request.method == "GET")
+    return writePath(request, response, args)
+  log("FORBIDDEN", args)
+  return writeError(request, response, { code: 403 })
+}
+
+function procedure(request, response) {
+  request.on("error", err => { console.error(err) })
+  response.on("error", err => { console.error(err) })
+  var args = { }
+  return parseRequestURL(request, response, args)
+    && checkPathBlock(request, response, args)
+    && checkPathRedirect(request, response, args)
+    && routeRequest(request, response, args)
 }
 
 https.createServer({
