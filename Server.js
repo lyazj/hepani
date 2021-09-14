@@ -10,7 +10,7 @@ var querystring = require("querystring")
 
 // blacklist
 var pathBlock = [
-  /\.+\//,
+  /(^|\/)\.+($|\/)/,
   /^Server\.js$/,
   /^[1-2]\.log$/,
   /^comment\.txt$/,
@@ -101,6 +101,7 @@ var redirect = {
 
 var httpsKey = fs.readFileSync("../https/cert.key")
 var httpsCert = fs.readFileSync("../https/cert.pem")
+var httpsDomain = /^((w{3}|develop)\.)?hepani\.xyz$/
 var description = JSON.parse(fs.readFileSync("cache/description.json"))
 var descriptionMstring =
   fs.statSync("cache/description.json").mtime.toUTCString()
@@ -348,7 +349,6 @@ function getChildArguments(request, response, args) {
 //   process(#), sout(#), serr(#), err(#), gin(#), gout(#), argArray(*)
 // }
 function createChildProcess(request, response, args) {
-  args.process = child_process.spawn("bin/Hepani", args.argArray)
   function kill() {
     try {
       this.process.kill()
@@ -363,6 +363,35 @@ function createChildProcess(request, response, args) {
       kill.bind(this)()
     }
   }
+  function writeOutput(code) {
+    if(this.err)
+    {
+      log("ERROR", this)
+      return writeError(request, response, {
+        code: this.err[0], type: fileType.json,
+        body: JSON.stringify(this.err[1]),
+      })
+    }
+    if(code)
+    {
+      log("ERROR", this)
+      return writeError(request, response, {
+        code: 400, body: this.serr,
+      })
+    }
+    response.writeHead(200, {
+      "Content-Type": fileType.json,
+      "Content-Encoding": "gzip",
+      "Cache-Control": cacheControl.mutable,
+      "X-Content-Type-Options": "nosniff",
+    })
+    this.gout = zlib.createGzip()
+    this.gout.on("error", errorHandler.bind(this, 500))
+    this.gout.pipe(response)
+    this.gout.end(this.sout)
+    log("SENT", this)
+  }
+  args.process = child_process.spawn("bin/Hepani", args.argArray)
   request.on("error", kill.bind(args))
   response.on("error", kill.bind(args))
   args.gin = zlib.createGunzip()
@@ -373,34 +402,7 @@ function createChildProcess(request, response, args) {
   args.serr = ""
   args.process.stderr.on("data", chunk => { args.serr += chunk })
   args.process.stderr.on("error", errorHandler.bind(args, 500))
-  args.process.on("close", code => {
-    if(args.err)
-    {
-      log("ERROR", args)
-      return writeError(request, response, {
-        code: args.err[0], type: fileType.json,
-        body: JSON.stringify(args.err[1]),
-      })
-    }
-    if(code)
-    {
-      log("ERROR", args)
-      return writeError(request, response, {
-        code: 400, body: args.serr,
-      })
-    }
-    response.writeHead(200, {
-      "Content-Type": fileType.json,
-      "Content-Encoding": "gzip",
-      "Cache-Control": cacheControl.mutable,
-      "X-Content-Type-Options": "nosniff",
-    })
-    args.gout = zlib.createGzip()
-    args.gout.on("error", errorHandler.bind(args, 500))
-    args.gout.pipe(response)
-    args.gout.end(args.sout)
-    log("SENT", args)
-  })
+  args.process.on("close", writeOutput.bind(args))
   request.pipe(args.gin).pipe(args.process.stdin)
   return false
 }
@@ -476,7 +478,7 @@ function receiveComment(request, response, args)
   content = content.slice(0, 256)
   fs.writeFile(
     "comment.txt",
-    Date() + " (" + args.ipv4 + "): " + content + "\n",
+    new Date().toLocaleString() + " (" + args.ipv4 + "): " + content + "\n",
     { flag: "a" }, err => {
       if(err)
       {
@@ -530,9 +532,7 @@ console.log("Server running at https://localhost:5414/")
 
 http.createServer(function (request, response) {
   var host = request.headers.host
-  if(host == "hepani.xyz"
-    || host == "www.hepani.xyz"
-    || host == "develop.hepani.xyz")
+  if(httpsDomain.exec(host))
   {
     response.writeHead(301, {Location: "https://" + host + request.url})
     return response.end()
