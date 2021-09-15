@@ -370,10 +370,16 @@ function createChildProcess(request, response, args) {
   function writeOutput(code) {
     if(this.err)
     {
-      if(this.err[0] >= 500)
-        log("EXCEPTION", this)
-      else
+      if(this.err[0] < 500)
+      {
         log("ERROR", this)
+        if(this.err[1].code == "Z_DATA_ERROR")
+          return writeError(request, response, {
+            code: this.err[0], body: "Invalid gzip format.",
+          })
+      }
+      else
+        log("EXCEPTION", this)
       return writeError(request, response, {
         code: this.err[0], type: fileType.json,
         body: JSON.stringify(this.err[1]),
