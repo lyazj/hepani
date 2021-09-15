@@ -30,7 +30,7 @@ var fileType = {
   json: "application/json;charset=utf-8",
   mp3:  "audio/mpeg",
   txt:  "text/plain;charset=utf-8",
-  gzip: "application/x-gzip",
+  gz:   "application/x-gzip",
   // ...
 }
 
@@ -46,7 +46,7 @@ var noGzip = [
   /.*\.jpg$/,
   /.*\.jpeg$/,
   /.*\.mp3$/,
-  /.*\.gzip$/,
+  /.*\.gz$/,
 ]
 
 var cacheControl = {
