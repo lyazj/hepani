@@ -216,9 +216,7 @@ function writeFile(request, response, args) {
   var stream = fs.createReadStream(args.path)
   stream.on("error", err => { console.error(err) })
   var gzipAccepted = request.headers["accept-encoding"]
-  console.log(gzipAccepted)
   gzipAccepted = gzipAccepted && gzipAccepted.search("gzip") > -1
-  console.log(gzipAccepted)
   if(gzipAccepted
     && noGzip.every(name => { return !name.exec(args.path) }))
   {
