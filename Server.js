@@ -143,7 +143,7 @@ function statSync(request, response, args) {
     writeError(request, response, {
       code: 500, type: fileType.json, body: JSON.stringify(err),
     })
-    log("ERROR", args)
+    log("EXCEPTION", args)
     return false
   }
 }
@@ -370,7 +370,10 @@ function createChildProcess(request, response, args) {
   function writeOutput(code) {
     if(this.err)
     {
-      log("ERROR", this)
+      if(this.err[0] >= 500)
+        log("EXCEPTION", this)
+      else
+        log("ERROR", this)
       return writeError(request, response, {
         code: this.err[0], type: fileType.json,
         body: JSON.stringify(this.err[1]),
@@ -396,6 +399,7 @@ function createChildProcess(request, response, args) {
     log("SENT", this)
   }
   args.process = child_process.spawn("bin/Hepani", args.argArray)
+  args.process.on("error", errorHandler.bind(args, 500))
   request.on("error", kill.bind(args))
   response.on("error", kill.bind(args))
   args.gin = zlib.createGunzip()
@@ -407,6 +411,7 @@ function createChildProcess(request, response, args) {
   args.process.stderr.on("data", chunk => { args.serr += chunk })
   args.process.stderr.on("error", errorHandler.bind(args, 500))
   args.process.on("close", writeOutput.bind(args))
+  args.process.stdin.on("error", errorHandler.bind(args, 500))
   request.pipe(args.gin).pipe(args.process.stdin)
   return false
 }
@@ -487,7 +492,7 @@ function receiveComment(request, response, args)
       if(err)
       {
         console.error(err)
-        log("ERROR", args)
+        log("EXCEPTION", args)
         return writeError(request, response, {
           code: 500, type: fileType.json, body: JSON.stringify(err)
         })
