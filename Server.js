@@ -215,7 +215,12 @@ function writeFile(request, response, args) {
   }
   var stream = fs.createReadStream(args.path)
   stream.on("error", err => { console.error(err) })
-  if(noGzip.every(name => { return !name.exec(args.path) }))
+  var gzipAccepted = request.headers["accept-encoding"]
+  console.log(gzipAccepted)
+  gzipAccepted = gzipAccepted && gzipAccepted.search("gzip") > -1
+  console.log(gzipAccepted)
+  if(gzipAccepted
+    && noGzip.every(name => { return !name.exec(args.path) }))
   {
     headObject["Content-Encoding"] = "gzip"
     stream = stream.pipe(zlib.createGzip())
@@ -386,7 +391,6 @@ function createChildProcess(request, response, args) {
       "Cache-Control": cacheControl.mutable,
       "X-Content-Type-Options": "nosniff",
     })
-    var os = response
     this.gout = zlib.createGzip()
     this.gout.on("error", errorHandler.bind(this, 500))
     this.gout.pipe(response)
