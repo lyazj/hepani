@@ -48,7 +48,7 @@ void read_until_eof(istream &is)
   (ofs ? (ostream &)ofs : (ostream &)oss) << is.rdbuf();
 }
 
-} // namespace
+}  // namespace
 
 bool System::load_py8log(istream &is)
 {
