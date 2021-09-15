@@ -99,13 +99,13 @@ function submitUpload() {
     xhr.setRequestHeader("Content-Encoding", "gzip")
     xhr.upload.onprogress = (function (evt) {
       clearTimeout(this.timeoutId)
-      this.timeoutId = setTimeout(this.onload.bind(this), 5000)
+      this.timeoutId = setTimeout(this.onload.bind(this), 30000)
       if(evt.total)
         createProcessBar(evt.loaded / evt.total)
     }).bind(xhr)
     xhr.send(buf)
     xhr.onload = onloadJSON.bind(undefined, xhr)
-    xhr.timeoutId = setTimeout(xhr.onload.bind(xhr), 5000)
+    xhr.timeoutId = setTimeout(xhr.onload.bind(xhr), 30000)
   }
 
   onrequestJSON()
