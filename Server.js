@@ -412,8 +412,10 @@ function createChildProcess(request, response, args) {
   args.process.stderr.on("error", errorHandler.bind(args, 500))
   args.process.on("close", writeOutput.bind(args))
   args.process.stdin.on("error", errorHandler.bind(args, 500))
-  request.pipe(args.gin).pipe(args.process.stdin)
-  return false
+  args.gin.pipe(args.process.stdin)
+  request.on("data", chunk => { if(!args.err) args.gin.write(chunk) })
+  request.on("end", () => { if(!args.err) args.gin.end() })
+  return true
 }
 
 // @args: {

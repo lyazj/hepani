@@ -212,7 +212,7 @@ function onloadJSON(xhr) {
   if(xhr.status == 0)
   {
     alert(
-      "Request timeout, invalid gzip format or network issue probably."
+      "Request timeout, network issue probably."
       + " Page will be refreshed after OK clicked."
     )
     return location.reload()
