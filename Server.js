@@ -10,11 +10,11 @@ var querystring = require("querystring")
 
 // blacklist
 var pathBlock = [
-  /(^|\/)\.+($|\/)/,
-  /^Server\.js$/,
-  /^[1-2]\.log$/,
-  /^comment\.txt$/,
-  /^cache\//,
+  /(^|\/)\.+($|\/)/,  // {} = {., .., ...}, */{}, {}/*, */{}/*
+  /^Server\.js$/,     // Server.js
+  /^[1-2]\.log$/,     // 1.log, 2.log
+  /^comment\.txt$/,   // comment.txt
+  /^cache\//,         // cache/*
   // ...
 ]
 
@@ -241,7 +241,7 @@ function writePath(request, response, args) {
 }
 
 // @args {
-//   code(*), type(txt), cacheControl(mutable), body(HTTP Error {code})
+//   code(*), type(txt), cacheControl(mutable), body({code} {message})
 // }
 function writeError(request, response, args) {
   response.writeHead(args.code, {
@@ -249,7 +249,8 @@ function writeError(request, response, args) {
     "Cache-Control": args.cacheControl || cacheControl.mutable,
     "X-Content-Type-Options": "nosniff",
   })
-  response.end(args.body || "HTTP Error " + args.code)
+  response.end(args.body ||
+    [args.code, http.STATUS_CODES[args.code]].join(" "))
   return true
 }
 
@@ -360,7 +361,7 @@ function createChildProcess(request, response, args) {
     if(!this.err)
     {
       this.err = [code, err]
-      kill.bind(this)()
+      kill.call(this)
     }
   }
   function writeOutput(code) {
@@ -385,6 +386,7 @@ function createChildProcess(request, response, args) {
       "Cache-Control": cacheControl.mutable,
       "X-Content-Type-Options": "nosniff",
     })
+    var os = response
     this.gout = zlib.createGzip()
     this.gout.on("error", errorHandler.bind(this, 500))
     this.gout.pipe(response)
