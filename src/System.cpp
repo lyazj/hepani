@@ -27,11 +27,28 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifdef _WIN32
+#define DEVNULL ("nul")
+#else
+#define DEVNULL ("/dev/null")
+#endif
+
 using namespace CTjson;
 using namespace std;
 using namespace HepMC3;
 
 namespace Hepani {
+
+namespace {
+
+void read_until_eof(istream &is)
+{
+  static ofstream ofs(DEVNULL);
+  ostringstream oss;
+  (ofs ? (ostream &)ofs : (ostream &)oss) << is.rdbuf();
+}
+
+} // namespace
 
 bool System::load_py8log(istream &is)
 {
@@ -67,6 +84,7 @@ bool System::load_py8log(istream &is)
 
   is.clear();
   getline(is, buf);
+  read_until_eof(is);
   if(buf.find("sum") == buf.npos)
   {
     cerr << "Invalid pythia8 running log." << endl;
