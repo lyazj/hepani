@@ -350,7 +350,6 @@ function start() {
   _animationTimeStamp = performance.now()
   start_stop.innerHTML = "Stop"
   animate()
-  playAudio("audio-background")
 }
 
 // @noexcept
