@@ -204,8 +204,6 @@ function updatePhase() {
     ++phase
   while(phase > -1 && time < timeline[phase - 1])
     --phase
-  if(phase == centralPhase)
-    playAudio("audio-collide")
   return true
 }
 
@@ -852,8 +850,10 @@ function changeTime(timeNew) {
   {
     clearParticles()
     phase = 0
-    while(timeline[phase] <= time)
+    while(phase < timeline.length && timeline[phase] <= time)
       ++phase
+    if(phase == timeline.length)
+      --phase
     for(let p = 0; p <= phase; ++p)
       for(let i = 0; i < particles[p].length; ++i)
       {
@@ -1270,24 +1270,6 @@ function onkeydownBody(evt) {
     updateConsole()
     break
 
-  case "=":
-    if(_ctrlPressing)
-      break
-    increaseVolume()
-    break
-
-  case "-":
-    if(_ctrlPressing)
-      break
-    decreaseVolume()
-    break
-
-  case "m": case "M":
-    if(_ctrlPressing)
-      break
-    playPauseAudio("audio-background")
-    break
-
   default:
     // console.log(evt.key)
     break
@@ -1314,57 +1296,6 @@ function onkeyupBody(evt) {
 
   return true
 
-}
-
-// @noexcept
-function playAudio(id) {
-  var audio = document.getElementById(id)
-  if(!audio || !audio.paused)
-    return
-  audio.play()
-}
-
-// @noexcept
-function pauseAudio(id) {
-  var audio = document.getElementById(id)
-  if(!audio || audio.paused)
-    return
-  audio.pause()
-}
-
-// @noexcept
-function audioPaused(id) {
-  var audio = document.getElementById(id)
-  if(!audio)
-    return undefined
-  return audio.paused
-}
-
-// @noexcept
-function playPauseAudio(id) {
-  var audio = document.getElementById(id)
-  if(!audio)
-    return
-  if(audioPaused(id))
-    playAudio(id)
-  else
-    pauseAudio(id)
-}
-
-// @noexcept
-function increaseVolume() {
-  var audios = document.getElementsByTagName("audio")
-  for(let i = 0; i < audios.length; ++i)
-    audios[i].volume = Math.min(audios[i].volume + 0.1, 1)
-  createProcessBar(audios[audios.length - 1].volume)
-}
-
-// @noexcept
-function decreaseVolume() {
-  var audios = document.getElementsByTagName("audio")
-  for(let i = 0; i < audios.length; ++i)
-    audios[i].volume = Math.max(audios[i].volume - 0.1, 0)
-  createProcessBar(audios[audios.length - 1].volume)
 }
 
 // @noexcept

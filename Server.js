@@ -28,7 +28,6 @@ var fileType = {
   js:   "text/javascript;charset=utf-8",
   css:  "text/css;charset=utf-8",
   json: "application/json;charset=utf-8",
-  mp3:  "audio/mpeg",
   txt:  "text/plain;charset=utf-8",
   gz:   "application/x-gzip",
   // ...
@@ -45,7 +44,6 @@ var noGzip = [
   /.*\.png$/,
   /.*\.jpg$/,
   /.*\.jpeg$/,
-  /.*\.mp3$/,
   /.*\.gz$/,
 ]
 
@@ -81,13 +79,9 @@ cacheControl = Object.assign(cacheControl, {
   "img/help.svg"         : cacheControl.static,
   "img/start.svg"        : cacheControl.static,
   "img/background.jpg"   : cacheControl.static,
-  "audio/collide.mp3"    : cacheControl.static,
-  "audio/background.mp3" : cacheControl.static,
 })
 
 var redirect = {
-  "audio/background.mp3":
-    "https://music.163.com/song/media/outer/url?id=29809102.mp3",
   "img/background.jpg":
     "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/"
     + "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg",
