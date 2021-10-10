@@ -353,10 +353,11 @@ bool System::find_centrals()
       break;
 
   if(c_status == (uint32_t)-1)
-  {
-    cerr << "Cannot find central particles." << endl;
-    return false;
-  }
+    c_status = (c_particles = particle_index[c_phase = 0])[0]->status;
+  // {
+  //   cerr << "Cannot find central particles." << endl;
+  //   return false;
+  // }
   swap(central_phase, c_phase);
   swap(central_particles, c_particles);
   swap(central_status, c_status);
