@@ -146,17 +146,18 @@ bool System::load_py8log(istream &is)
   return true;
 }
 
-bool System::load_hepmc2(istream &is)
+template<class Accessor>
+inline bool System::load_hepmc(istream &is)
 {
   stringstream ss;
   ss << is.rdbuf();
-  HepMC2RandomAccessor h2ra(ss);
+  Accessor hra(ss);
   GenEvent evt;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wparentheses"
-  if(event_index == (uint32_t)-1 && !h2ra.read_event(evt)
-      || event_index != (uint32_t)-1 && !h2ra.read_event(event_index, evt))
+  if(event_index == (uint32_t)-1 && !hra.read_event(evt)
+      || event_index != (uint32_t)-1 && !hra.read_event(event_index, evt))
   {
     cerr << "Invalid HepMC2 file or index out of range." << endl;
     return false;
@@ -231,6 +232,16 @@ bool System::load_hepmc2(istream &is)
     }
   swap(particles, pps);
   return true;
+}
+
+bool System::load_hepmc2(istream &is)
+{
+  return load_hepmc<HepMC2RandomAccessor>(is);
+}
+
+bool System::load_hepmc3(istream &is)
+{
+  return load_hepmc<HepMC3RandomAccessor>(is);
 }
 
 uint32_t System::get_birth(Particles &dj_union) noexcept(false)
@@ -490,6 +501,12 @@ bool System::from_hepmc2(istream &is)
 {
   input_type.assign("hepmc2");
   return load_hepmc2(is) && process_all();
+}
+
+bool System::from_hepmc3(istream &is)
+{
+  input_type.assign("hepmc3");
+  return load_hepmc3(is) && process_all();
 }
 
 ostream &System::to_json(ostream &os) const

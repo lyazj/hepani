@@ -31,6 +31,7 @@ public:
 
   bool from_py8log(std::istream &);
   bool from_hepmc2(std::istream &);
+  bool from_hepmc3(std::istream &);
   std::ostream &to_json(std::ostream &) const;
   std::ostream &to_js(std::ostream &) const;
 
@@ -46,8 +47,11 @@ private:
 
   bool load_py8log(std::istream &);
   bool load_hepmc2(std::istream &);
+  bool load_hepmc3(std::istream &);
   bool process_all();
 
+  template<class>
+    bool load_hepmc(std::istream &);
   bool build_index();
   bool find_centrals();
   void build_timeline();

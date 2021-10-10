@@ -135,6 +135,8 @@ bool ArgParser::run(istream &is, ostream &os) noexcept(false)
     input = &System::from_py8log;
   else if(args["type"] == "hepmc2")
     input = &System::from_hepmc2;
+  else if(args["type"] == "hepmc3")
+    input = &System::from_hepmc3;
   // else if(...)
   // {
 
