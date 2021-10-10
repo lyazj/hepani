@@ -14,8 +14,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef HEPMC2EXTENSION_HDR
-#define HEPMC2EXTENSION_HDR
+#ifndef HEPMCEXTENSION_HDR
+#define HEPMCEXTENSION_HDR
 
 #include <string>
 #include <vector>
@@ -28,14 +28,15 @@
 
 #include <HepMC3/GenEvent.h>
 #include <HepMC3/GenParticle.h>
+#include <HepMC3/ReaderAscii.h>
 #include <HepMC3/ReaderAsciiHepMC2.h>
 
 namespace HepMC3 {
 
-class HepMC2Index {
+class HepMCIndex {
 public:
-  HepMC2Index(std::istream &);
-  HepMC2Index(const std::string &);
+  HepMCIndex(std::istream &);
+  HepMCIndex(const std::string &);
 
   size_t size() const { return index.size(); }
   size_t operator[](size_t i) const { return index[i]; }
@@ -44,11 +45,12 @@ private:
   std::vector<size_t> index;
 };
 
-class HepMC2RandomAccessor {
+template<class Reader>
+class HepMCRandomAccessor {
 public:
-  HepMC2RandomAccessor(std::istream &);
-  HepMC2RandomAccessor(const std::string &);
-  ~HepMC2RandomAccessor() { delete pifs; }
+  HepMCRandomAccessor(std::istream &);
+  HepMCRandomAccessor(const std::string &);
+  ~HepMCRandomAccessor() { delete pifs; }
 
   size_t size() const { return index.size(); }
   bool read_event(size_t, GenEvent &);
@@ -60,11 +62,11 @@ public:
 private:
   std::ifstream *pifs = nullptr;
   std::istream is;
-  HepMC2Index index;
-  ReaderAsciiHepMC2 input;
+  HepMCIndex index;
+  Reader input;
 };
 
-inline HepMC2Index::HepMC2Index(std::istream &is)
+inline HepMCIndex::HepMCIndex(std::istream &is)
 {
   std::string buf;
   size_t pos(is.tellg());
@@ -76,20 +78,22 @@ inline HepMC2Index::HepMC2Index(std::istream &is)
   }
 }
 
-inline HepMC2Index::HepMC2Index(const std::string &filename)
+inline HepMCIndex::HepMCIndex(const std::string &filename)
 {
   std::ifstream is(filename);
   operator=(is);
 }
 
-inline HepMC2RandomAccessor::HepMC2RandomAccessor(std::istream &_is)
+template<class Reader>
+inline HepMCRandomAccessor<Reader>::HepMCRandomAccessor(std::istream &_is)
   : is(_is.rdbuf()),
   index(is), input((is.clear(), is))
 {
 
 }
 
-inline HepMC2RandomAccessor::HepMC2RandomAccessor(
+template<class Reader>
+inline HepMCRandomAccessor<Reader>::HepMCRandomAccessor(
     const std::string &filename)
   : pifs(new std::ifstream(filename)), is(pifs->rdbuf()),
   index(is), input((is.clear(), is))
@@ -97,7 +101,8 @@ inline HepMC2RandomAccessor::HepMC2RandomAccessor(
 
 }
 
-inline bool HepMC2RandomAccessor::read_event(size_t i, GenEvent &evt)
+template<class Reader>
+inline bool HepMCRandomAccessor<Reader>::read_event(size_t i, GenEvent &evt)
 {
   if(i >= size())
     return false;
@@ -105,7 +110,8 @@ inline bool HepMC2RandomAccessor::read_event(size_t i, GenEvent &evt)
   return input.read_event(evt);
 }
 
-inline bool HepMC2RandomAccessor::read_event(GenEvent &evt)
+template<class Reader>
+inline bool HepMCRandomAccessor<Reader>::read_event(GenEvent &evt)
 {
   static std::default_random_engine dre(time(NULL));
   static size_t sz((dre.discard(1), size()));
@@ -115,6 +121,9 @@ inline bool HepMC2RandomAccessor::read_event(GenEvent &evt)
   return read_event(uid(dre), evt);
 }
 
+typedef HepMCRandomAccessor<ReaderAsciiHepMC2> HepMC2RandomAccessor;
+typedef HepMCRandomAccessor<ReaderAscii> HepMC3RandomAccessor;
+
 }  // namespace HepMC3
 
-#endif  /* HEPMC2EXTENSION_HDR */
+#endif  /* HEPMCEXTENSION_HDR */

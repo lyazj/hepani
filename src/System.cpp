@@ -15,7 +15,7 @@
  */
 
 #include "System.h"
-#include "HepMC2Extension.h"
+#include "HepMCExtension.h"
 
 #include <fstream>
 #include <algorithm>
