@@ -13,6 +13,7 @@ all = cache \
       example/output.json.gz \
       example/py8log.json \
       example/hepmc2.json \
+      example/hepmc3.json \
       $(js)
 
 CXX = g++
@@ -42,6 +43,11 @@ example/py8log.json: example/input.txt bin/Hepani
 
 example/hepmc2.json: example/input.hepmc bin/Hepani
 	bin/Hepani --type hepmc2 --d0 0.001 --d1 5 --event 0 < $< > $@
+
+example/hepmc3.json: example/input.hepmc3 bin/Hepani
+	bin/Hepani --type hepmc3 \
+		--d0 0.001 --d1 3 --d2 3 --d3 3 --d4 3 --d5 3 \
+		--event 0 < $< > $@
 
 example/output.json: example/py8log.json
 	ln -f $< $@
