@@ -755,7 +755,7 @@ function disableUpdateLabelOverlaps() {
     var label = all[i]
     if(!label)
       break
-    label[i].style.visibility = "visible"
+    label.style.visibility = "visible"
   }
 }
 
