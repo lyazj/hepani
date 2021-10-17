@@ -112,7 +112,7 @@ function onclickIntersect(particleMesh) {
      "PID: " + data.id + " " +
      "(" + PID.getPIDMatch(data).slice(2) + ")\n" +
      "Colours: " + data.colours + "        " +
-     "Energy: " + data.e + " MeV\n" +
+     "Energy: " + data.e + " GeV\n" +
      "Velocity: (c) " + data.v + "\n" +
      "Position at birth: (cΔt) " + data.r + "\n" +
      "Mothers: " + data.momset + "\n" +
