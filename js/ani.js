@@ -320,6 +320,7 @@ function initialize(doubleCallingNeeded) {
     .checked = "checked"
   document.getElementById("size-class-" + sizeClass)
     .checked = "checked"
+  start()
 }
 
 // @noexcept
