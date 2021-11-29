@@ -8,7 +8,14 @@ def getFourMomentum(particle):
     return numpy.array(particle['v'] + [1]) * particle['e']
 
 def sumFourMomentum(particleList):
-    return sum(getFourMomentum(p) for p in particleList)
+    # return sum(getFourMomentum(p) for p in particleList)
+    fms = numpy.array([0., 0., 0., 0.])
+    for p in particleList:
+        fm = getFourMomentum(p)
+        print(f'  [{p["no"]}] Counting particle {p["no"]} with four momentum {formatFourMomentum(fm)}')
+        print(f'    mothers: {p["momset"]}  daughters: {p["dauset"]}')
+        fms += fm
+    return fms
 
 def formatFloat(f):
     return format(f, '+.3e')
