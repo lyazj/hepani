@@ -469,7 +469,7 @@ STATUS.sizeSchemes = {
 
   default: JSON.stringify({
     isNull       : particleRadius / 2,
-    isFinal      : particleRadius / 2,
+    isFinal      : particleRadius * 1.5,
     isDecayed    : particleRadius / 2,
     isBeam       : particleRadius * 2,
     isHard       : particleRadius * 2,
