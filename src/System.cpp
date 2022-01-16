@@ -348,7 +348,7 @@ bool System::find_centrals()
       }
     return c_status;
   };
-  for(uint32_t object_status : {22, 23, 21})
+  for(uint32_t object_status : {22, 23, 21, 24})
     if(find(object_status) != (uint32_t)-1)
       break;
 
