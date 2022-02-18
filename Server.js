@@ -129,10 +129,16 @@ function statSync(request, response, args) {
     args.stats = fs.statSync(args.path)
     return true
   } catch(err) {
-    if(err.code == "ENOENT")
+    if(err.code == "ENOENT" || err.code == "ENOTDIR")
     {
       writeError(request, response, { code: 404 })
       log("NOT FOUND", args)
+      return false
+    }
+    else if(err.code == "ENAMETOOLONG")
+    {
+      writeError(request, response, { code: 400 })
+      log("NAME TOO LONG", args)
       return false
     }
     console.error(err)
