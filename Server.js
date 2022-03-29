@@ -30,6 +30,7 @@ var fileType = {
   json: "application/json;charset=utf-8",
   txt:  "text/plain;charset=utf-8",
   gz:   "application/x-gzip",
+  pdf:   "application/pdf",
   // ...
 }
 
