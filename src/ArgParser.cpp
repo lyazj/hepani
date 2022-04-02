@@ -65,12 +65,12 @@ bool ArgParser::parse(int argc, char *argv[])
       args[key] = "true";
       continue;
     }
-    if(i == argc)
+    if(++i == argc)
     {
       cerr << "Missing value of option: " << key << "." << endl;
       return _ready = !(_error = true);
     }
-    string val(argv[++i]);
+    string val(argv[i]);
     if(key.substr(0, 1) == "d")
     {
       try {
