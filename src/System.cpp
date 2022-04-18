@@ -467,7 +467,8 @@ bool System::calc_dynamics()
   if(particle_index.size() > 1)
     for(const ParticlePtr &pp : particle_index[1])
       if(pp->r.isnan())
-        pp->r = {0.0};
+        // pp->r = {0.0};
+        throw runtime_error("Seperated beam particle found.");
   for(uint32_t phase = 2; phase < particle_index.size(); ++phase)
     for(ParticlePtr &pp : particle_index[phase])
       pp->r =
