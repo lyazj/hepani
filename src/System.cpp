@@ -445,8 +445,8 @@ bool System::calc_dynamics()
         initial[particles[m]] = pp;
   }
 
-  queue<pair<ParticlePtr, ParticlePtr>> waiting;
-  for(const pair<ParticlePtr, ParticlePtr> &p : initial)
+  queue<pair<const ParticlePtr, ParticlePtr>> waiting;
+  for(const pair<const ParticlePtr, ParticlePtr> &p : initial)
     waiting.push(p);
   while(!waiting.empty())
   {
