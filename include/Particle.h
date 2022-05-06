@@ -45,8 +45,6 @@ struct ParticleBase {
   uint32_t            death;
   std::set<uint32_t>  momset;
   std::set<uint32_t>  dauset;
-  uint32_t            dj_parent;
-  uint32_t            dj_rank;
   uint32_t            main_mother;
 };
 
@@ -61,8 +59,6 @@ struct Particle : ParticleBase {
   virtual ~Particle() = default;
 
   void initialize();
-  void dj_union(Particle &, std::vector<ParticlePtr> &);
-  uint32_t dj_find(std::vector<ParticlePtr> &);
   Array get_position(uint32_t, const Timeline &) const;
   void set_position(const Array &, uint32_t, const Timeline &);
   CTjson::ojsonstream &print(CTjson::ojsonstream &) const;

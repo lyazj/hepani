@@ -17,7 +17,7 @@ all = cache \
       $(js)
 
 CXX = g++
-CXXFLAGS = -O2 -Wall -Wshadow -Wextra -Iinclude
+CXXFLAGS = -O3 -Wall -Wshadow -Wextra -Iinclude
 LDFLAGS = -lHepMC3
 
 all: $(all)

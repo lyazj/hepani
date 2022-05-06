@@ -37,8 +37,6 @@ const Particle particle_zero(ParticleBase {
   .death = phase_undef,
   .momset = { },
   .dauset = { },
-  .dj_parent = 0,
-  .dj_rank = 0,
   .main_mother = (uint32_t)-1,
 });
 
@@ -71,8 +69,6 @@ void Particle::initialize()
   r = array_nan,
   v = e ? p / e : Array{0.0, 0.0, 1.0};
   birth = death = phase_undef;
-  dj_parent = no;
-  dj_rank = 0;
   main_mother = (uint32_t)-1;
 }
 
@@ -95,29 +91,6 @@ bool operator<=(const Particle &p1, const Particle &p2)
 bool operator>=(const Particle &p1, const Particle &p2)
 {
   return p1.no >= p2.no;
-}
-
-void Particle::dj_union(Particle &other, vector<ParticlePtr> &pps)
-{
-  uint32_t root(dj_find(pps)), root_other(other.dj_find(pps));
-  if(root == root_other)
-    return;
-  if(pps[root]->dj_rank > pps[root_other]->dj_rank)
-    pps[root_other]->dj_parent = root;
-  else if(pps[root]->dj_rank < pps[root_other]->dj_rank)
-    pps[root]->dj_parent = root_other;
-  else
-  {
-    pps[root_other]->dj_parent = root;
-    ++pps[root]->dj_rank;
-  }
-}
-
-uint32_t Particle::dj_find(vector<ParticlePtr> &pps)
-{
-  if(dj_parent == no)
-    return no;
-  return dj_parent = pps[dj_parent]->dj_find(pps);
 }
 
 Array Particle::get_position(

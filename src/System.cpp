@@ -244,30 +244,23 @@ bool System::load_hepmc3(istream &is)
   return load_hepmc<HepMC3RandomAccessor>(is);
 }
 
-uint32_t System::get_birth(Particles &dj_union) noexcept(false)
+uint32_t System::get_birth(const ParticlePtr &pp) noexcept(false)
 {
-  if(dj_union[0]->birth == phase_undef)
+  if(pp->birth == phase_undef)
   {
     static unsigned recursive_depth = 0;
-    if(++recursive_depth > particle_dj_index.size())
+    if(++recursive_depth > particles.size())
     {
       recursive_depth = 0;
       throw runtime_error("Maximum recursive depth exceeded.");
     }
-
-    set<uint32_t> dj_moms;
-    for(const ParticlePtr &pp : dj_union)
-      for(uint32_t m : pp->momset)
-        dj_moms.insert(particles[m]->dj_find(particles));
     uint32_t birth(0);
-    for(uint32_t m : dj_moms)
-      birth = max(birth, get_birth(particle_dj_index[m]) + 1);
-    for(const ParticlePtr &pp : dj_union)
-      pp->birth = birth;
-
+    for(uint32_t m : pp->momset)
+      birth = max(birth, get_birth(particles[m]) + 1);
+    pp->birth = birth;
     --recursive_depth;
   }
-  return dj_union[0]->birth;
+  return pp->birth;
 }
 
 bool System::build_index()
@@ -278,47 +271,28 @@ bool System::build_index()
     return false;
   }
 
-  for(const ParticlePtr &pp : particles)
-  {
-    auto i2(pp->dauset.begin());
-    if(i2 == pp->dauset.end())
-      continue;
-    auto i1(i2++);
-    while(i2 != pp->dauset.end())
-      particles[*i1]->dj_union(*particles[*i2++], particles);
-  }
-
-  map<uint32_t, Particles> par_dj_index;
   vector<Particles> par_index;
   swap(particle_index, par_index);
-  swap(particle_dj_index, par_dj_index);
 
   for(const ParticlePtr &pp : particles)
-    particle_dj_index[pp->dj_find(particles)].push_back(pp);
-  for(auto p : particle_dj_index)
   {
     uint32_t birth;
     try {
-      birth = get_birth(p.second);
+      birth = get_birth(pp);
     }
     catch(const runtime_error &err) {
       cerr << err.what() << endl;
       swap(particle_index, par_index);
-      swap(particle_dj_index, par_dj_index);
       return false;
     }
     if(particle_index.size() <= birth)
       particle_index.resize(birth + 1);
-    particle_index[birth].insert(
-        particle_index[birth].end(), p.second.begin(), p.second.end());
+    particle_index[birth].push_back(pp);
   }
 
   for(const ParticlePtr &pp : particles)
-  {
-    if(pp->dauset.empty())
-      continue;
-    pp->death = particles[*pp->dauset.begin()]->birth;
-  }
+    if(!pp->dauset.empty())
+      pp->death = particles[*pp->dauset.begin()]->birth;
 
   return true;
 }

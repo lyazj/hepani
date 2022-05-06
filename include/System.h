@@ -22,7 +22,6 @@ namespace Hepani {
 
 typedef std::vector<ParticlePtr> Particles;
 typedef std::vector<Particles> ParticleIndex;
-typedef std::map<uint32_t, Particles> ParticleDJIndex;
 
 class System {
 public:
@@ -40,7 +39,6 @@ private:
   std::string      time_stamp;
   Particles        particles;
   ParticleIndex    particle_index;
-  ParticleDJIndex  particle_dj_index;
   uint32_t         central_phase = phase_undef;
   Particles        central_particles;
   uint32_t         central_status = (uint32_t)-1;
@@ -58,7 +56,7 @@ private:
   bool calc_dynamics();
   void write_time_stamp();
 
-  uint32_t get_birth(Particles &) noexcept(false);
+  uint32_t get_birth(const ParticlePtr &) noexcept(false);
   uint32_t get_main_mother(Particle &);
 };
 
