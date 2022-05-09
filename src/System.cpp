@@ -254,10 +254,27 @@ uint32_t System::get_birth(const ParticlePtr &pp) noexcept(false)
       recursive_depth = 0;
       throw runtime_error("Maximum recursive depth exceeded.");
     }
+
+    set<uint32_t> sibset;
+    if(pp->momset.empty())
+      sibset.insert(pp->no);
+    else
+      sibset = particles[*pp->momset.begin()]->dauset;
+
     uint32_t birth(0);
     for(uint32_t m : pp->momset)
+    {
+      if(particles[m]->dauset != sibset)
+        throw runtime_error("Inconsistent dauset of mothers.");
       birth = max(birth, get_birth(particles[m]) + 1);
-    pp->birth = birth;
+    }
+    for(uint32_t s: sibset)
+    {
+      // if(particles[s]->momset != pp->momset)
+      //   throw runtime_error("Inconsistent momset of daughters.");
+      particles[s]->birth = birth;
+    }
+
     --recursive_depth;
   }
   return pp->birth;
