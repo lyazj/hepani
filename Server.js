@@ -130,7 +130,9 @@ function statSync(request, response, args) {
     args.stats = fs.statSync(args.path)
     return true
   } catch(err) {
-    if(err.code == "ENOENT" || err.code == "ENOTDIR")
+    if(err.code == "ENOENT"
+      || err.code == "ENOTDIR"
+      || err.code == "ERR_INVALID_ARG_VALUE")
     {
       writeError(request, response, { code: 404 })
       log("NOT FOUND", args)
