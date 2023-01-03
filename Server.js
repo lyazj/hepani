@@ -88,8 +88,8 @@ var redirect = {
     + "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg",
   "js/three.min.js":
     "https://threejs.org/build/three.min.js",
-  "js/OrbitControls.js":
-    "https://threejs.org/examples/js/controls/OrbitControls.js",
+  // "js/OrbitControls.js":
+  //   "https://threejs.org/examples/js/controls/OrbitControls.js",
   "js/pako.min.js":
     "https://cdn.bootcdn.net/ajax/libs/pako/2.0.4/pako.min.js",
   "js/jquery.slim.min.js":
