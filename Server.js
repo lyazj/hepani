@@ -83,11 +83,11 @@ cacheControl = Object.assign(cacheControl, {
 })
 
 var redirect = {
-  "img/background.jpg":
-    "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/"
-    + "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg",
-  "js/three.min.js":
-    "https://threejs.org/build/three.min.js",
+  // "img/background.jpg":
+  //   "https://mediaarchive.cern.ch/MediaArchive/Photo/Public/"
+  //   + "2013/1308206/1308206_20/1308206_20-A4-at-144-dpi.jpg",
+  // "js/three.min.js":
+  //   "https://threejs.org/build/three.min.js",
   // "js/OrbitControls.js":
   //   "https://threejs.org/examples/js/controls/OrbitControls.js",
   "js/pako.min.js":
