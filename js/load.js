@@ -52,10 +52,12 @@ function updateConsole() {
   if(searchParams.has("local"))
     isLocal = true
   else
-    loads.push(
-      "https://hm.baidu.com/hm.js?4f48d998dfeca15149d06a6e7f6b61d1"
-    )
+    loadJS("https://hm.baidu.com/hm.js?4f48d998dfeca15149d06a6e7f6b61d1")
   loads.forEach(load => {
-    reloadJS(load)
+    if(!load) return
+    var url = new URL(location.href)
+    url.pathname = (load[0] == "/" ? "" : "/") + load
+    url.search = ""
+    loadJS(url.href)
   })
 }()
